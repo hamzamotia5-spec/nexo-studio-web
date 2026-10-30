@@ -379,6 +379,11 @@ p { margin: 0; }
 .works__cta { margin-top: 28px; color: var(--muted); }
 .works__cta a { color: var(--blue); font-weight: 600; text-decoration: none; }
 
+/* Tarjetas de demo con foto */
+.works--3 .work__media--photo { padding: 0; height: 270px; overflow: hidden; display: block; background: var(--bg-2); }
+.work__media--photo img { width: 100%; height: 100%; object-fit: cover; transition: transform 1s var(--ease); }
+.work:hover .work__media--photo img { transform: scale(1.06); }
+
 /* Pasos */
 .steps { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
 .step { padding: 34px 30px 36px; }
