@@ -1,0 +1,26 @@
+{
+  "hero": {
+    "src": "assets/img/hero-2560.webp",
+    "title": "Hair (portada)",
+    "creator": "Unsplash",
+    "license": "Unsplash License",
+    "license_url": "https://unsplash.com/license",
+    "foreign_landing_url": "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e"
+  },
+  "hero-1600": {
+    "src": "assets/img/hero-1600.webp",
+    "title": "Hair (portada)",
+    "creator": "Unsplash",
+    "license": "Unsplash License",
+    "license_url": "https://unsplash.com/license",
+    "foreign_landing_url": "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e"
+  },
+  "hero-mobile": {
+    "src": "assets/img/hero-mobile.webp",
+    "title": "Hair (portada)",
+    "creator": "Unsplash",
+    "license": "Unsplash License",
+    "license_url": "https://unsplash.com/license",
+    "foreign_landing_url": "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e"
+  }
+}
