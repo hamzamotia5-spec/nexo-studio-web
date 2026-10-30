@@ -1,0 +1,26 @@
+{
+  "platos": {
+    "src": "assets/img/{patata-baturra,croqueta,torrezno-soria,bolitas-torrezno,tostada-jamon,langostinos-panko,sticks-mozzarella,bolitas-pollo,tarta-queso}.webp",
+    "creator": "La Cordobesa (fotos propias publicadas en lacordobesazgz.com)",
+    "license": "Uso con permiso del propio negocio",
+    "title": "Platos de La Cordobesa",
+    "license_url": "https://lacordobesazgz.com/",
+    "foreign_landing_url": "https://lacordobesazgz.com/pedidos.html"
+  },
+  "horno": {
+    "src": "assets/img/horno.webp",
+    "creator": "Dong Cheng · Unsplash",
+    "license": "Unsplash License",
+    "license_url": "https://unsplash.com/license",
+    "foreign_landing_url": "https://images.unsplash.com/photo-1639922414789-74610d7385ea",
+    "title": "Patatas asándose en el horno"
+  },
+  "patatas-crudas": {
+    "src": "assets/img/patatas-crudas.webp",
+    "creator": "Lars Blankers · Unsplash",
+    "license": "Unsplash License",
+    "license_url": "https://unsplash.com/license",
+    "foreign_landing_url": "https://images.unsplash.com/photo-1518977676601-b53f82aba655",
+    "title": "Patatas"
+  }
+}
