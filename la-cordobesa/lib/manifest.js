@@ -6,9 +6,10 @@
   // Horario en minutos desde medianoche. Un turno que pasa de 1440 cruza la medianoche.
   window.__BRAND__ = {
     name: 'La Cordobesa',
+    // Pedidos y reservas se envían como mensaje de WhatsApp a este número
+    whatsappNumber: '34634862371',
+    shippingCost: 2.5,
     links: {
-      order: 'https://lacordobesazgz.com/pedidos.html',
-      book: 'https://lacordobesazgz.com/reservas.html',
       whatsapp: 'https://wa.me/34634862371?text=Hola%20La%20Cordobesa%2C%20quer%C3%ADa%20hacer%20una%20consulta.',
       phone: 'tel:+34634862371',
       instagram: 'https://www.instagram.com/lacordobesa.zgz/',
