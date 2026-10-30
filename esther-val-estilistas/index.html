@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Esther Val Estilistas · Peluquería en Zaragoza</title>
+  <meta name="description" content="Esther Val Estilistas, peluquería y estilismo en Delicias, Zaragoza (C. de Barcelona, 59). Corte, color, mechas, peinados, tratamientos y novias. Valoración 4,9 en Google. Reserva: 645 29 95 50.">
+  <meta name="theme-color" content="#F5EFE8">
+  <meta name="robots" content="noindex, nofollow">
+  <meta property="og:title" content="Esther Val Estilistas · Zaragoza">
+  <meta property="og:description" content="Peluquería y estilismo en Delicias, Zaragoza. Corte, color, mechas, peinados y tratamientos.">
+  <meta property="og:image" content="assets/img/esther-val-rojo.webp">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Manrope:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="preload" as="image" href="assets/img/hero-2560.webp" imagesrcset="assets/img/hero-1600.webp 1600w, assets/img/hero-2560.webp 2560w" imagesizes="100vw" media="(min-width: 761px)">
+  <link rel="preload" as="image" href="assets/img/hero-mobile.webp" media="(max-width: 760px)">
+  <link rel="stylesheet" href="styles.css?v=20261030">
+  <script defer src="lib/manifest.js?v=20261030"></script>
+  <script defer src="lib/gsap.min.js?v=20261030"></script>
+  <script defer src="lib/ScrollTrigger.min.js?v=20261030"></script>
+  <script defer src="main.js?v=20261030"></script>
+</head>
+<body>
+
+  <!-- Splash: se oculta por JS y, como red de seguridad, por CSS a los 4.5s -->
+  <div class="splash" aria-hidden="true">
+    <div class="splash-mark"><span>E</span><i>·</i><span>V</span></div>
+  </div>
+
+  <div class="progress" aria-hidden="true"><span></span></div>
+
+  <header class="nav" id="nav">
+    <a class="brand" href="#inicio" aria-label="Esther Val Estilistas, inicio">
+      <span class="brand-name">Esther Val</span>
+      <span class="brand-sub">Estilistas</span>
+    </a>
+    <nav class="nav-links" aria-label="Principal">
+      <a href="#salon">El salón</a>
+      <a href="#servicios">Servicios</a>
+      <a href="#trabajos">Trabajos</a>
+      <a href="#visitanos">Visítanos</a>
+    </nav>
+    <a class="btn btn-small nav-cta magnetic" href="#reserva">Reservar cita</a>
+    <button class="burger" aria-label="Abrir menú" aria-expanded="false" aria-controls="menu"><span></span><span></span></button>
+  </header>
+
+  <div class="menu" id="menu" aria-hidden="true">
+    <nav>
+      <a href="#salon"><small>01</small>El salón</a>
+      <a href="#servicios"><small>02</small>Servicios</a>
+      <a href="#trabajos"><small>03</small>Trabajos</a>
+      <a href="#visitanos"><small>04</small>Visítanos</a>
+      <a href="#reserva"><small>05</small>Reservar</a>
+    </nav>
+    <p class="menu-foot"><a href="tel:+34645299550">645 29 95 50</a> · <a href="https://www.facebook.com/ev.estilistas59/" target="_blank" rel="noopener">Facebook</a> · Delicias, Zaragoza</p>
+  </div>
+
+  <main>
+
+    <!-- HERO: foto 2K a sangre, texto sobre la pared y parallax suave -->
+    <section class="hero" id="inicio">
+      <picture class="hero-media">
+        <source media="(max-width: 760px)" srcset="assets/img/hero-mobile.webp">
+        <img src="assets/img/hero-2560.webp" srcset="assets/img/hero-1600.webp 1600w, assets/img/hero-2560.webp 2560w" sizes="100vw"
+             alt="Melena larga y ondulada con reflejos cálidos sobre fondo rosa" fetchpriority="high" width="2560" height="1440">
+      </picture>
+
+      <div class="wrap hero-content">
+        <p class="eyebrow hero-in" style="--d:.2s">Peluquería y estilismo · Delicias, Zaragoza</p>
+        <h1 class="hero-title hero-in" style="--d:.35s">El arte de<br><em>ser tú.</em></h1>
+        <p class="hero-sub hero-in" style="--d:.5s">Corte, color, peinados y tratamientos a medida. Cada servicio hecho a mano y sin prisas, para que te reconozcas en el espejo.</p>
+        <div class="hero-actions hero-in" style="--d:.65s">
+          <a class="btn magnetic" href="#reserva">Reservar cita</a>
+          <a class="ulink" href="#servicios">Ver servicios</a>
+        </div>
+        <p class="hero-rating hero-in" style="--d:.8s"><span aria-hidden="true">★★★★★</span> 4,9 en Google</p>
+      </div>
+
+      <div class="hero-scroll" aria-hidden="true"><i></i></div>
+    </section>
+
+    <!-- Marquee -->
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee-track">
+        <span>Corte</span><b>✦</b><span><em>Color</em></span><b>✦</b><span>Peinados</span><b>✦</b><span><em>Mechas</em></span><b>✦</b><span>Tratamientos</span><b>✦</b><span><em>Balayage</em></span><b>✦</b><span>Recogidos</span><b>✦</b><span><em>Novias</em></span><b>✦</b>
+        <span>Corte</span><b>✦</b><span><em>Color</em></span><b>✦</b><span>Peinados</span><b>✦</b><span><em>Mechas</em></span><b>✦</b><span>Tratamientos</span><b>✦</b><span><em>Balayage</em></span><b>✦</b><span>Recogidos</span><b>✦</b><span><em>Novias</em></span><b>✦</b>
+      </div>
+    </div>
+
+    <!-- Manifiesto -->
+    <section class="manifesto" id="salon">
+      <div class="wrap manifesto-grid">
+        <p class="eyebrow">01 — El salón</p>
+        <div>
+          <p class="manifesto-text" data-words>Un buen look no se elige en una revista. Se elige mirándote: tu cara, tu pelo, tu rutina y cómo lo vas a llevar dentro de dos meses. Por eso cada servicio empieza con una conversación y se hace a mano y sin prisas, para que se vea igual de bonito el día veinte que el primero.</p>
+          <div class="manifesto-meta">
+            <div><strong>4,9</strong><span>★★★★★ Valoración de clientas en Google</span></div>
+            <div><strong>Delicias</strong><span>C. de Barcelona, 59 · Zaragoza</span></div>
+            <div><strong>1:1</strong><span>Atención personal, sin prisas</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Servicios -->
+    <section class="services" id="servicios">
+      <div class="wrap">
+        <header class="section-head reveal">
+          <p class="eyebrow">02 — Servicios</p>
+          <h2>Todo lo que tu pelo<br><em>necesita.</em></h2>
+        </header>
+
+        <div class="services-grid">
+          <aside class="services-aside" aria-hidden="true">
+            <span class="sa-num">01</span>
+            <span class="sa-name">Corte &amp; estilo</span>
+            <span class="sa-line"></span>
+          </aside>
+
+          <ol class="services-list">
+            <li class="service reveal">
+              <span class="service-num">01</span>
+              <div>
+                <h3>Corte &amp; estilo</h3>
+                <p>Cortes pensados para tu tipo de pelo, tus facciones y tu rutina. Que funcione el día de la peluquería y todos los demás.</p>
+                <ul class="service-tags"><li>Corte</li><li>Lavado &amp; secado</li><li>Brushing</li><li>Flequillos</li></ul>
+              </div>
+            </li>
+            <li class="service reveal">
+              <span class="service-num">02</span>
+              <div>
+                <h3>Color</h3>
+                <p>Coloración global y tonos fantasía. Colores pensados para tu piel que crecen con elegancia y cubren con naturalidad.</p>
+                <ul class="service-tags"><li>Tinte</li><li>Cobertura de canas</li><li>Matiz</li><li>Rojos &amp; cobrizos</li></ul>
+              </div>
+            </li>
+            <li class="service reveal">
+              <span class="service-num">03</span>
+              <div>
+                <h3>Mechas &amp; balayage</h3>
+                <p>Del caramelo al rubio frío. Aclarados cuidando la fibra y matices a medida para iluminar sin marcar la raíz.</p>
+                <ul class="service-tags"><li>Balayage</li><li>Babylights</li><li>Mechas</li><li>Rubios</li></ul>
+              </div>
+            </li>
+            <li class="service reveal">
+              <span class="service-num">04</span>
+              <div>
+                <h3>Peinados &amp; recogidos</h3>
+                <p>Ondas, trenzas y recogidos para una cena, una graduación o cualquier día que merezca algo especial.</p>
+                <ul class="service-tags"><li>Ondas</li><li>Recogidos</li><li>Trenzas</li><li>Semirecogidos</li></ul>
+              </div>
+            </li>
+            <li class="service reveal">
+              <span class="service-num">05</span>
+              <div>
+                <h3>Tratamientos</h3>
+                <p>Rituales de hidratación, reparación y alisado para devolverle al cabello brillo, fuerza y suavidad.</p>
+                <ul class="service-tags"><li>Hidratación</li><li>Reparación</li><li>Alisado</li><li>Anticaída</li></ul>
+              </div>
+            </li>
+            <li class="service reveal">
+              <span class="service-num">06</span>
+              <div>
+                <h3>Novias &amp; eventos</h3>
+                <p>Peinado de novia, invitadas, comuniones y celebraciones. Con prueba previa para llegar al gran día tranquila.</p>
+                <ul class="service-tags"><li>Novias</li><li>Invitadas</li><li>Comuniones</li><li>Prueba previa</li></ul>
+              </div>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- Trabajos reales del salón -->
+    <section class="palette" id="trabajos" data-tone="rojo">
+      <div class="wrap palette-grid">
+        <div class="palette-stage">
+          <div class="palette-frame">
+            <img class="is-active" data-tone="rojo" src="assets/img/esther-val-rojo.webp" alt="Rojo cereza con ondas, trabajo real de Esther Val Estilistas" loading="lazy">
+            <img data-tone="ondas" src="assets/img/esther-val-ondas.webp" alt="Melena con ondas marcadas y definidas, trabajo real de Esther Val Estilistas" loading="lazy">
+            <img data-tone="caramelo" src="assets/img/esther-val-balayage-caramelo.webp" alt="Balayage caramelo con ondas, trabajo real de Esther Val Estilistas" loading="lazy">
+            <img data-tone="semirecogido" src="assets/img/esther-val-semirecogido.webp" alt="Semirecogido romántico con ondas sueltas, trabajo real de Esther Val Estilistas" loading="lazy">
+            <img data-tone="miel" src="assets/img/esther-val-rubio-ondas.webp" alt="Rubio miel en melena muy larga con ondas, trabajo real de Esther Val Estilistas" loading="lazy">
+            <img data-tone="frio" src="assets/img/esther-val-rubio-frio.webp" alt="Mechas en rubio frío, trabajo real de Esther Val Estilistas" loading="lazy">
+          </div>
+          <p class="palette-stamp"><span>Trabajo real</span><span>Esther Val Estilistas</span></p>
+        </div>
+
+        <div class="palette-copy">
+          <p class="eyebrow reveal">03 — Trabajos reales</p>
+          <h2 class="reveal">Hecho en<br><em>nuestro salón.</em></h2>
+          <p class="palette-intro reveal">Sin fotos de catálogo: color, mechas y peinados reales de nuestras clientas. Toca uno para verlo.</p>
+
+          <div class="tones reveal" role="group" aria-label="Elige un trabajo">
+            <button class="tone is-active" type="button" data-tone="rojo" aria-pressed="true">
+              <img class="sw" src="assets/img/esther-val-rojo.webp" alt="" loading="lazy">
+              <span class="tone-name">Rojo cereza</span><span class="tone-tech">Color</span>
+            </button>
+            <button class="tone" type="button" data-tone="ondas" aria-pressed="false">
+              <img class="sw" src="assets/img/esther-val-ondas.webp" alt="" loading="lazy">
+              <span class="tone-name">Ondas marcadas</span><span class="tone-tech">Peinado</span>
+            </button>
+            <button class="tone" type="button" data-tone="caramelo" aria-pressed="false">
+              <img class="sw" src="assets/img/esther-val-balayage-caramelo.webp" alt="" loading="lazy">
+              <span class="tone-name">Caramelo</span><span class="tone-tech">Balayage</span>
+            </button>
+            <button class="tone" type="button" data-tone="semirecogido" aria-pressed="false">
+              <img class="sw" src="assets/img/esther-val-semirecogido.webp" alt="" loading="lazy">
+              <span class="tone-name">Semirecogido</span><span class="tone-tech">Peinado de evento</span>
+            </button>
+            <button class="tone" type="button" data-tone="miel" aria-pressed="false">
+              <img class="sw" src="assets/img/esther-val-rubio-ondas.webp" alt="" loading="lazy">
+              <span class="tone-name">Rubio miel</span><span class="tone-tech">Color · melena XL</span>
+            </button>
+            <button class="tone" type="button" data-tone="frio" aria-pressed="false">
+              <img class="sw" src="assets/img/esther-val-rubio-frio.webp" alt="" loading="lazy">
+              <span class="tone-name">Rubio frío</span><span class="tone-tech">Mechas</span>
+            </button>
+          </div>
+
+          <p class="tone-desc" aria-live="polite">Un rojo profundo, uniforme de raíz a puntas, con un brillo que se ve de lejos.</p>
+          <div class="palette-actions">
+            <a class="btn magnetic tone-cta" href="#reserva" data-shade="Rojo cereza">Quiero este look</a>
+            <a class="ulink" href="https://maps.app.goo.gl/k7THbpDVwciBqfgA8" target="_blank" rel="noopener">Más fotos en Google ↗</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Opiniones -->
+    <section class="quote reviews" id="opiniones">
+      <div class="wrap reviews-inner reveal">
+        <p class="eyebrow light">Opiniones reales en Google</p>
+        <p class="reviews-score">4,9<span>/5</span></p>
+        <p class="reviews-stars" aria-label="Valoración de 4,9 sobre 5">★★★★★</p>
+        <p class="reviews-text">Es la nota media que nos dan nuestras clientas en Google.<br><em>Esto es lo que cuentan.</em></p>
+        <div class="reviews-grid">
+          <figure class="review reveal">
+            <p class="review-stars" aria-label="5 estrellas">★★★★★</p>
+            <blockquote><p>“Es la primera vez que me he hecho mechas con Esther y ha sido espectacular! Se va a volver mi peluquería de confianza. Un trato excepcional y ya el resultado solo hace falta verlo, 10 de 10.”</p></blockquote>
+            <figcaption><strong>Claudia L.</strong><span>Mechas · hace 3 meses</span></figcaption>
+          </figure>
+          <figure class="review reveal">
+            <p class="review-stars" aria-label="5 estrellas">★★★★★</p>
+            <blockquote><p>“Llevo yendo a la misma peluquería cerca de 3 años y siempre salgo súper contenta con el resultado. Tanto Esther como Sandra son muy profesionales y atentas. Se nota la vocación y que lo hacen todo con cariño.”</p></blockquote>
+            <figcaption><strong>Vicky M.</strong><span>Clienta desde hace 3 años</span></figcaption>
+          </figure>
+          <figure class="review reveal">
+            <p class="review-stars" aria-label="5 estrellas">★★★★★</p>
+            <blockquote><p>“La mejor peluquera de Zaragoza sin ninguna duda, tiene unas manos que valen oro y siempre acierta con la coloración.”</p></blockquote>
+            <figcaption><strong>Mar P.</strong><span>Color · Local Guide</span></figcaption>
+          </figure>
+          <figure class="review reveal">
+            <p class="review-stars" aria-label="5 estrellas">★★★★★</p>
+            <blockquote><p>“He salido encantada. El trato ha sido espectacular y Esther ha sabido captar a la perfección el estilo que quería desde el primer momento. El resultado ha sido increíble. ¡Muy recomendable!”</p></blockquote>
+            <figcaption><strong>Silvia B.</strong><span>Hace 4 meses</span></figcaption>
+          </figure>
+          <figure class="review reveal">
+            <p class="review-stars" aria-label="5 estrellas">★★★★★</p>
+            <blockquote><p>“Contacté con ellas por recomendación y no he podido acertar más. Te tratan con delicadeza y en todo momento se preocupan por si estás cómoda o necesitas algo.”</p></blockquote>
+            <figcaption><strong>Andrea T.</strong><span>Hace 6 meses</span></figcaption>
+          </figure>
+          <figure class="review reveal">
+            <p class="review-stars" aria-label="5 estrellas">★★★★★</p>
+            <blockquote><p>“Muy contenta! He ido a teñirme varias veces y encantada! Adoro este rojo-cereza!!!”</p></blockquote>
+            <figcaption><strong>Jennifer G.</strong><span>Color rojo cereza</span></figcaption>
+          </figure>
+        </div>
+        <div class="reviews-actions">
+          <a class="btn btn-light magnetic" href="https://maps.app.goo.gl/k7THbpDVwciBqfgA8" target="_blank" rel="noopener">Leer reseñas en Google ↗</a>
+          <a class="reviews-fb" href="https://www.facebook.com/ev.estilistas59/" target="_blank" rel="noopener"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 8.5V6.8c0-.8.5-1 .9-1H17V2.2L14.1 2C10.9 2 10.2 4.4 10.2 6v2.5H8v3.7h2.2V22H14v-9.8h2.8l.4-3.7H14z"/></svg><span>Síguenos en Facebook</span></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Proceso -->
+    <section class="process">
+      <div class="wrap">
+        <header class="section-head reveal">
+          <p class="eyebrow light">04 — La experiencia</p>
+          <h2>Cuatro pasos,<br><em>una sola idea: tú.</em></h2>
+        </header>
+        <ol class="steps">
+          <li class="step reveal"><span>I</span><h3>Escucha</h3><p>Hablamos de tu pelo, de tu día a día y de lo que te gustaría cambiar (o no).</p></li>
+          <li class="step reveal"><span>II</span><h3>Diagnóstico</h3><p>Analizamos textura, densidad y estado del cabello antes de proponer nada.</p></li>
+          <li class="step reveal"><span>III</span><h3>Ritual</h3><p>Lavado con masaje, producto profesional y el tiempo que tu servicio necesita.</p></li>
+          <li class="step reveal"><span>IV</span><h3>Para casa</h3><p>Te explicamos cómo peinarte y qué usar para que el resultado dure.</p></li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- Reserva -->
+    <section class="booking" id="reserva">
+      <div class="wrap booking-grid">
+        <div class="booking-copy reveal">
+          <p class="eyebrow">05 — Reserva</p>
+          <h2>Tu próxima<br><em>versión favorita</em><br>empieza aquí.</h2>
+          <p>Elige servicio y día, y te llega directo a nuestro WhatsApp. ¿Prefieres hablar? Llámanos al <a class="ulink" href="tel:+34645299550">645 29 95 50</a>.</p>
+        </div>
+
+        <form class="form reveal" id="booking-form" novalidate>
+          <label class="field"><span>Nombre</span><input name="nombre" type="text" autocomplete="name" required placeholder="Tu nombre"></label>
+          <label class="field"><span>Teléfono</span><input name="telefono" type="tel" autocomplete="tel" inputmode="tel" required placeholder="600 000 000"></label>
+          <fieldset class="field chips">
+            <legend>Servicio</legend>
+            <label><input type="radio" name="servicio" value="Corte & estilo" checked><span>Corte</span></label>
+            <label><input type="radio" name="servicio" value="Color"><span>Color</span></label>
+            <label><input type="radio" name="servicio" value="Mechas & balayage"><span>Mechas</span></label>
+            <label><input type="radio" name="servicio" value="Peinados & recogidos"><span>Peinado</span></label>
+            <label><input type="radio" name="servicio" value="Tratamientos"><span>Tratamiento</span></label>
+            <label><input type="radio" name="servicio" value="Novias & eventos"><span>Novias</span></label>
+          </fieldset>
+          <p class="shade-pick" hidden>Look elegido: <strong></strong> <button type="button" aria-label="Quitar look">✕</button></p>
+          <input type="hidden" name="tono" value="">
+          <label class="field"><span>Día preferido</span><input name="fecha" type="date"></label>
+          <label class="field"><span>Comentarios <small>(opcional)</small></span><textarea name="mensaje" rows="3" placeholder="Cuéntanos qué tienes en mente"></textarea></label>
+          <button class="btn btn-full magnetic" type="submit"><span>Pedir cita por WhatsApp</span></button>
+          <p class="form-ok" role="status" hidden>
+            <svg viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="24"/><path d="M15 27l7 7 15-16"/></svg>
+            <span>¡Listo! Se ha abierto WhatsApp con tu solicitud. Envía el mensaje y te confirmamos la cita.</span>
+          </p>
+        </form>
+      </div>
+    </section>
+
+    <!-- Visítanos -->
+    <section class="visit" id="visitanos">
+      <div class="wrap visit-grid">
+        <div class="visit-info reveal">
+          <p class="eyebrow">06 — Visítanos</p>
+          <h2>Te esperamos<br><em>en Delicias.</em></h2>
+          <dl>
+            <div><dt>Dirección</dt><dd>C. de Barcelona, 59<br>Delicias, 50017 Zaragoza</dd></div>
+            <div><dt>Teléfono</dt><dd><a class="ulink" href="tel:+34645299550">645 29 95 50</a></dd></div>
+            <div><dt>Citas</dt><dd>Con cita previa · llámanos o reserva aquí</dd></div>
+            <div><dt>Redes</dt><dd><a class="ulink" href="https://www.facebook.com/ev.estilistas59/" target="_blank" rel="noopener">Facebook · @ev.estilistas59</a></dd></div>
+          </dl>
+          <a class="btn btn-ghost magnetic" href="https://maps.app.goo.gl/k7THbpDVwciBqfgA8" target="_blank" rel="noopener">Cómo llegar ↗</a>
+        </div>
+        <div class="visit-map reveal">
+          <iframe title="Mapa de Esther Val Estilistas" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+            src="https://www.google.com/maps?q=Esther+Val+Estilistas,+C.+de+Barcelona+59,+Zaragoza&amp;z=16&amp;output=embed"></iframe>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <p class="footer-big">Esther <em>Val</em></p>
+      <div class="footer-row">
+        <p>C. de Barcelona, 59 · Delicias · Zaragoza · <a href="tel:+34645299550">645 29 95 50</a></p>
+        <nav aria-label="Pie"><a href="#servicios">Servicios</a><a href="#reserva">Reservar</a><a href="https://maps.app.goo.gl/k7THbpDVwciBqfgA8" target="_blank" rel="noopener">Google Maps</a><a href="https://www.facebook.com/ev.estilistas59/" target="_blank" rel="noopener">Facebook</a></nav>
+        <p>© <span id="year">2026</span> Esther Val Estilistas · Foto de portada: Unsplash</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Barra fija de reserva en móvil -->
+  <a class="mobile-cta" href="#reserva"><span>Reservar cita</span><i>→</i></a>
+
+</body>
+</html>
