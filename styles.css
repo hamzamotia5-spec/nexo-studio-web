@@ -352,6 +352,33 @@ p { margin: 0; }
 .link-arrow span { display: inline-block; transition: transform .3s var(--ease); color: var(--blue); }
 .work--empty:hover .link-arrow span { transform: translateX(5px); }
 
+/* Demos (3 columnas) */
+.section__sub { color: var(--muted); margin-top: 16px; font-size: 17px; }
+.works--3 { grid-template-columns: repeat(3, 1fr); }
+.works--3 .work { text-decoration: none; color: inherit; }
+.works--3 .work__media { padding: 28px 24px 0; min-height: 0; height: 270px; }
+.works--3 .browser__body { padding: 22px 20px 26px; }
+.works--3 .browser__title { font-size: 30px; }
+.works--3 .work__info { padding: 24px 26px 28px; display: flex; flex-direction: column; align-items: flex-start; flex: 1; }
+.works--3 .work__info h3 { font-size: 21px; }
+.works--3 .work__info p { margin-bottom: 18px; }
+.works--3 .link-arrow { margin-top: auto; }
+.works--3 .work:hover .link-arrow span { transform: translateX(5px); }
+.work__media--pelu { background: radial-gradient(circle at 30% 0%, #f7e1d8, transparent 60%), linear-gradient(150deg, #e9c9be, #c98f82 60%, #5b3150); }
+.browser--pelu .browser__body { background: #fffaf8; }
+.browser--pelu .browser__eyebrow { color: #5b3150; }
+.browser--pelu .browser__title { font-family: Georgia, serif; font-weight: 600; letter-spacing: -.01em; color: #2e1f2a; }
+.browser--pelu .browser__title em { color: #5b3150; }
+.browser--pelu .browser__btns span { background: #5b3150; }
+.browser--pelu .browser__btns span + span { background: transparent; color: #5b3150; border-color: #5b3150; }
+.work__media--clinic { background: radial-gradient(circle at 80% 0%, #c9f0eb, transparent 60%), linear-gradient(150deg, #e6f6f4, #7fd1c9 60%, #0e9f9a); }
+.browser--clinic .browser__body { background: #f3f9fb; color: #0f2a33; }
+.browser--clinic .browser__eyebrow { color: #0b7f7b; }
+.browser--clinic .browser__btns span { background: #0e9f9a; border-radius: 10px; }
+.browser--clinic .browser__btns span + span { background: #fff; color: #0f2a33; border-color: #dfecef; }
+.works__cta { margin-top: 28px; color: var(--muted); }
+.works__cta a { color: var(--blue); font-weight: 600; text-decoration: none; }
+
 /* Pasos */
 .steps { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
 .step { padding: 34px 30px 36px; }
@@ -459,7 +486,7 @@ p { margin: 0; }
   .hero__layout { grid-template-columns: 1fr; gap: 64px; padding-top: calc(var(--nav-h) + 28px); }
   .hero__watermark { width: 110vw; right: -30vw; top: 32%; }
   .phone { height: 540px; max-height: none; }
-  .works { grid-template-columns: 1fr; }
+  .works, .works--3 { grid-template-columns: 1fr; }
   .steps { grid-template-columns: 1fr; gap: 12px; }
   .pricing { grid-template-columns: 1fr; }
 }

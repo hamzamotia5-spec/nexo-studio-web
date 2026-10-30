@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>La Brasa del Tubo · Demo de restaurante · Nexo Studio</title>
+  <meta name="description" content="Web de muestra para un restaurante, diseñada por Nexo Studio. Carta online, reservas por WhatsApp, horarios y mapa.">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#2b1810">
+  <link rel="icon" href="../../assets/img/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root { --ink: #22160f; --cream: #fbf6ee; --paper: #f3eadd; --terra: #c4532a; --terra-2: #a6421f; --wood: #2b1810; --muted: #7a6656; --line: #e7dacb; }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 110px; }
+    body { margin: 0; font-family: Inter, system-ui, sans-serif; color: var(--ink); background: var(--cream); line-height: 1.6; font-size: 16px; -webkit-font-smoothing: antialiased; overflow-x: clip; }
+    a { color: inherit; }
+    h1, h2, h3 { font-family: Fraunces, Georgia, serif; font-weight: 700; line-height: 1.05; margin: 0; letter-spacing: -.01em; }
+    p { margin: 0; }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+
+    /* Aviso de demo */
+    .demo-bar { position: fixed; z-index: 100; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; padding: 8px 16px; background: #0b1230; color: #dfe5f7; font-size: 13px; text-align: center; }
+    .demo-bar b { color: #fff; }
+    .demo-bar > span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+    @media (max-width: 560px) { .demo-bar { flex-wrap: nowrap; font-size: 12px; gap: 10px; padding: 8px 12px; } }
+    .demo-bar a { color: #fff; background: linear-gradient(120deg, #19c8ff, #1f5bff); padding: 4px 12px; border-radius: 99px; text-decoration: none; font-weight: 600; white-space: nowrap; }
+
+    /* Navegación */
+    .nav { position: fixed; z-index: 50; top: 37px; left: 0; right: 0; transition: background .3s; }
+    .nav.is-solid { background: rgba(251, 246, 238, .94); backdrop-filter: blur(10px); box-shadow: 0 1px 0 var(--line); }
+    .nav__in { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+    .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; font-family: Fraunces, serif; font-weight: 700; font-size: 20px; color: #fff; transition: color .3s; }
+    .nav.is-solid .brand { color: var(--ink); }
+    .brand i { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--terra); color: #fff; font-style: italic; font-size: 14px; }
+    .nav__links { display: flex; gap: 26px; }
+    .nav__links a { text-decoration: none; color: rgba(255, 255, 255, .85); font-weight: 500; font-size: 15px; }
+    .nav.is-solid .nav__links a { color: var(--muted); }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 13px 22px; border-radius: 99px; font-weight: 600; text-decoration: none; transition: transform .2s, background .2s; border: 1.5px solid transparent; }
+    .btn:hover { transform: translateY(-2px); }
+    .btn--terra { background: var(--terra); color: #fff; }
+    .btn--terra:hover { background: var(--terra-2); }
+    .btn--light { border-color: rgba(255, 255, 255, .5); color: #fff; }
+    .btn--line { border-color: var(--ink); color: var(--ink); }
+    .btn--sm { padding: 9px 16px; font-size: 14px; }
+
+    /* Portada */
+    .hero { position: relative; min-height: 100svh; display: flex; align-items: flex-end; color: #fff; overflow: hidden; padding: 160px 0 70px;
+      background: repeating-linear-gradient(92deg, rgba(0, 0, 0, .1) 0 2px, transparent 2px 26px), repeating-linear-gradient(88deg, rgba(255, 255, 255, .03) 0 1px, transparent 1px 9px), linear-gradient(160deg, #5a3622, #3a2216 55%, #1e100a); }
+    .hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(20, 10, 5, .55), rgba(20, 10, 5, 0) 35%, rgba(20, 10, 5, .2) 55%, rgba(20, 10, 5, .9)); }
+    .hero .wrap { position: relative; z-index: 2; width: 100%; }
+    .plate { position: absolute; z-index: 1; right: -6vw; top: 50%; width: min(64vw, 680px); aspect-ratio: 1; transform: translateY(-50%); border-radius: 50%; background: radial-gradient(circle, #fbfaf7 0 56%, #ecebe6 57% 60%, #fdfcf9 61% 68%, #dcdad4 69% 70%, transparent 71%); box-shadow: 0 50px 80px rgba(0, 0, 0, .5); animation: spin 90s linear infinite; }
+    @keyframes spin { to { transform: translateY(-50%) rotate(360deg); } }
+    .plate i { position: absolute; display: block; border-radius: 50%; }
+    .p-sauce { left: 24%; top: 28%; width: 52%; height: 44%; background: radial-gradient(ellipse at 40% 40%, rgba(150, 70, 30, .55), transparent 70%); }
+    .p-meat { left: 30%; top: 30%; width: 34%; height: 26%; border-radius: 45% 55% 50% 40% !important; background: radial-gradient(ellipse at 35% 30%, #c57a45, #8a4320 55%, #5c2a12); transform: rotate(-18deg); box-shadow: inset -6px -8px 12px rgba(0, 0, 0, .35); }
+    .p-meat2 { left: 44%; top: 44%; width: 30%; height: 22%; border-radius: 45% 55% 50% 40% !important; background: radial-gradient(ellipse at 35% 30%, #c57a45, #8a4320 55%, #5c2a12); transform: rotate(14deg); box-shadow: inset -6px -8px 12px rgba(0, 0, 0, .35); }
+    .p-pot { width: 13%; height: 11%; background: radial-gradient(circle at 35% 30%, #ffe08a, #e0a73a 70%, #b97a1d); box-shadow: inset -4px -4px 6px rgba(0, 0, 0, .25); }
+    .p-herb { width: 3.4%; height: 3.4%; background: #4f7d2f; }
+    .glass { position: absolute; z-index: 1; right: 46vw; top: 22%; width: 120px; height: 120px; border-radius: 50%; background: radial-gradient(circle at 40% 35%, rgba(255, 255, 255, .5), rgba(150, 20, 40, .85) 30%, #5b0d1d 70%); box-shadow: 0 0 0 8px rgba(255, 255, 255, .15), 0 30px 40px rgba(0, 0, 0, .45); }
+    .hero__chip { display: inline-block; padding: 6px 14px; border-radius: 99px; background: rgba(255, 255, 255, .14); backdrop-filter: blur(8px); color: #ffd98a; font-weight: 600; font-size: 14px; }
+    .hero h1 { font-size: clamp(52px, 9vw, 120px); margin: 18px 0 14px; max-width: 9ch; }
+    .hero__sub { font-size: clamp(17px, 2vw, 21px); max-width: 520px; color: #f1e4d6; }
+    .hero__ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+
+    .info { background: #fff; border-bottom: 1px solid var(--line); }
+    .info .wrap { display: grid; grid-template-columns: repeat(3, 1fr); }
+    .info div { padding: 22px 0; display: flex; flex-direction: column; gap: 2px; }
+    .info div + div { padding-left: 24px; border-left: 1px solid var(--line); }
+    .info small { color: var(--muted); font-size: 13px; text-transform: uppercase; letter-spacing: .1em; }
+    .info b { font-weight: 600; }
+    .open { color: #2c7a3b; }
+
+    .section { padding: clamp(70px, 10vw, 120px) 0; }
+    .kicker { color: var(--terra); font-weight: 600; text-transform: uppercase; letter-spacing: .16em; font-size: 13px; margin-bottom: 12px; }
+    .section h2 { font-size: clamp(36px, 5vw, 58px); margin-bottom: 18px; }
+    .lead { color: var(--muted); max-width: 560px; font-size: 18px; }
+
+    /* Carta */
+    .tabs { display: flex; gap: 8px; margin: 34px 0 26px; flex-wrap: wrap; }
+    .tab { font: inherit; font-weight: 600; font-size: 15px; padding: 9px 18px; border-radius: 99px; border: 1.5px solid var(--line); background: #fff; color: var(--muted); cursor: pointer; }
+    .tab[aria-selected="true"] { background: var(--ink); color: #fff; border-color: var(--ink); }
+    .menu { display: grid; grid-template-columns: 1fr 1fr; gap: 0 48px; }
+    .menu[hidden] { display: none; }
+    .dish { display: flex; gap: 16px; align-items: center; padding: 18px 0; border-bottom: 1px dashed var(--line); }
+    .thumb { flex: none; width: 64px; height: 64px; border-radius: 14px; }
+    .t1 { background: radial-gradient(circle at 55% 45%, #8a4320 0 22%, transparent 23%), radial-gradient(circle at 32% 66%, #e0a73a 0 10%, transparent 11%), radial-gradient(circle, #fbfaf7 0 44%, #e2ddd3 45% 48%, transparent 49%), #4a2c1c; }
+    .t2 { background: radial-gradient(circle at 40% 45%, #6f9a4a 0 18%, transparent 19%), radial-gradient(circle at 62% 58%, #c9b48e 0 11%, transparent 12%), radial-gradient(circle, #fbfaf7 0 44%, #e2ddd3 45% 48%, transparent 49%), #2f3b2a; }
+    .t3 { background: radial-gradient(circle at 45% 42%, #ffcf3f 0 9%, transparent 10%), radial-gradient(circle at 45% 42%, #fff 0 18%, transparent 19%), radial-gradient(circle at 60% 60%, #e8b04b 0 20%, transparent 21%), radial-gradient(circle, #3c3a37 0 46%, transparent 47%), #6b4b33; }
+    .t4 { background: radial-gradient(circle at 60% 40%, #fff6e3 0 10%, transparent 11%), linear-gradient(135deg, transparent 30%, #c27a2c 31% 64%, transparent 65%), radial-gradient(circle, #fbfaf7 0 44%, #e2ddd3 45% 48%, transparent 49%), #5b3a26; }
+    .t5 { background: radial-gradient(circle at 50% 50%, #b5452c 0 26%, transparent 27%), radial-gradient(circle, #fbfaf7 0 44%, #e2ddd3 45% 48%, transparent 49%), #3a2a22; }
+    .t6 { background: radial-gradient(circle at 42% 48%, #e9d7b4 0 14%, transparent 15%), radial-gradient(circle at 60% 54%, #e9d7b4 0 12%, transparent 13%), radial-gradient(circle, #fbfaf7 0 44%, #e2ddd3 45% 48%, transparent 49%), #26323b; }
+    .dish__t { flex: 1; }
+    .dish__t b { font-family: Fraunces, serif; font-size: 19px; font-weight: 600; }
+    .dish__t p { color: var(--muted); font-size: 14px; }
+    .price { font-weight: 700; color: var(--terra); font-size: 18px; }
+    .tag { display: inline-block; font-size: 11px; font-weight: 600; color: #2c7a3b; background: #e5f3e7; padding: 2px 8px; border-radius: 99px; margin-left: 6px; vertical-align: middle; }
+
+    /* Opiniones */
+    .reviews { background: var(--paper); }
+    .score { display: flex; align-items: center; gap: 18px; margin: 10px 0 40px; }
+    .score b { font-family: Fraunces, serif; font-size: 64px; line-height: 1; }
+    .stars { color: #f2a516; font-size: 20px; letter-spacing: 2px; }
+    .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .review { background: #fff; border-radius: 18px; padding: 26px; box-shadow: 0 10px 30px -18px rgba(60, 30, 10, .3); }
+    .review p { margin: 10px 0 18px; font-size: 16px; }
+    .who { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 14px; }
+    .av { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-size: 13px; background: var(--terra); }
+
+    /* Visítanos */
+    .visit { display: grid; grid-template-columns: 1fr 1.1fr; gap: 50px; align-items: center; }
+    .hours { list-style: none; padding: 0; margin: 26px 0; }
+    .hours li { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--line); }
+    .hours li span:last-child { font-weight: 600; }
+    .map { position: relative; height: 380px; border-radius: 24px; overflow: hidden; background: #ece6dc; box-shadow: 0 20px 50px -25px rgba(60, 30, 10, .4); }
+    .map i { position: absolute; background: #fff; box-shadow: 0 0 0 1px #e0d6c8; }
+    .r1 { left: -10%; right: -10%; top: 45%; height: 16px; transform: rotate(-8deg); }
+    .r2 { top: -10%; bottom: -10%; left: 40%; width: 12px; transform: rotate(12deg); }
+    .r3 { left: 52%; right: -10%; top: 76%; height: 9px; transform: rotate(18deg); }
+    .r4 { left: -10%; width: 55%; top: 18%; height: 8px; transform: rotate(6deg); }
+    .park { position: absolute; left: 62%; top: 8%; width: 28%; height: 28%; border-radius: 30px; background: #cfe3c0; }
+    .pin { position: absolute; left: 46%; top: 30%; width: 44px; height: 44px; border-radius: 50% 50% 50% 0; background: var(--terra); transform: rotate(-45deg); box-shadow: 0 10px 16px rgba(0, 0, 0, .25); }
+    .pin::after { content: ""; position: absolute; inset: 13px; border-radius: 50%; background: #fff; }
+
+    /* Reserva */
+    .book { background: var(--wood); color: #fff; text-align: center; }
+    .book h2 { color: #fff; }
+    .book .lead { color: #e2d3c4; margin: 0 auto 32px; }
+
+    footer { background: #1a0f09; color: #a8968a; padding: 30px 0 100px; font-size: 14px; }
+    footer .wrap { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+    footer a { color: #fff; }
+
+    .mbar { display: none; }
+
+    @media (max-width: 860px) {
+      .nav__links { display: none; }
+      .plate { width: 110vw; right: -45vw; top: 34%; }
+      .glass { right: auto; left: -30px; top: 24%; width: 90px; height: 90px; }
+      .info .wrap { grid-template-columns: 1fr; }
+      .info div + div { padding-left: 0; border-left: 0; border-top: 1px solid var(--line); }
+      .info div { padding: 14px 0; }
+      .menu { grid-template-columns: 1fr; }
+      .cards { grid-template-columns: 1fr; }
+      .visit { grid-template-columns: 1fr; }
+      .map { height: 260px; }
+      .mbar { display: flex; gap: 8px; position: fixed; z-index: 60; left: 12px; right: 12px; bottom: max(12px, env(safe-area-inset-bottom)); padding: 8px; border-radius: 20px; background: rgba(255, 255, 255, .95); backdrop-filter: blur(10px); box-shadow: 0 10px 30px rgba(60, 30, 10, .25); }
+      .mbar a { flex: 1; padding: 13px 0; }
+      .nav .btn--sm { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="demo-bar"><span><b>Web de muestra</b> diseñada por Nexo Studio</span><a href="https://wa.me/34711591734?text=Hola,%20he%20visto%20la%20demo%20del%20restaurante%20y%20quiero%20una%20web%20as%C3%AD" target="_blank" rel="noopener">Quiero una así</a></div>
+
+  <header class="nav" id="nav">
+    <div class="wrap nav__in">
+      <a class="brand" href="#inicio"><i>BT</i>La Brasa del Tubo</a>
+      <nav class="nav__links"><a href="#carta">Carta</a><a href="#opiniones">Opiniones</a><a href="#visitanos">Horario</a></nav>
+      <a class="btn btn--terra btn--sm" href="#reservar">Reservar</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="inicio">
+      <div class="plate" aria-hidden="true">
+        <i class="p-sauce"></i><i class="p-meat"></i><i class="p-meat2"></i>
+        <i class="p-pot" style="left:22%;top:56%"></i><i class="p-pot" style="left:35%;top:64%;width:11%;height:10%"></i><i class="p-pot" style="left:64%;top:26%"></i>
+        <i class="p-herb" style="left:40%;top:26%"></i><i class="p-herb" style="left:52%;top:31%"></i><i class="p-herb" style="left:60%;top:62%"></i><i class="p-herb" style="left:30%;top:47%"></i><i class="p-herb" style="left:68%;top:48%"></i><i class="p-herb" style="left:46%;top:70%"></i>
+      </div>
+      <div class="glass" aria-hidden="true"></div>
+      <div class="wrap">
+        <span class="hero__chip">★ 4,8 en Google · 326 reseñas</span>
+        <h1>La Brasa del Tubo</h1>
+        <p class="hero__sub">Cocina de mercado y brasa en pleno Tubo de Zaragoza. Producto de Aragón, vinos de la tierra y sobremesas largas.</p>
+        <div class="hero__ctas">
+          <a class="btn btn--terra" href="#reservar">Reservar mesa</a>
+          <a class="btn btn--light" href="#carta">Ver la carta</a>
+        </div>
+      </div>
+    </section>
+
+    <div class="info">
+      <div class="wrap">
+        <div><small>Hoy</small><b class="open">● Abierto · cierra a las 23:30</b></div>
+        <div><small>Dónde</small><b>Calle Estébanes · El Tubo, Zaragoza</b></div>
+        <div><small>Reservas</small><b>Por WhatsApp o teléfono</b></div>
+      </div>
+    </div>
+
+    <section class="section" id="carta">
+      <div class="wrap">
+        <p class="kicker">Nuestra carta</p>
+        <h2>Lo que sale de la brasa.</h2>
+        <p class="lead">Cambiamos algunos platos según temporada. Pregunta por las sugerencias del día.</p>
+
+        <div class="tabs" role="tablist">
+          <button class="tab" role="tab" aria-selected="true" data-tab="principales">Principales</button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="picar">Para picar</button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="postres">Postres</button>
+        </div>
+
+        <div class="menu" data-panel="principales">
+          <div class="dish"><span class="thumb t1"></span><div class="dish__t"><b>Ternasco de Aragón al horno</b><p>Con patata panadera y su jugo</p></div><span class="price">18 €</span></div>
+          <div class="dish"><span class="thumb t5"></span><div class="dish__t"><b>Entrecot a la brasa</b><p>Vaca madurada, pimientos asados</p></div><span class="price">22 €</span></div>
+          <div class="dish"><span class="thumb t6"></span><div class="dish__t"><b>Bacalao confitado</b><p>Sobre pisto de la huerta</p></div><span class="price">17 €</span></div>
+          <div class="dish"><span class="thumb t2"></span><div class="dish__t"><b>Borrajas con almejas <span class="tag">Temporada</span></b><p>Verdura de la huerta de Aragón</p></div><span class="price">14 €</span></div>
+        </div>
+        <div class="menu" data-panel="picar" hidden>
+          <div class="dish"><span class="thumb t3"></span><div class="dish__t"><b>Huevos rotos con trufa</b><p>Trufa negra de Teruel</p></div><span class="price">12 €</span></div>
+          <div class="dish"><span class="thumb t6"></span><div class="dish__t"><b>Croquetas caseras de jamón</b><p>6 unidades</p></div><span class="price">9 €</span></div>
+          <div class="dish"><span class="thumb t2"></span><div class="dish__t"><b>Ensalada de tomate rosa</b><p>Tomate de Barbastro y ventresca</p></div><span class="price">11 €</span></div>
+          <div class="dish"><span class="thumb t5"></span><div class="dish__t"><b>Longaniza de Graus</b><p>A la brasa, con pan de cristal</p></div><span class="price">10 €</span></div>
+        </div>
+        <div class="menu" data-panel="postres" hidden>
+          <div class="dish"><span class="thumb t4"></span><div class="dish__t"><b>Torrija caramelizada</b><p>Con helado de vainilla</p></div><span class="price">7 €</span></div>
+          <div class="dish"><span class="thumb t3"></span><div class="dish__t"><b>Tarta de queso</b><p>Cremosa, al horno</p></div><span class="price">6 €</span></div>
+          <div class="dish"><span class="thumb t5"></span><div class="dish__t"><b>Melocotón con vino</b><p>Melocotón de Calanda</p></div><span class="price">6 €</span></div>
+          <div class="dish"><span class="thumb t4"></span><div class="dish__t"><b>Frutas de Aragón</b><p>Bombones de fruta escarchada</p></div><span class="price">5 €</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section reviews" id="opiniones">
+      <div class="wrap">
+        <p class="kicker">Opiniones</p>
+        <h2>Lo que dicen en Google.</h2>
+        <div class="score"><b>4,8</b><div><div class="stars">★★★★★</div><span style="color:var(--muted)">326 reseñas</span></div></div>
+        <div class="cards">
+          <div class="review"><div class="stars">★★★★★</div><p>“El ternasco, espectacular. El trato de diez y el sitio muy acogedor. Volveremos seguro.”</p><div class="who"><span class="av">LM</span>Laura M.</div></div>
+          <div class="review"><div class="stars">★★★★★</div><p>“Reservé por WhatsApp en un minuto y nos guardaron la mesa de la ventana. Todo buenísimo.”</p><div class="who"><span class="av" style="background:#3b6fb6">JG</span>Javier G.</div></div>
+          <div class="review"><div class="stars">★★★★★</div><p>“De lo mejor del Tubo. Las croquetas y la torrija, imprescindibles.”</p><div class="who"><span class="av" style="background:#4f7d2f">AR</span>Ana R.</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="visitanos">
+      <div class="wrap visit">
+        <div>
+          <p class="kicker">Visítanos</p>
+          <h2>En el corazón del Tubo.</h2>
+          <p class="lead">A dos minutos de la plaza de España. Parking más cercano: Plaza de San Felipe.</p>
+          <ul class="hours">
+            <li><span>Lunes</span><span>Cerrado</span></li>
+            <li><span>Martes a jueves</span><span>13:00–16:00 · 20:00–23:00</span></li>
+            <li><span>Viernes y sábado</span><span>13:00–16:30 · 20:00–23:30</span></li>
+            <li><span>Domingo</span><span>13:00–16:30</span></li>
+          </ul>
+          <a class="btn btn--line" href="#reservar">Cómo llegar</a>
+        </div>
+        <div class="map" aria-label="Mapa de ubicación"><span class="park"></span><i class="r1"></i><i class="r2"></i><i class="r3"></i><i class="r4"></i><span class="pin"></span></div>
+      </div>
+    </section>
+
+    <section class="section book" id="reservar">
+      <div class="wrap">
+        <p class="kicker">Reservas</p>
+        <h2>¿Te guardamos mesa?</h2>
+        <p class="lead">Escríbenos por WhatsApp con el día, la hora y cuántos sois. Te confirmamos en unos minutos.</p>
+        <a class="btn btn--terra" href="https://wa.me/34711591734?text=Hola,%20he%20visto%20la%20demo%20del%20restaurante%20y%20quiero%20una%20web%20as%C3%AD" target="_blank" rel="noopener">Reservar por WhatsApp</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap"><span>La Brasa del Tubo · Restaurante de muestra (ficticio)</span><span>Web diseñada por <a href="../../">Nexo Studio</a></span></div>
+  </footer>
+
+  <div class="mbar"><a class="btn btn--line" href="#visitanos">Llamar</a><a class="btn btn--terra" href="#reservar">Reservar</a></div>
+
+  <script>
+    (function () {
+      var nav = document.getElementById("nav");
+      function onScroll() { nav.classList.toggle("is-solid", window.scrollY > 60); }
+      onScroll(); window.addEventListener("scroll", onScroll, { passive: true });
+      var tabs = document.querySelectorAll(".tab");
+      tabs.forEach(function (t) {
+        t.addEventListener("click", function () {
+          tabs.forEach(function (o) { o.setAttribute("aria-selected", o === t ? "true" : "false"); });
+          document.querySelectorAll("[data-panel]").forEach(function (p) { p.hidden = p.getAttribute("data-panel") !== t.getAttribute("data-tab"); });
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
