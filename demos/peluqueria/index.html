@@ -54,7 +54,30 @@
 
     .art { position: relative; aspect-ratio: 4 / 5; border-radius: 220px 220px 28px 28px; overflow: hidden;
       background: radial-gradient(ellipse at 30% 20%, #f3d6cb, transparent 60%), linear-gradient(170deg, #e9c9be, #c98f82 70%, #a96c62); box-shadow: 0 40px 70px -35px rgba(91, 49, 80, .5); }
-    .art svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .art img.art__img { position: absolute; inset: -8% 0; width: 100%; height: 116%; object-fit: cover; will-change: transform; }
+    .art { animation: archIn 1.6s cubic-bezier(.2, .7, .2, 1) both; }
+    @keyframes archIn { from { clip-path: inset(100% 0 0 0 round 220px 220px 28px 28px); } to { clip-path: inset(0 0 0 0 round 220px 220px 28px 28px); } }
+    .hero__grid > div:first-child > * { animation: up 1s cubic-bezier(.2, .7, .2, 1) both; }
+    .hero__grid > div:first-child > :nth-child(2) { animation-delay: .12s; } .hero__grid > div:first-child > :nth-child(3) { animation-delay: .24s; } .hero__grid > div:first-child > :nth-child(4) { animation-delay: .36s; } .hero__grid > div:first-child > :nth-child(5) { animation-delay: .48s; }
+    @keyframes up { from { opacity: 0; transform: translateY(30px); } }
+    .js [data-reveal] { opacity: 0; transform: translateY(34px); transition: opacity .9s cubic-bezier(.2, .7, .2, 1), transform .9s cubic-bezier(.2, .7, .2, 1); }
+    .js [data-reveal].in { opacity: 1; transform: none; }
+
+    /* Galería */
+    .gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .shot { position: relative; margin: 0; border-radius: 24px; overflow: hidden; aspect-ratio: 4 / 5; }
+    .shot img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s cubic-bezier(.2, .7, .2, 1); }
+    .shot:hover img { transform: scale(1.06); }
+    .shot figcaption { position: absolute; left: 14px; bottom: 14px; padding: 7px 14px; border-radius: 99px; background: rgba(255, 250, 248, .92); font-size: 14px; font-weight: 600; }
+    .gallery .shot:nth-child(2) { transform: translateY(40px); }
+
+    /* Estudio: la foto se abre al bajar */
+    .studio { position: relative; height: 78vh; min-height: 440px; }
+    .studio__frame { position: absolute; inset: 0; overflow: hidden; clip-path: inset(calc((1 - var(--g, 1)) * 12%) calc((1 - var(--g, 1)) * 20%) round calc(28px + (1 - var(--g, 1)) * 60px)); }
+    .studio__frame img { position: absolute; inset: -10% 0; width: 100%; height: 120%; object-fit: cover; }
+    .studio__text { position: absolute; z-index: 2; left: 50%; bottom: 10%; transform: translateX(-50%); width: min(90%, 560px); text-align: center; padding: 24px 28px; border-radius: 24px; background: rgba(255, 250, 248, .9); backdrop-filter: blur(10px); opacity: calc(var(--g, 1) * 1.6 - .6); }
+    .studio__text h2 { font-size: clamp(32px, 4.5vw, 52px); }
+    .studio__text p { color: var(--muted); margin-top: 6px; }
     .art__tag { position: absolute; left: 18px; bottom: 18px; right: 18px; display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; border-radius: 18px; background: rgba(255, 250, 248, .9); backdrop-filter: blur(8px); font-size: 14px; }
     .art__tag b { font-family: "Cormorant Garamond", serif; font-size: 22px; }
     .stars { color: #d39b1c; letter-spacing: 2px; }
@@ -82,7 +105,8 @@
     .team { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
     .member { text-align: center; }
     .portrait { aspect-ratio: 1; border-radius: 50%; margin: 0 auto 18px; max-width: 230px; position: relative; overflow: hidden; }
-    .portrait svg { width: 100%; height: 100%; display: block; }
+    .portrait img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .8s cubic-bezier(.2, .7, .2, 1); }
+    .member:hover .portrait img { transform: scale(1.06); }
     .member h3 { font-size: 30px; }
     .member p { color: var(--muted); font-size: 15px; }
 
@@ -115,7 +139,10 @@
       .hero { padding-top: 140px; }
       .hero__grid, .booking { grid-template-columns: 1fr; }
       .art { max-width: 420px; width: 100%; margin: 0 auto; }
-      .services, .team { grid-template-columns: 1fr; }
+      .services, .team, .gallery { grid-template-columns: 1fr; }
+      .gallery .shot:nth-child(2) { transform: none; }
+      .shot { aspect-ratio: 4 / 4.4; }
+      .studio { height: 60vh; }
       .team { gap: 36px; }
     }
   </style>
@@ -144,16 +171,8 @@
           </div>
           <div class="hero__meta"><span><b>4,9</b>en Google</span><span><b>+12</b>años de oficio</span><span><b>3</b>estilistas</span></div>
         </div>
-        <div class="art" aria-hidden="true">
-          <svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice">
-            <defs><linearGradient id="h" x1="0" x2="1"><stop offset="0" stop-color="#5b3150"/><stop offset="1" stop-color="#8a4d6f"/></linearGradient></defs>
-            <path d="M120 520 C 120 380, 150 330, 200 320 C 250 330, 280 380, 280 520 Z" fill="#f3d6cb" opacity=".9"/>
-            <circle cx="200" cy="230" r="78" fill="#f1cdbf"/>
-            <path d="M110 250 C 95 140, 160 95, 210 100 C 280 105, 320 170, 300 260 C 330 330, 320 420, 290 470 C 300 380, 285 320, 270 290 C 280 220, 250 170, 200 165 C 150 170, 128 215, 135 290 C 115 340, 110 400, 120 470 C 85 400, 90 320, 110 250 Z" fill="url(#h)"/>
-            <path d="M150 140 C 190 120, 250 125, 280 170" stroke="#a8668a" stroke-width="5" fill="none" opacity=".6" stroke-linecap="round"/>
-            <path d="M140 200 C 130 280, 140 360, 120 440" stroke="#a8668a" stroke-width="4" fill="none" opacity=".5" stroke-linecap="round"/>
-            <path d="M290 210 C 300 300, 295 380, 300 440" stroke="#a8668a" stroke-width="4" fill="none" opacity=".5" stroke-linecap="round"/>
-          </svg>
+        <div class="art">
+          <img class="art__img" src="../img/pelu-hero.webp" alt="Melena con balayage caramelo recién peinada" data-parallax="0.1" data-scale="1.08" fetchpriority="high">
           <div class="art__tag"><span><b>“Salgo siempre encantada”</b><br><span class="stars">★★★★★</span> Marta, clienta desde 2019</span></div>
         </div>
       </div>
@@ -162,11 +181,11 @@
     <section class="section" id="servicios">
       <div class="wrap">
         <div class="head">
-          <div><span class="eyebrow">Servicios y precios</span><h2>Lo que hacemos.</h2></div>
+          <div><span class="eyebrow" data-reveal>Servicios y precios</span><h2 data-reveal>Lo que hacemos.</h2></div>
           <p>Precios orientativos para pelo medio. Te confirmamos el precio exacto antes de empezar.</p>
         </div>
         <div class="services">
-          <div class="svc">
+          <div class="svc" data-reveal>
             <h3>Corte y peinado</h3>
             <ul>
               <li><span>Corte mujer<small>Lavado y secado incluidos</small></span><span>28 €</span></li>
@@ -175,7 +194,7 @@
               <li><span>Peinado o recogido</span><span>desde 20 €</span></li>
             </ul>
           </div>
-          <div class="svc svc--feat">
+          <div class="svc svc--feat" data-reveal data-delay="120">
             <h3>Color</h3>
             <ul>
               <li><span>Tinte raíz</span><span>32 €</span></li>
@@ -184,7 +203,7 @@
               <li><span>Color sin amoniaco</span><span>38 €</span></li>
             </ul>
           </div>
-          <div class="svc">
+          <div class="svc" data-reveal>
             <h3>Tratamientos</h3>
             <ul>
               <li><span>Hidratación profunda</span><span>18 €</span></li>
@@ -197,24 +216,40 @@
       </div>
     </section>
 
+    <section class="section" style="padding-top:0">
+      <div class="wrap">
+        <div class="head"><div><span class="eyebrow" data-reveal>Trabajos recientes</span><h2 data-reveal>Salen así de aquí.</h2></div><p data-reveal>Algunos de los looks de esta semana en el estudio.</p></div>
+        <div class="gallery">
+          <figure class="shot" data-reveal><img src="../img/pelu-color.webp" alt="Balayage rubio en ondas" loading="lazy"><figcaption>Balayage</figcaption></figure>
+          <figure class="shot" data-reveal data-delay="120"><img src="../img/pelu-fade.webp" alt="Degradado de barbería" loading="lazy"><figcaption>Fade y textura</figcaption></figure>
+          <figure class="shot" data-reveal data-delay="240"><img src="../img/pelu-novia.webp" alt="Recogido de novia con flores" loading="lazy"><figcaption>Recogido de novia</figcaption></figure>
+        </div>
+      </div>
+    </section>
+
     <section class="section team-bg" id="equipo">
       <div class="wrap">
-        <div class="head"><div><span class="eyebrow">Equipo</span><h2>Las manos detrás de Lúa.</h2></div></div>
+        <div class="head"><div><span class="eyebrow" data-reveal>Equipo</span><h2 data-reveal>Las manos detrás de Lúa.</h2></div></div>
         <div class="team">
-          <div class="member">
-            <div class="portrait"><svg viewBox="0 0 200 200"><rect width="200" height="200" fill="#e9c9be"/><path d="M40 210 C 45 150, 155 150, 160 210 Z" fill="#5b3150"/><circle cx="100" cy="95" r="38" fill="#f1cdbf"/><path d="M58 110 C 50 50, 150 45, 142 110 C 150 140, 145 170, 140 180 C 135 140, 130 110, 125 95 C 110 75, 85 75, 75 95 C 70 115, 65 140, 60 180 C 52 160, 52 135, 58 110 Z" fill="#3b2230"/></svg></div>
+          <div class="member" data-reveal data-delay="0">
+            <div class="portrait"><img src="../img/pelu-lucia.webp" alt="Lucía, estilista de Lúa" loading="lazy"></div>
             <h3>Lucía</h3><p>Fundadora · Especialista en color</p>
           </div>
-          <div class="member">
-            <div class="portrait"><svg viewBox="0 0 200 200"><rect width="200" height="200" fill="#d6dfd2"/><path d="M40 210 C 45 150, 155 150, 160 210 Z" fill="#8fa38a"/><circle cx="100" cy="95" r="38" fill="#e8bfa8"/><path d="M62 92 C 60 55, 140 50, 138 92 C 132 80, 120 70, 100 70 C 82 70, 70 78, 62 92 Z" fill="#2d2420"/></svg></div>
+          <div class="member" data-reveal data-delay="120">
+            <div class="portrait"><img src="../img/pelu-dani.webp" alt="Dani, estilista de Lúa" loading="lazy"></div>
             <h3>Dani</h3><p>Barbería y cortes de hombre</p>
           </div>
-          <div class="member">
-            <div class="portrait"><svg viewBox="0 0 200 200"><rect width="200" height="200" fill="#f0dccf"/><path d="M40 210 C 45 150, 155 150, 160 210 Z" fill="#d9a99a"/><circle cx="100" cy="95" r="38" fill="#c98f6f"/><circle cx="100" cy="62" r="26" fill="#2a1a14"/><path d="M60 95 C 58 60, 142 60, 140 95 C 130 75, 70 75, 60 95 Z" fill="#2a1a14"/></svg></div>
+          <div class="member" data-reveal data-delay="240">
+            <div class="portrait"><img src="../img/pelu-irene.webp" alt="Irene, estilista de Lúa" loading="lazy"></div>
             <h3>Irene</h3><p>Peinados, novias y recogidos</p>
           </div>
         </div>
       </div>
+    </section>
+
+    <section class="studio" data-grow>
+      <div class="studio__frame"><img src="../img/pelu-salon.webp" alt="Interior del estudio de peluquería" loading="lazy" data-parallax="0.12" data-scale="1"></div>
+      <div class="studio__text"><h2>Un estudio tranquilo.</h2><p>Sin prisas, sin ruido y con un café mientras esperas.</p></div>
     </section>
 
     <section class="section" id="cita">
@@ -229,7 +264,7 @@
             <li>¿No puedes venir? Cámbiala con un mensaje.</li>
           </ul>
         </div>
-        <div class="panel">
+        <div class="panel" data-reveal>
           <p class="step">1 · Servicio</p>
           <div class="chips" data-group="svc">
             <button class="chip" aria-pressed="true">Corte mujer</button>
@@ -254,6 +289,7 @@
     <div class="wrap"><span>Lúa Estudio de peluquería · Negocio de muestra (ficticio)</span><span>Web diseñada por <a href="../../">Nexo Studio</a></span></div>
   </footer>
 
+  <script defer src="../demo.js"></script>
   <script>
     (function () {
       var DAYS = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];

@@ -47,11 +47,28 @@
     .btn--sm { padding: 9px 16px; font-size: 14px; }
 
     /* Portada */
-    .hero { position: relative; min-height: 100svh; display: flex; align-items: flex-end; color: #fff; overflow: hidden; padding: 160px 0 70px;
-      background: repeating-linear-gradient(92deg, rgba(0, 0, 0, .1) 0 2px, transparent 2px 26px), repeating-linear-gradient(88deg, rgba(255, 255, 255, .03) 0 1px, transparent 1px 9px), linear-gradient(160deg, #5a3622, #3a2216 55%, #1e100a); }
-    .hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(20, 10, 5, .55), rgba(20, 10, 5, 0) 35%, rgba(20, 10, 5, .2) 55%, rgba(20, 10, 5, .9)); }
+    .hero { position: relative; min-height: 100svh; display: flex; align-items: flex-end; color: #fff; overflow: hidden; padding: 160px 0 70px; background: #1e100a; }
+    .hero__img { position: absolute; inset: -6% 0; width: 100%; height: 112%; object-fit: cover; object-position: 70% 50%; transform: scale(1.12); will-change: transform; animation: heroIn 2.4s cubic-bezier(.2, .7, .2, 1) both; }
+    @keyframes heroIn { from { opacity: 0; filter: blur(8px); } }
+    .hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(20, 10, 5, .88) 0%, rgba(20, 10, 5, .55) 42%, rgba(20, 10, 5, 0) 70%), linear-gradient(180deg, rgba(20, 10, 5, .5), transparent 30%, transparent 70%, rgba(20, 10, 5, .6)); }
+    .hero .wrap > * { animation: up 1s cubic-bezier(.2, .7, .2, 1) both; }
+    .hero .wrap > :nth-child(2) { animation-delay: .15s; } .hero .wrap > :nth-child(3) { animation-delay: .3s; } .hero .wrap > :nth-child(4) { animation-delay: .45s; }
+    @keyframes up { from { opacity: 0; transform: translateY(30px); } }
+
+    /* Animaciones de scroll */
+    .js [data-reveal] { opacity: 0; transform: translateY(34px); transition: opacity .9s cubic-bezier(.2, .7, .2, 1), transform .9s cubic-bezier(.2, .7, .2, 1); }
+    .js [data-reveal].in { opacity: 1; transform: none; }
+
+    /* Ambiente: la foto se abre al bajar */
+    .ambience { position: relative; height: 82vh; min-height: 460px; }
+    .ambience__frame { position: absolute; inset: 0; overflow: hidden; clip-path: inset(calc((1 - var(--g, 1)) * 14%) calc((1 - var(--g, 1)) * 22%) round calc((1 - var(--g, 1)) * 60px)); }
+    .ambience__frame img { position: absolute; inset: -10% 0; width: 100%; height: 120%; object-fit: cover; }
+    .ambience__frame::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(20, 10, 5, .1), rgba(20, 10, 5, .7)); }
+    .ambience__text { position: absolute; z-index: 2; left: 0; right: 0; bottom: 12%; text-align: center; color: #fff; padding: 0 20px; opacity: calc(var(--g, 1) * 1.6 - .6); }
+    .ambience__text h2 { font-size: clamp(36px, 6vw, 76px); }
+    .ambience__text p { color: #f1e4d6; font-size: 18px; margin-top: 10px; }
     .hero .wrap { position: relative; z-index: 2; width: 100%; }
-    .plate { position: absolute; z-index: 1; right: -6vw; top: 50%; width: min(64vw, 680px); aspect-ratio: 1; transform: translateY(-50%); border-radius: 50%; background: radial-gradient(circle, #fbfaf7 0 56%, #ecebe6 57% 60%, #fdfcf9 61% 68%, #dcdad4 69% 70%, transparent 71%); box-shadow: 0 50px 80px rgba(0, 0, 0, .5); animation: spin 90s linear infinite; }
+    .plate-unused { position: absolute; z-index: 1; right: -6vw; top: 50%; width: min(64vw, 680px); aspect-ratio: 1; transform: translateY(-50%); border-radius: 50%; background: radial-gradient(circle, #fbfaf7 0 56%, #ecebe6 57% 60%, #fdfcf9 61% 68%, #dcdad4 69% 70%, transparent 71%); box-shadow: 0 50px 80px rgba(0, 0, 0, .5); animation: spin 90s linear infinite; }
     @keyframes spin { to { transform: translateY(-50%) rotate(360deg); } }
     .plate i { position: absolute; display: block; border-radius: 50%; }
     .p-sauce { left: 24%; top: 28%; width: 52%; height: 44%; background: radial-gradient(ellipse at 40% 40%, rgba(150, 70, 30, .55), transparent 70%); }
@@ -85,7 +102,10 @@
     .menu { display: grid; grid-template-columns: 1fr 1fr; gap: 0 48px; }
     .menu[hidden] { display: none; }
     .dish { display: flex; gap: 16px; align-items: center; padding: 18px 0; border-bottom: 1px dashed var(--line); }
-    .thumb { flex: none; width: 64px; height: 64px; border-radius: 14px; }
+    .thumb { flex: none; width: 84px; height: 84px; border-radius: 16px; object-fit: cover; box-shadow: 0 10px 20px -12px rgba(60, 30, 10, .5); transition: transform .4s cubic-bezier(.2, .7, .2, 1); }
+    .dish:hover .thumb { transform: scale(1.06) rotate(-2deg); }
+    .menu:not([hidden]) .dish { animation: up .6s cubic-bezier(.2, .7, .2, 1) both; }
+    .menu .dish:nth-child(2) { animation-delay: .06s; } .menu .dish:nth-child(3) { animation-delay: .12s; } .menu .dish:nth-child(4) { animation-delay: .18s; }
     .t1 { background: radial-gradient(circle at 55% 45%, #8a4320 0 22%, transparent 23%), radial-gradient(circle at 32% 66%, #e0a73a 0 10%, transparent 11%), radial-gradient(circle, #fbfaf7 0 44%, #e2ddd3 45% 48%, transparent 49%), #4a2c1c; }
     .t2 { background: radial-gradient(circle at 40% 45%, #6f9a4a 0 18%, transparent 19%), radial-gradient(circle at 62% 58%, #c9b48e 0 11%, transparent 12%), radial-gradient(circle, #fbfaf7 0 44%, #e2ddd3 45% 48%, transparent 49%), #2f3b2a; }
     .t3 { background: radial-gradient(circle at 45% 42%, #ffcf3f 0 9%, transparent 10%), radial-gradient(circle at 45% 42%, #fff 0 18%, transparent 19%), radial-gradient(circle at 60% 60%, #e8b04b 0 20%, transparent 21%), radial-gradient(circle, #3c3a37 0 46%, transparent 47%), #6b4b33; }
@@ -137,8 +157,10 @@
 
     @media (max-width: 860px) {
       .nav__links { display: none; }
-      .plate { width: 110vw; right: -45vw; top: 34%; }
-      .glass { right: auto; left: -30px; top: 24%; width: 90px; height: 90px; }
+      .hero__img { object-position: 72% 50%; }
+      .hero::after { background: linear-gradient(180deg, rgba(20, 10, 5, .45), rgba(20, 10, 5, .1) 30%, rgba(20, 10, 5, .75) 62%, rgba(20, 10, 5, .95)); }
+      .thumb { width: 72px; height: 72px; }
+      .ambience { height: 60vh; }
       .info .wrap { grid-template-columns: 1fr; }
       .info div + div { padding-left: 0; border-left: 0; border-top: 1px solid var(--line); }
       .info div { padding: 14px 0; }
@@ -165,12 +187,7 @@
 
   <main>
     <section class="hero" id="inicio">
-      <div class="plate" aria-hidden="true">
-        <i class="p-sauce"></i><i class="p-meat"></i><i class="p-meat2"></i>
-        <i class="p-pot" style="left:22%;top:56%"></i><i class="p-pot" style="left:35%;top:64%;width:11%;height:10%"></i><i class="p-pot" style="left:64%;top:26%"></i>
-        <i class="p-herb" style="left:40%;top:26%"></i><i class="p-herb" style="left:52%;top:31%"></i><i class="p-herb" style="left:60%;top:62%"></i><i class="p-herb" style="left:30%;top:47%"></i><i class="p-herb" style="left:68%;top:48%"></i><i class="p-herb" style="left:46%;top:70%"></i>
-      </div>
-      <div class="glass" aria-hidden="true"></div>
+      <img class="hero__img" src="../img/resto-hero.webp" alt="Ternasco al horno con patatas y una copa de vino" data-parallax="0.18" data-scale="1.12" fetchpriority="high">
       <div class="wrap">
         <span class="hero__chip">★ 4,8 en Google · 326 reseñas</span>
         <h1>La Brasa del Tubo</h1>
@@ -192,46 +209,50 @@
 
     <section class="section" id="carta">
       <div class="wrap">
-        <p class="kicker">Nuestra carta</p>
-        <h2>Lo que sale de la brasa.</h2>
-        <p class="lead">Cambiamos algunos platos según temporada. Pregunta por las sugerencias del día.</p>
+        <p data-reveal class="kicker">Nuestra carta</p>
+        <h2 data-reveal>Lo que sale de la brasa.</h2>
+        <p data-reveal class="lead">Cambiamos algunos platos según temporada. Pregunta por las sugerencias del día.</p>
 
-        <div class="tabs" role="tablist">
+        <div data-reveal class="tabs" role="tablist">
           <button class="tab" role="tab" aria-selected="true" data-tab="principales">Principales</button>
           <button class="tab" role="tab" aria-selected="false" data-tab="picar">Para picar</button>
           <button class="tab" role="tab" aria-selected="false" data-tab="postres">Postres</button>
         </div>
 
         <div class="menu" data-panel="principales">
-          <div class="dish"><span class="thumb t1"></span><div class="dish__t"><b>Ternasco de Aragón al horno</b><p>Con patata panadera y su jugo</p></div><span class="price">18 €</span></div>
-          <div class="dish"><span class="thumb t5"></span><div class="dish__t"><b>Entrecot a la brasa</b><p>Vaca madurada, pimientos asados</p></div><span class="price">22 €</span></div>
-          <div class="dish"><span class="thumb t6"></span><div class="dish__t"><b>Bacalao confitado</b><p>Sobre pisto de la huerta</p></div><span class="price">17 €</span></div>
-          <div class="dish"><span class="thumb t2"></span><div class="dish__t"><b>Borrajas con almejas <span class="tag">Temporada</span></b><p>Verdura de la huerta de Aragón</p></div><span class="price">14 €</span></div>
+          <div class="dish"><img class="thumb" src="../img/resto-ternasco.webp" alt="Ternasco de Aragón al horno" loading="lazy" width="84" height="84"><div class="dish__t"><b>Ternasco de Aragón al horno</b><p>Con patata panadera y su jugo</p></div><span class="price">18 €</span></div>
+          <div class="dish"><img class="thumb" src="../img/resto-entrecot.webp" alt="Entrecot a la brasa" loading="lazy" width="84" height="84"><div class="dish__t"><b>Entrecot a la brasa</b><p>Vaca madurada, pimientos asados</p></div><span class="price">22 €</span></div>
+          <div class="dish"><img class="thumb" src="../img/resto-bacalao.webp" alt="Bacalao confitado" loading="lazy" width="84" height="84"><div class="dish__t"><b>Bacalao confitado</b><p>Sobre pisto de la huerta</p></div><span class="price">17 €</span></div>
+          <div class="dish"><img class="thumb" src="../img/resto-borrajas.webp" alt="Borrajas con almejas" loading="lazy" width="84" height="84"><div class="dish__t"><b>Borrajas con almejas <span class="tag">Temporada</span></b><p>Verdura de la huerta de Aragón</p></div><span class="price">14 €</span></div>
         </div>
         <div class="menu" data-panel="picar" hidden>
-          <div class="dish"><span class="thumb t3"></span><div class="dish__t"><b>Huevos rotos con trufa</b><p>Trufa negra de Teruel</p></div><span class="price">12 €</span></div>
-          <div class="dish"><span class="thumb t6"></span><div class="dish__t"><b>Croquetas caseras de jamón</b><p>6 unidades</p></div><span class="price">9 €</span></div>
-          <div class="dish"><span class="thumb t2"></span><div class="dish__t"><b>Ensalada de tomate rosa</b><p>Tomate de Barbastro y ventresca</p></div><span class="price">11 €</span></div>
-          <div class="dish"><span class="thumb t5"></span><div class="dish__t"><b>Longaniza de Graus</b><p>A la brasa, con pan de cristal</p></div><span class="price">10 €</span></div>
+          <div class="dish"><img class="thumb" src="../img/resto-huevos.webp" alt="Huevos rotos con trufa" loading="lazy" width="84" height="84"><div class="dish__t"><b>Huevos rotos con trufa</b><p>Trufa negra de Teruel</p></div><span class="price">12 €</span></div>
+          <div class="dish"><img class="thumb" src="../img/resto-croquetas.webp" alt="Croquetas caseras de jamón" loading="lazy" width="84" height="84"><div class="dish__t"><b>Croquetas caseras de jamón</b><p>6 unidades</p></div><span class="price">9 €</span></div>
+          <div class="dish"><img class="thumb" src="../img/resto-ensalada.webp" alt="Ensalada de tomate rosa" loading="lazy" width="84" height="84"><div class="dish__t"><b>Ensalada de tomate rosa</b><p>Tomate de Barbastro y ventresca</p></div><span class="price">11 €</span></div>
+          <div class="dish"><img class="thumb" src="../img/resto-longaniza.webp" alt="Longaniza de Graus" loading="lazy" width="84" height="84"><div class="dish__t"><b>Longaniza de Graus</b><p>A la brasa, con pan de cristal</p></div><span class="price">10 €</span></div>
         </div>
         <div class="menu" data-panel="postres" hidden>
-          <div class="dish"><span class="thumb t4"></span><div class="dish__t"><b>Torrija caramelizada</b><p>Con helado de vainilla</p></div><span class="price">7 €</span></div>
-          <div class="dish"><span class="thumb t3"></span><div class="dish__t"><b>Tarta de queso</b><p>Cremosa, al horno</p></div><span class="price">6 €</span></div>
-          <div class="dish"><span class="thumb t5"></span><div class="dish__t"><b>Melocotón con vino</b><p>Melocotón de Calanda</p></div><span class="price">6 €</span></div>
-          <div class="dish"><span class="thumb t4"></span><div class="dish__t"><b>Frutas de Aragón</b><p>Bombones de fruta escarchada</p></div><span class="price">5 €</span></div>
+          <div class="dish"><img class="thumb" src="../img/resto-torrija.webp" alt="Torrija caramelizada" loading="lazy" width="84" height="84"><div class="dish__t"><b>Torrija caramelizada</b><p>Con helado de vainilla</p></div><span class="price">7 €</span></div>
+          <div class="dish"><img class="thumb" src="../img/resto-tarta.webp" alt="Tarta de queso" loading="lazy" width="84" height="84"><div class="dish__t"><b>Tarta de queso</b><p>Cremosa, al horno</p></div><span class="price">6 €</span></div>
+          <div class="dish"><img class="thumb" src="../img/resto-melocoton.webp" alt="Melocotón con vino" loading="lazy" width="84" height="84"><div class="dish__t"><b>Melocotón con vino</b><p>Melocotón de Calanda</p></div><span class="price">6 €</span></div>
         </div>
       </div>
     </section>
 
+    <section class="ambience" data-grow>
+      <div class="ambience__frame"><img src="../img/resto-interior.webp" alt="Comedor del restaurante con paredes de piedra y vigas de madera" loading="lazy" data-parallax="0.12" data-scale="1"></div>
+      <div class="ambience__text"><h2>Un rincón de siempre en el Tubo.</h2><p>Piedra, madera y sobremesas largas desde 1998.</p></div>
+    </section>
+
     <section class="section reviews" id="opiniones">
       <div class="wrap">
-        <p class="kicker">Opiniones</p>
-        <h2>Lo que dicen en Google.</h2>
-        <div class="score"><b>4,8</b><div><div class="stars">★★★★★</div><span style="color:var(--muted)">326 reseñas</span></div></div>
+        <p data-reveal class="kicker">Opiniones</p>
+        <h2 data-reveal>Lo que dicen en Google.</h2>
+        <div data-reveal class="score"><b>4,8</b><div><div class="stars">★★★★★</div><span style="color:var(--muted)">326 reseñas</span></div></div>
         <div class="cards">
-          <div class="review"><div class="stars">★★★★★</div><p>“El ternasco, espectacular. El trato de diez y el sitio muy acogedor. Volveremos seguro.”</p><div class="who"><span class="av">LM</span>Laura M.</div></div>
-          <div class="review"><div class="stars">★★★★★</div><p>“Reservé por WhatsApp en un minuto y nos guardaron la mesa de la ventana. Todo buenísimo.”</p><div class="who"><span class="av" style="background:#3b6fb6">JG</span>Javier G.</div></div>
-          <div class="review"><div class="stars">★★★★★</div><p>“De lo mejor del Tubo. Las croquetas y la torrija, imprescindibles.”</p><div class="who"><span class="av" style="background:#4f7d2f">AR</span>Ana R.</div></div>
+          <div data-reveal data-delay="0" class="review"><div class="stars">★★★★★</div><p>“El ternasco, espectacular. El trato de diez y el sitio muy acogedor. Volveremos seguro.”</p><div class="who"><span class="av">LM</span>Laura M.</div></div>
+          <div data-reveal data-delay="120" class="review"><div class="stars">★★★★★</div><p>“Reservé por WhatsApp en un minuto y nos guardaron la mesa de la ventana. Todo buenísimo.”</p><div class="who"><span class="av" style="background:#3b6fb6">JG</span>Javier G.</div></div>
+          <div data-reveal data-delay="240" class="review"><div class="stars">★★★★★</div><p>“De lo mejor del Tubo. Las croquetas y la torrija, imprescindibles.”</p><div class="who"><span class="av" style="background:#4f7d2f">AR</span>Ana R.</div></div>
         </div>
       </div>
     </section>
@@ -239,10 +260,10 @@
     <section class="section" id="visitanos">
       <div class="wrap visit">
         <div>
-          <p class="kicker">Visítanos</p>
-          <h2>En el corazón del Tubo.</h2>
-          <p class="lead">A dos minutos de la plaza de España. Parking más cercano: Plaza de San Felipe.</p>
-          <ul class="hours">
+          <p data-reveal class="kicker">Visítanos</p>
+          <h2 data-reveal>En el corazón del Tubo.</h2>
+          <p data-reveal class="lead">A dos minutos de la plaza de España. Parking más cercano: Plaza de San Felipe.</p>
+          <ul data-reveal class="hours">
             <li><span>Lunes</span><span>Cerrado</span></li>
             <li><span>Martes a jueves</span><span>13:00–16:00 · 20:00–23:00</span></li>
             <li><span>Viernes y sábado</span><span>13:00–16:30 · 20:00–23:30</span></li>
@@ -250,15 +271,15 @@
           </ul>
           <a class="btn btn--line" href="#reservar">Cómo llegar</a>
         </div>
-        <div class="map" aria-label="Mapa de ubicación"><span class="park"></span><i class="r1"></i><i class="r2"></i><i class="r3"></i><i class="r4"></i><span class="pin"></span></div>
+        <div data-reveal class="map" aria-label="Mapa de ubicación"><span class="park"></span><i class="r1"></i><i class="r2"></i><i class="r3"></i><i class="r4"></i><span class="pin"></span></div>
       </div>
     </section>
 
     <section class="section book" id="reservar">
       <div class="wrap">
-        <p class="kicker">Reservas</p>
-        <h2>¿Te guardamos mesa?</h2>
-        <p class="lead">Escríbenos por WhatsApp con el día, la hora y cuántos sois. Te confirmamos en unos minutos.</p>
+        <p data-reveal class="kicker">Reservas</p>
+        <h2 data-reveal>¿Te guardamos mesa?</h2>
+        <p data-reveal class="lead">Escríbenos por WhatsApp con el día, la hora y cuántos sois. Te confirmamos en unos minutos.</p>
         <a class="btn btn--terra" href="https://wa.me/34711591734?text=Hola,%20he%20visto%20la%20demo%20del%20restaurante%20y%20quiero%20una%20web%20as%C3%AD" target="_blank" rel="noopener">Reservar por WhatsApp</a>
       </div>
     </section>
@@ -270,6 +291,7 @@
 
   <div class="mbar"><a class="btn btn--line" href="#visitanos">Llamar</a><a class="btn btn--terra" href="#reservar">Reservar</a></div>
 
+  <script defer src="../demo.js"></script>
   <script>
     (function () {
       var nav = document.getElementById("nav");
