@@ -94,6 +94,43 @@
     });
   }
 
+  // Conversación de ejemplo de la recepcionista IA: se reproduce al verla.
+  function initChat() {
+    var body = document.getElementById("chat");
+    if (!body || !("IntersectionObserver" in window)) return;
+    var msgs = [].slice.call(body.querySelectorAll(".msg"));
+    body.classList.add("is-play");
+    function typing(out) {
+      var t = document.createElement("span");
+      t.className = "typing" + (out ? " typing--out" : "");
+      t.innerHTML = "<i></i><i></i><i></i>";
+      return t;
+    }
+    function play() {
+      var i = 0;
+      function next() {
+        if (i >= msgs.length) return;
+        var m = msgs[i++];
+        var out = m.classList.contains("msg--out");
+        if (m.classList.contains("msg--sys")) { m.classList.add("show"); return; }
+        var t = typing(out);
+        body.insertBefore(t, m);
+        setTimeout(function () {
+          t.remove();
+          m.classList.add("show");
+          setTimeout(next, 500);
+        }, out ? 1100 : 700);
+      }
+      next();
+    }
+    var io = new IntersectionObserver(function (e) {
+      if (e[0].isIntersecting) { io.disconnect(); play(); }
+    }, { threshold: 0.3 });
+    io.observe(body);
+    // Red de seguridad: si algo falla, se ven todos los mensajes.
+    setTimeout(function () { msgs.forEach(function (m) { m.classList.add("show"); }); }, 15000);
+  }
+
   function initFaq() {
     // Solo una pregunta abierta a la vez.
     var all = document.querySelectorAll(".faq details");
@@ -115,6 +152,7 @@
     safe(initHeroScene, "hero");
     safe(initReveal, "reveal");
     safe(initCardGlow, "cards");
+    safe(initChat, "chat");
     safe(initFaq, "faq");
     safe(initYear, "year");
   }
