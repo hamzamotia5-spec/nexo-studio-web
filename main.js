@@ -94,10 +94,13 @@
     });
   }
 
-  // Conversación de ejemplo de la recepcionista IA: se reproduce al verla.
+  // Conversaciones de ejemplo (recepcionista IA y Sin Plantones): se reproducen al verlas.
   function initChat() {
-    var body = document.getElementById("chat");
-    if (!body || !("IntersectionObserver" in window)) return;
+    if (!("IntersectionObserver" in window)) return;
+    document.querySelectorAll(".chat__body[data-play]").forEach(playChat);
+  }
+
+  function playChat(body) {
     var msgs = [].slice.call(body.querySelectorAll(".msg"));
     body.classList.add("is-play");
     function typing(out) {
@@ -107,12 +110,19 @@
       return t;
     }
     function play() {
+      // Red de seguridad: si algo falla, se ven todos los mensajes.
+      setTimeout(function () { msgs.forEach(function (m) { m.classList.add("show"); }); }, 15000);
       var i = 0;
       function next() {
         if (i >= msgs.length) return;
         var m = msgs[i++];
         var out = m.classList.contains("msg--out");
-        if (m.classList.contains("msg--sys")) { m.classList.add("show"); return; }
+        // Avisos y botones aparecen sin "escribiendo…"
+        if (m.classList.contains("msg--sys") || m.classList.contains("msg--btns")) {
+          m.classList.add("show");
+          setTimeout(next, 900);
+          return;
+        }
         var t = typing(out);
         body.insertBefore(t, m);
         setTimeout(function () {
@@ -127,8 +137,6 @@
       if (e[0].isIntersecting) { io.disconnect(); play(); }
     }, { threshold: 0.3 });
     io.observe(body);
-    // Red de seguridad: si algo falla, se ven todos los mensajes.
-    setTimeout(function () { msgs.forEach(function (m) { m.classList.add("show"); }); }, 15000);
   }
 
   function initFaq() {

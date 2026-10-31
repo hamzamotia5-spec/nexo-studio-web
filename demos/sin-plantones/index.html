@@ -1,0 +1,796 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>NEXO Sin Plantones · Prototipo · Nexo Studio</title>
+  <meta name="description" content="Prototipo de NEXO Sin Plantones: recordatorios por WhatsApp, lista de espera automática y señal legal para que no se queden huecos vacíos en tu agenda.">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#f5f7fc">
+  <meta name="color-scheme" content="light">
+  <link rel="icon" href="../../assets/img/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f7fc; --surface: #fff; --navy: #0b1230; --text: #0b1230; --muted: #586179;
+      --line: rgba(11, 18, 48, .08); --line-2: rgba(11, 18, 48, .15);
+      --blue: #1f5bff; --cyan: #19c8ff; --grad: linear-gradient(120deg, #19c8ff 0%, #1f5bff 55%, #0a3cff 100%);
+      --ok: #12a150; --ok-bg: #e5f7ec; --warn: #b26b00; --warn-bg: #fff3dc; --bad: #d23a3a; --bad-bg: #fde8e8;
+      --wa-head: #0b5c4b; --wa-bg: #efe7dc; --wa-out: #d6f7c4;
+      --display: "Sora", "Inter", system-ui, sans-serif; --body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      --ease: cubic-bezier(.2, .7, .2, 1);
+    }
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; background: var(--bg); }
+    body { margin: 0; font-family: var(--body); font-size: 16px; line-height: 1.55; color: var(--text); background: var(--bg); -webkit-font-smoothing: antialiased; overflow-x: clip; padding-top: 37px; }
+    h1, h2, h3 { font-family: var(--display); letter-spacing: -.03em; line-height: 1.1; margin: 0; }
+    p { margin: 0; }
+    a { color: inherit; }
+    button { font: inherit; color: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    :focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; border-radius: 6px; }
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    .grad { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+    .demo-bar { position: fixed; z-index: 100; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: center; gap: 12px; padding: 8px 16px; background: var(--navy); color: #dfe5f7; font-size: 13px; }
+    .demo-bar b { color: #fff; }
+    .demo-bar > span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+    .demo-bar a { color: #fff; background: var(--grad); padding: 4px 12px; border-radius: 99px; text-decoration: none; font-weight: 600; white-space: nowrap; }
+
+    /* Cabecera */
+    .top { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 22px 0 6px; }
+    .back { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; color: var(--muted); font-size: 14.5px; font-weight: 500; }
+    .back:hover { color: var(--text); }
+    .logo { display: inline-flex; align-items: center; gap: 10px; font-family: var(--display); font-weight: 800; letter-spacing: .02em; text-decoration: none; }
+    .logo img { width: 30px; height: 30px; }
+    .logo span span { font-weight: 400; color: var(--muted); }
+    .intro { padding: 26px 0 28px; max-width: 820px; }
+    .kicker { display: inline-flex; align-items: center; gap: 10px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .2em; color: var(--blue); margin-bottom: 14px; }
+    .kicker::before { content: ""; width: 22px; height: 1px; background: var(--grad); }
+    .intro h1 { font-size: clamp(30px, 4.4vw, 50px); }
+    .intro p { color: var(--muted); font-size: 17.5px; margin-top: 14px; }
+
+    /* Pasos del recorrido */
+    .guide { display: grid; grid-template-columns: 1fr auto; gap: 14px 20px; align-items: center; padding: 18px 20px; background: var(--surface); border: 1px solid var(--line); border-radius: 20px; box-shadow: 0 12px 30px -18px rgba(11, 18, 48, .18); }
+    .steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; grid-column: 1 / -1; }
+    .steps li { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 12px; font-size: 14px; color: var(--muted); background: var(--bg); border: 1px solid transparent; transition: background .3s, border-color .3s, color .3s; }
+    .steps li i { flex: none; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font-style: normal; font-weight: 700; font-size: 13px; background: #fff; border: 1px solid var(--line-2); }
+    .steps li.is-now { color: var(--text); background: #eef3ff; border-color: rgba(31, 91, 255, .35); }
+    .steps li.is-now i { background: var(--grad); color: #fff; border-color: transparent; }
+    .steps li.is-done i { background: var(--ok); color: #fff; border-color: transparent; }
+    .hint { font-size: 15.5px; }
+    .hint b { font-weight: 600; }
+    .hint.is-win { color: var(--ok); }
+    .reset { border: 1px solid var(--line-2); background: #fff; border-radius: 99px; padding: 9px 16px; font-size: 14px; font-weight: 600; white-space: nowrap; }
+    .reset:hover { border-color: var(--text); }
+
+    /* Escenario: panel + móvil */
+    .switch { display: none; }
+    .stage { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 28px; align-items: start; margin: 22px 0 60px; }
+
+    .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 24px; box-shadow: 0 30px 60px -36px rgba(11, 18, 48, .35); overflow: hidden; min-width: 0; }
+    .panel__head { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 22px; border-bottom: 1px solid var(--line); }
+    .biz { display: flex; align-items: center; gap: 12px; }
+    .biz__av { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: #5b3150; color: #fff; font-family: var(--display); font-weight: 700; font-size: 15px; }
+    .biz b { display: block; font-family: var(--display); font-size: 16px; }
+    .biz small { color: var(--muted); font-size: 13px; }
+    .saved { text-align: right; line-height: 1.15; }
+    .saved small { display: block; color: var(--muted); font-size: 12px; }
+    .saved strong { font-family: var(--display); font-size: 24px; color: var(--ok); }
+    .saved.is-bump strong { animation: bump .7s var(--ease); }
+    @keyframes bump { 40% { transform: scale(1.25); } }
+
+    .tabs { display: flex; gap: 4px; padding: 10px 14px 0; border-bottom: 1px solid var(--line); overflow-x: auto; scrollbar-width: none; }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tab { flex: none; border: 0; background: none; padding: 10px 12px 12px; font-size: 14.5px; font-weight: 600; color: var(--muted); border-bottom: 2px solid transparent; margin-bottom: -1px; }
+    .tab[aria-selected="true"] { color: var(--blue); border-color: var(--blue); }
+    .tab .n { display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 6px; margin-left: 4px; border-radius: 99px; background: var(--bg); font-size: 12px; }
+    .pane { padding: 20px 22px 24px; }
+    .pane[hidden] { display: none; }
+
+    .bar { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-bottom: 16px; }
+    .bar h2 { font-size: 19px; letter-spacing: -.02em; }
+    .bar p { color: var(--muted); font-size: 13.5px; margin-top: 2px; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 0; border-radius: 99px; padding: 12px 18px; font-weight: 600; font-size: 15px; background: var(--grad); color: #fff; box-shadow: 0 12px 28px -12px rgba(31, 91, 255, .9); transition: transform .2s var(--ease), opacity .2s; }
+    .btn:hover { transform: translateY(-2px); }
+    .btn:disabled { opacity: .45; cursor: default; transform: none; box-shadow: none; }
+    .btn.is-pulse:not(:disabled) { animation: pulse 1.8s infinite; }
+    @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(31, 91, 255, .5); } 50% { box-shadow: 0 0 0 10px rgba(31, 91, 255, 0); } }
+
+    .list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+    .row { display: grid; grid-template-columns: 58px minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 12px 14px; border: 1px solid var(--line); border-radius: 14px; transition: background .4s, border-color .4s; }
+    .row__t { font-family: var(--display); font-weight: 700; font-size: 16px; }
+    .row__who b { display: block; font-weight: 600; font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .row__who small { color: var(--muted); font-size: 13px; }
+    .row.is-free { background: #fff8e8; border-color: #f3d79a; border-style: dashed; }
+    .row.is-win { background: var(--ok-bg); border-color: rgba(18, 161, 80, .35); }
+    .row.is-hl { border-color: rgba(31, 91, 255, .45); box-shadow: 0 0 0 3px rgba(31, 91, 255, .1); }
+    .chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 99px; font-size: 12.5px; font-weight: 600; white-space: nowrap; background: var(--bg); color: var(--muted); }
+    .chip::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; opacity: .8; }
+    .chip--sent { background: #eef3ff; color: var(--blue); }
+    .chip--ok { background: var(--ok-bg); color: var(--ok); }
+    .chip--wait { background: var(--warn-bg); color: var(--warn); }
+    .chip--bad { background: var(--bad-bg); color: var(--bad); }
+    .note { margin-top: 14px; font-size: 13.5px; color: var(--muted); }
+
+    /* Señal */
+    .policy { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .field { display: grid; gap: 6px; margin-bottom: 14px; }
+    .field label, .field > span { font-size: 13.5px; font-weight: 600; }
+    .field select, .field input[type="number"] { width: 100%; font: inherit; font-size: 15px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line-2); background: #fff; color: var(--text); }
+    .check { display: flex; gap: 10px; align-items: flex-start; font-size: 14.5px; }
+    .check input { margin-top: 4px; accent-color: var(--blue); }
+    .out { background: var(--bg); border: 1px solid var(--line); border-radius: 14px; padding: 16px; font-size: 14.5px; }
+    .out p { white-space: pre-line; }
+    .copy { margin-top: 12px; border: 1px solid var(--line-2); background: #fff; border-radius: 99px; padding: 8px 14px; font-size: 13.5px; font-weight: 600; }
+    .verdicts { list-style: none; padding: 0; margin: 14px 0 0; display: grid; gap: 8px; font-size: 13.5px; }
+    .verdicts li { display: flex; gap: 8px; padding: 8px 10px; border-radius: 10px; }
+    .verdicts .ok { background: var(--ok-bg); color: #0d6b37; }
+    .verdicts .warn { background: var(--warn-bg); color: #7a4a00; }
+    .legal { margin-top: 12px; font-size: 12.5px; color: var(--muted); }
+
+    /* Resumen */
+    .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .kpi { padding: 14px; border: 1px solid var(--line); border-radius: 14px; }
+    .kpi small { display: block; color: var(--muted); font-size: 12.5px; }
+    .kpi strong { display: block; font-family: var(--display); font-size: 26px; letter-spacing: -.03em; margin-top: 4px; }
+    .kpi em { font-style: normal; font-size: 12.5px; font-weight: 600; color: var(--ok); }
+    .compare { margin-top: 18px; display: grid; gap: 10px; }
+    .compare__row { display: grid; grid-template-columns: 150px 1fr 40px; gap: 12px; align-items: center; font-size: 14px; }
+    .compare__track { height: 12px; border-radius: 99px; background: var(--bg); overflow: hidden; }
+    .compare__fill { height: 100%; border-radius: 99px; background: #c4cadb; }
+    .compare__fill--new { background: var(--grad); }
+    .compare__row b { text-align: right; font-family: var(--display); }
+    .roi { margin-top: 18px; padding: 16px; border-radius: 14px; background: var(--navy); color: #fff; font-size: 15px; }
+    .roi b { color: var(--cyan); }
+
+    /* Móvil con WhatsApp */
+    .phonecol { position: sticky; top: 52px; }
+    .who { display: flex; gap: 6px; margin-bottom: 10px; }
+    .who button { position: relative; flex: 1; border: 1px solid var(--line-2); background: #fff; border-radius: 12px; padding: 8px 10px; text-align: left; line-height: 1.2; }
+    .who button small { display: block; color: var(--muted); font-size: 11.5px; }
+    .who button b { font-size: 14px; font-weight: 600; }
+    .who button[aria-pressed="true"] { border-color: var(--wa-head); box-shadow: 0 0 0 2px rgba(11, 92, 75, .15); }
+    .badge { position: absolute; top: -7px; right: -7px; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 99px; display: grid; place-items: center; background: #25d366; color: #04260f; font-size: 12px; font-weight: 700; box-shadow: 0 0 0 3px var(--bg); }
+    .badge[hidden] { display: none; }
+    .phone { border-radius: 38px; padding: 10px; background: #0b1230; box-shadow: 0 40px 80px -36px rgba(11, 18, 48, .7); }
+    .screen { border-radius: 30px; overflow: hidden; background: var(--wa-bg); display: flex; flex-direction: column; height: 600px; max-height: calc(100vh - 140px); min-height: 460px; }
+    .wa-head { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: var(--wa-head); color: #fff; }
+    .wa-head .av { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: #5b3150; font-weight: 700; font-size: 13px; flex: none; }
+    .wa-head b { display: block; font-size: 15px; }
+    .wa-head small { font-size: 12px; color: #c6e8de; }
+    .wa-body { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding: 16px 12px 20px; background-image: radial-gradient(rgba(0, 0, 0, .04) 1px, transparent 1px); background-size: 14px 14px; scroll-behavior: smooth; }
+    .m { max-width: 86%; padding: 8px 12px 6px; border-radius: 14px; font-size: 14.5px; line-height: 1.42; box-shadow: 0 1px 1px rgba(0, 0, 0, .08); white-space: pre-line; }
+    .is-new { animation: in .35s var(--ease); }
+    .m time { display: block; text-align: right; font-size: 10.5px; color: #7c8a84; margin-top: 2px; }
+    .m--biz { align-self: flex-start; background: #fff; border-top-left-radius: 4px; }
+    .m--me { align-self: flex-end; background: var(--wa-out); border-top-right-radius: 4px; }
+    .m--sys { align-self: center; max-width: 94%; text-align: center; font-size: 12.5px; background: #fff7d6; color: #6b5a1c; border-radius: 10px; padding: 6px 10px; }
+    .qr { align-self: flex-start; width: 86%; display: grid; gap: 4px; margin-top: -4px; }
+    .qr button { border: 0; background: #fff; border-radius: 10px; padding: 9px; color: #027eb5; font-weight: 600; font-size: 14px; box-shadow: 0 1px 1px rgba(0, 0, 0, .08); }
+    .qr button:hover:not(:disabled) { background: #f2fbff; }
+    .qr button:disabled { color: #9aa7a2; cursor: default; }
+    .qr.is-hot button:not(:disabled) { animation: glow 1.8s infinite; }
+    @keyframes glow { 0%, 100% { box-shadow: 0 0 0 0 rgba(2, 126, 181, .35); } 50% { box-shadow: 0 0 0 5px rgba(2, 126, 181, 0); } }
+    .typing { align-self: flex-start; display: inline-flex; gap: 4px; padding: 11px 13px; background: #fff; border-radius: 14px; border-top-left-radius: 4px; }
+    .typing i { width: 6px; height: 6px; border-radius: 50%; background: #8a9a93; animation: blink 1.2s infinite; }
+    .typing i:nth-child(2) { animation-delay: .2s; } .typing i:nth-child(3) { animation-delay: .4s; }
+    @keyframes blink { 0%, 80%, 100% { opacity: .3; } 40% { opacity: 1; } }
+    @keyframes in { from { opacity: 0; transform: translateY(8px); } }
+    .wa-foot { display: flex; gap: 8px; padding: 8px 10px 12px; }
+    .wa-foot span { flex: 1; background: #fff; border-radius: 99px; padding: 9px 14px; font-size: 14px; color: #93a19b; }
+    .wa-foot i { width: 38px; height: 38px; border-radius: 50%; background: #0b8a6f; flex: none; }
+    .phone-cap { text-align: center; font-size: 13px; color: var(--muted); margin-top: 10px; }
+
+    /* Cómo funciona de verdad */
+    .real { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; padding-bottom: 80px; }
+    .real article { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 22px; }
+    .real h3 { font-size: 17px; margin-bottom: 6px; }
+    .real p { color: var(--muted); font-size: 14.5px; }
+    .cta { text-align: center; padding: 0 0 90px; }
+    .cta h2 { font-size: clamp(26px, 3.6vw, 40px); }
+    .cta p { color: var(--muted); margin: 12px auto 22px; max-width: 560px; }
+    .btn--wa { background: #25d366; color: #04260f; box-shadow: 0 14px 40px -12px rgba(37, 211, 102, .75); padding: 16px 26px; font-size: 16px; text-decoration: none; }
+
+    .toast { position: fixed; z-index: 90; left: 50%; bottom: 18px; transform: translate(-50%, 140%); display: flex; align-items: center; gap: 12px; max-width: calc(100% - 32px); padding: 12px 14px 12px 18px; border-radius: 16px; background: var(--navy); color: #fff; font-size: 14.5px; box-shadow: 0 20px 40px -16px rgba(0, 0, 0, .5); transition: transform .4s var(--ease); }
+    .toast.is-on { transform: translate(-50%, 0); }
+    .toast button { border: 0; border-radius: 99px; padding: 8px 14px; font-weight: 600; font-size: 13.5px; background: #25d366; color: #04260f; white-space: nowrap; }
+    .toast button[hidden] { display: none; }
+
+    @media (max-width: 980px) {
+      .stage { grid-template-columns: minmax(0, 1fr) 340px; gap: 20px; }
+      .kpis { grid-template-columns: repeat(2, 1fr); }
+      .policy { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 860px) {
+      body { padding-bottom: 70px; }
+      .steps { grid-template-columns: repeat(2, 1fr); }
+      .switch { position: sticky; top: 37px; z-index: 40; display: flex; gap: 4px; padding: 4px; margin: 18px 0 0; background: #fff; border: 1px solid var(--line-2); border-radius: 99px; box-shadow: 0 10px 24px -14px rgba(11, 18, 48, .4); }
+      .switch button { position: relative; flex: 1; border: 0; background: none; border-radius: 99px; padding: 10px 8px; font-weight: 600; font-size: 14px; color: var(--muted); }
+      .switch button[aria-pressed="true"] { background: var(--navy); color: #fff; }
+      .switch .badge { top: -4px; right: 6px; }
+      .stage { grid-template-columns: 1fr; margin-top: 14px; }
+      .stage[data-view="panel"] .phonecol, .stage[data-view="phone"] .panel { display: none; }
+      .phonecol { position: static; max-width: 400px; width: 100%; margin: 0 auto; }
+      .screen { height: 70vh; max-height: none; }
+      .real { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 560px) {
+      .wrap { padding: 0 16px; }
+      .demo-bar { font-size: 12px; gap: 10px; padding: 8px 12px; }
+      .top .back span { display: none; }
+      .guide { grid-template-columns: 1fr; padding: 14px; }
+      .steps { gap: 6px; }
+      .steps li { font-size: 12.5px; padding: 8px; gap: 8px; }
+      .steps li i { width: 22px; height: 22px; font-size: 12px; }
+      .reset { justify-self: start; }
+      .panel__head, .pane { padding-left: 14px; padding-right: 14px; }
+      .row { grid-template-columns: 46px minmax(0, 1fr); gap: 4px 10px; padding: 10px 12px; }
+      .row .chip { grid-column: 2; justify-self: start; }
+      .row__t { font-size: 15px; }
+      .kpi strong { font-size: 22px; }
+      .compare__row { grid-template-columns: 1fr 34px; }
+      .compare__track { grid-column: 1 / -1; grid-row: 2; }
+      .phone { padding: 8px; border-radius: 32px; }
+      .screen { border-radius: 26px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+      .wa-body { scroll-behavior: auto; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="demo-bar"><span><b>Prototipo</b> de NEXO Sin Plantones · Los datos son de ejemplo</span><a href="https://wa.me/34711591734?text=Hola,%20he%20visto%20el%20prototipo%20de%20NEXO%20Sin%20Plantones%20y%20me%20interesa%20para%20mi%20negocio" target="_blank" rel="noopener">Lo quiero</a></div>
+
+  <div class="wrap">
+    <header class="top">
+      <a class="logo" href="../../"><img src="../../assets/img/nexo-mark.webp" alt="" width="30" height="30"><span>NEXO<span>STUDIO</span></span></a>
+      <a class="back" href="../../#sin-plantones">← <span>Volver a la web</span></a>
+    </header>
+
+    <section class="intro">
+      <p class="kicker">Prototipo interactivo</p>
+      <h1>NEXO Sin Plantones: <span class="grad">que ninguna cita se quede vacía.</span></h1>
+      <p>Estás viendo el panel de <b>Lúa Estudio</b>, una peluquería de ejemplo, junto al WhatsApp de dos clientas. Sigue los 4 pasos y verás cómo un plantón se convierte en una cita recuperada.</p>
+    </section>
+
+    <div class="guide">
+      <ol class="steps" id="steps">
+        <li><i>1</i><span>Envía los recordatorios</span></li>
+        <li><i>2</i><span>Marta responde por WhatsApp</span></li>
+        <li><i>3</i><span>Se avisa a la lista de espera</span></li>
+        <li><i>4</i><span>El hueco se vuelve a llenar</span></li>
+      </ol>
+      <p class="hint" id="hint" aria-live="polite"></p>
+      <button class="reset" id="reset" type="button">↺ Reiniciar</button>
+    </div>
+
+    <div class="switch" role="group" aria-label="Qué ver">
+      <button type="button" data-view="panel" aria-pressed="true">Panel del negocio</button>
+      <button type="button" data-view="phone" aria-pressed="false">WhatsApp del cliente <span class="badge" id="switchBadge" hidden>1</span></button>
+    </div>
+
+    <div class="stage" id="stage" data-view="panel">
+
+      <!-- PANEL DEL NEGOCIO -->
+      <section class="panel" aria-label="Panel del negocio">
+        <div class="panel__head">
+          <div class="biz"><span class="biz__av">LÚA</span><span><b>Lúa Estudio</b><small>Panel de Sin Plantones</small></span></div>
+          <div class="saved" id="saved"><small>Recuperado hoy</small><strong id="savedAmount">0 €</strong></div>
+        </div>
+
+        <div class="tabs" role="tablist">
+          <button class="tab" role="tab" type="button" id="t-agenda" aria-controls="p-agenda" aria-selected="true">Agenda de mañana</button>
+          <button class="tab" role="tab" type="button" id="t-wait" aria-controls="p-wait" aria-selected="false">Lista de espera <span class="n" id="waitCount">3</span></button>
+          <button class="tab" role="tab" type="button" id="t-policy" aria-controls="p-policy" aria-selected="false">Señal y cancelación</button>
+          <button class="tab" role="tab" type="button" id="t-month" aria-controls="p-month" aria-selected="false">Resumen del mes</button>
+        </div>
+
+        <div class="pane" role="tabpanel" id="p-agenda" aria-labelledby="t-agenda">
+          <div class="bar">
+            <div><h2>Mañana, viernes</h2><p>Los recordatorios salen solos 24 h antes. Aquí los envías tú para verlo.</p></div>
+            <button class="btn is-pulse" id="send" type="button">Enviar recordatorios</button>
+          </div>
+          <ul class="list" id="agenda"></ul>
+          <p class="note">Si un cliente no contesta, le llega un segundo aviso 3 horas después.</p>
+        </div>
+
+        <div class="pane" role="tabpanel" id="p-wait" aria-labelledby="t-wait" hidden>
+          <div class="bar"><div><h2>Lista de espera</h2><p>Se apuntan por WhatsApp o desde tu web cuando no hay hueco.</p></div></div>
+          <ul class="list" id="waitlist"></ul>
+          <p class="note">Cuando se libera un hueco, se avisa a quien encaja por servicio y horario. Si no responde en 15 minutos, pasa al siguiente.</p>
+        </div>
+
+        <div class="pane" role="tabpanel" id="p-policy" aria-labelledby="t-policy" hidden>
+          <div class="bar"><div><h2>Señal y política de cancelación</h2><p>Te ayudamos a pedir una señal sin meterte en líos.</p></div></div>
+          <div class="policy">
+            <form id="policyForm" onsubmit="return false">
+              <div class="field">
+                <label for="pService">Servicio de ejemplo</label>
+                <select id="pService">
+                  <option value="32">Corte + peinado · 32 €</option>
+                  <option value="58" selected>Color · 58 €</option>
+                  <option value="85">Mechas · 85 €</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="pAmount">Señal al reservar (€)</label>
+                <input id="pAmount" type="number" min="0" max="200" step="1" value="10" inputmode="numeric">
+              </div>
+              <div class="field">
+                <label for="pHours">Avisar con al menos</label>
+                <select id="pHours">
+                  <option value="24" selected>24 horas</option>
+                  <option value="48">48 horas</option>
+                  <option value="12">12 horas</option>
+                </select>
+              </div>
+              <label class="check"><input id="pRefund" type="checkbox" checked> Devolver la señal si cancela a tiempo</label>
+            </form>
+            <div>
+              <div class="out"><p id="pText"></p><button class="copy" id="pCopy" type="button">Copiar texto</button></div>
+              <ul class="verdicts" id="pChecks"></ul>
+              <p class="legal">Orientativo: se basa en los criterios publicados por las autoridades de consumo. No sustituye al asesoramiento legal.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="pane" role="tabpanel" id="p-month" aria-labelledby="t-month" hidden>
+          <div class="bar"><div><h2>Octubre · resumen</h2><p>Lo que recibirías cada mes por WhatsApp. Datos de ejemplo.</p></div></div>
+          <div class="kpis">
+            <div class="kpi"><small>Recordatorios enviados</small><strong>318</strong><em>91 % confirmadas</em></div>
+            <div class="kpi"><small>Plantones</small><strong>4</strong><em>antes eran 19</em></div>
+            <div class="kpi"><small>Huecos recuperados</small><strong>11</strong><em>con la lista de espera</em></div>
+            <div class="kpi"><small>Dinero recuperado</small><strong>897 €</strong><em>en citas que se habrían perdido</em></div>
+          </div>
+          <div class="compare" aria-label="Plantones al mes, antes y después">
+            <div class="compare__row"><span>Plantones antes</span><div class="compare__track"><div class="compare__fill" style="width:100%"></div></div><b>19</b></div>
+            <div class="compare__row"><span>Con Sin Plantones</span><div class="compare__track"><div class="compare__fill compare__fill--new" style="width:21%"></div></div><b>4</b></div>
+          </div>
+          <p class="roi">Sin Plantones cuesta <b>29 € al mes</b>. Este mes te ha devuelto <b>unas 30 veces</b> lo que cuesta.</p>
+        </div>
+      </section>
+
+      <!-- MÓVIL DEL CLIENTE -->
+      <aside class="phonecol" aria-label="WhatsApp del cliente">
+        <div class="who" role="group" aria-label="Elegir chat">
+          <button type="button" data-chat="marta" aria-pressed="true"><small>Tiene cita mañana</small><b>Marta López</b><span class="badge" data-badge="marta" hidden>1</span></button>
+          <button type="button" data-chat="lucia" aria-pressed="false"><small>En lista de espera</small><b>Lucía Pérez</b><span class="badge" data-badge="lucia" hidden>1</span></button>
+        </div>
+        <div class="phone">
+          <div class="screen">
+            <div class="wa-head"><span class="av">LÚA</span><span><b>Lúa Estudio</b><small>Cuenta de empresa</small></span></div>
+            <div class="wa-body" id="wa" aria-live="polite"></div>
+            <div class="wa-foot" aria-hidden="true"><span>Mensaje</span><i></i></div>
+          </div>
+        </div>
+        <p class="phone-cap" id="phoneCap">Así lo ve Marta en su WhatsApp</p>
+      </aside>
+    </div>
+
+    <section class="real" aria-label="Cómo funciona en tu negocio">
+      <article><h3>Con el WhatsApp de tu negocio</h3><p>Los mensajes salen desde el número oficial de tu negocio. Tus clientes no instalan nada ni crean cuentas.</p></article>
+      <article><h3>Sin comisiones por cita</h3><p>Una cuota fija al mes. Los clientes son tuyos: no te cobramos por cada reserva ni por cada cliente nuevo.</p></article>
+      <article><h3>Te lo dejo funcionando</h3><p>Pasamos tu agenda, configuramos los mensajes y tu política de señal. Lo probamos juntos antes de activarlo.</p></article>
+    </section>
+
+    <section class="cta">
+      <h2>¿Lo quieres en tu negocio?</h2>
+      <p>Cuéntame cuántas citas sueles perder al mes y te digo cuánto podrías recuperar.</p>
+      <a class="btn btn--wa" href="https://wa.me/34711591734?text=Hola,%20he%20visto%20el%20prototipo%20de%20NEXO%20Sin%20Plantones%20y%20me%20interesa%20para%20mi%20negocio" target="_blank" rel="noopener">Escríbeme por WhatsApp</a>
+    </section>
+  </div>
+
+  <div class="toast" id="toast" role="status"><span id="toastText"></span><button type="button" id="toastBtn" hidden>Ver</button></div>
+
+  <script>
+  (function () {
+    "use strict";
+
+    var $ = function (id) { return document.getElementById(id); };
+    var mobile = window.matchMedia("(max-width: 860px)");
+
+    var APPTS = [
+      { id: "ana", t: "09:30", name: "Ana Ruiz", svc: "Color", price: 58, auto: "confirm", delay: 1300 },
+      { id: "marta", t: "10:30", name: "Marta López", svc: "Corte + peinado", price: 32 },
+      { id: "carmen", t: "11:30", name: "Carmen Gil", svc: "Mechas", price: 85, auto: "confirm", delay: 2200 },
+      { id: "jorge", t: "12:30", name: "Jorge Sanz", svc: "Corte caballero", price: 18, auto: "late", delay: 3000 },
+      { id: "pilar", t: "16:00", name: "Pilar Martín", svc: "Tratamiento", price: 40, auto: "confirm", delay: 3600 },
+      { id: "elena", t: "17:00", name: "Elena Torres", svc: "Color", price: 58, auto: "confirm", delay: 4300 }
+    ];
+    var WAIT = [
+      { id: "lucia", name: "Lucía Pérez", wants: "Corte + peinado · mañana por la mañana", since: "desde el martes" },
+      { id: "raul", name: "Raúl Gómez", wants: "Cualquier servicio · viernes", since: "desde el miércoles" },
+      { id: "sofia", name: "Sofía Navarro", wants: "Color · la semana que viene", since: "desde ayer" }
+    ];
+    var STATUS = {
+      idle: ["Pendiente", ""],
+      sent: ["Recordatorio enviado", "chip--sent"],
+      noreply: ["Sin respuesta · 2º aviso", "chip--wait"],
+      confirmed: ["Confirmada", "chip--ok"],
+      cancelled: ["Ha cancelado", "chip--bad"],
+      moved: ["Cambia de hora", "chip--wait"],
+      free: ["Hueco libre · avisando…", "chip--wait"],
+      recovered: ["Recuperada +32 €", "chip--ok"],
+      waiting: ["En espera", ""],
+      notified: ["Avisada · esperando respuesta", "chip--sent"],
+      declined: ["No le viene bien", ""],
+      booked: ["Ha cogido el hueco", "chip--ok"]
+    };
+
+    var S, timers = [], drawn = {};
+
+    function later(fn, ms) { timers.push(setTimeout(fn, ms)); }
+
+    function fresh() {
+      var st = { step: 0, branch: null, saved: 0, active: "marta", unread: { marta: 0, lucia: 0 }, appts: {}, wait: {}, extra: null, filled: null, chats: { marta: [], lucia: [] } };
+      APPTS.forEach(function (a) { st.appts[a.id] = "idle"; });
+      WAIT.forEach(function (w) { st.wait[w.id] = "waiting"; });
+      st.chats.marta = [
+        { from: "sys", text: "Hace 6 días" },
+        { from: "biz", text: "¡Cita reservada, Marta! ✂️\nViernes · 10:30 · Corte + peinado (32 €)\nTe recordaremos la cita el día antes.", time: "18:02" }
+      ];
+      st.chats.lucia = [
+        { from: "sys", text: "Martes" },
+        { from: "me", text: "Hola! ¿Tenéis algo el viernes por la mañana para cortar y peinar?", time: "13:15" },
+        { from: "biz", text: "¡Hola Lucía! El viernes por la mañana está todo lleno 😕\nTe apunto en la lista de espera: si se libera un hueco, te aviso al momento por aquí.", time: "13:15" }
+      ];
+      return st;
+    }
+
+    /* ---------- Pintado ---------- */
+
+    function chip(key, label) {
+      var s = STATUS[key];
+      return '<span class="chip ' + s[1] + '">' + (label || s[0]) + "</span>";
+    }
+
+    function renderAgenda() {
+      var html = APPTS.map(function (a) {
+        var st = S.appts[a.id], cls = "row", who, status;
+        if (a.id === "marta" && S.filled) {
+          cls += " is-win";
+          who = "<b>" + S.filled.name + "</b><small>" + a.svc + " · " + a.price + " € · antes Marta López</small>";
+          status = chip("recovered", "Recuperada +" + a.price + " €");
+        } else if (a.id === "marta" && (st === "cancelled" || st === "moved")) {
+          cls += " is-free";
+          who = "<b>Hueco libre</b><small>" + a.svc + " · " + a.price + " € · " + (st === "moved" ? "Marta cambió de hora" : "Marta canceló") + "</small>";
+          status = chip("free");
+        } else {
+          if (a.id === "marta" && S.step === 1) cls += " is-hl";
+          who = "<b>" + a.name + "</b><small>" + a.svc + " · " + a.price + " €</small>";
+          status = chip(st);
+        }
+        return '<li class="' + cls + '"><span class="row__t">' + a.t + '</span><span class="row__who">' + who + "</span>" + status + "</li>";
+      });
+      if (S.extra) {
+        html.push('<li class="row"><span class="row__t">' + S.extra.t + '</span><span class="row__who"><b>Marta López</b><small>Corte + peinado · 32 € · cambiada desde las 10:30</small></span>' + chip("confirmed") + "</li>");
+      }
+      $("agenda").innerHTML = html.join("");
+      $("send").disabled = S.step > 0;
+      $("send").textContent = S.step > 0 ? "Recordatorios enviados ✓" : "Enviar recordatorios";
+    }
+
+    function renderWait() {
+      var left = 0;
+      $("waitlist").innerHTML = WAIT.map(function (w) {
+        var st = S.wait[w.id];
+        if (st !== "booked") left++;
+        var cls = "row" + (st === "booked" ? " is-win" : st === "notified" ? " is-hl" : "");
+        return '<li class="' + cls + '"><span class="row__t">' + w.name.split(" ").map(function (p) { return p[0]; }).join("") + '</span><span class="row__who"><b>' + w.name + "</b><small>" + w.wants + " · " + w.since + "</small></span>" + chip(st) + "</li>";
+      }).join("");
+      $("waitCount").textContent = left;
+    }
+
+    var HINTS = [
+      "Pulsa <b>«Enviar recordatorios»</b> en el panel. En la vida real salen solos 24 h antes de cada cita.",
+      "Marta acaba de recibir el recordatorio. En su WhatsApp, pulsa <b>«❌ No puedo ir»</b> o <b>«🔁 Cambiar hora»</b>.",
+      "Lucía estaba en la lista de espera y le ha llegado el aviso. Pulsa <b>«🙌 ¡Lo quiero!»</b> en su WhatsApp.",
+      ""
+    ];
+
+    function renderGuide() {
+      var lis = $("steps").children;
+      for (var i = 0; i < lis.length; i++) {
+        lis[i].className = i < S.step || S.step === 4 ? "is-done" : i === S.step ? "is-now" : "";
+      }
+      var h = $("hint");
+      h.className = "hint";
+      if (S.branch === "confirmed") {
+        h.innerHTML = "Marta ha confirmado 👍 Para ver la lista de espera en acción, pulsa <b>«Reiniciar»</b> y esta vez elige <b>«No puedo ir»</b>.";
+      } else if (S.step === 4) {
+        h.className = "hint is-win";
+        h.innerHTML = "✓ <b>Hueco recuperado.</b> Sin este sistema, la silla de las 10:30 se habría quedado vacía y Lúa Estudio habría perdido 32 €.";
+      } else if (S.step === 3) {
+        h.innerHTML = "Lucía no podía ir. Se ha avisado al siguiente de la lista…";
+      } else {
+        h.innerHTML = HINTS[S.step];
+      }
+    }
+
+    function renderSaved(bump) {
+      $("savedAmount").textContent = S.saved + " €";
+      if (bump) {
+        var el = $("saved");
+        el.classList.remove("is-bump"); void el.offsetWidth; el.classList.add("is-bump");
+      }
+    }
+
+    function renderChat() {
+      var box = $("wa"), msgs = S.chats[S.active], html = [];
+      // Solo se animan los mensajes que no estaban ya en pantalla
+      var seen = drawn.chat === S.active ? drawn.count : msgs.length;
+      drawn = { chat: S.active, count: msgs.length };
+      msgs.forEach(function (m, i) {
+        var nw = i >= seen ? " is-new" : "";
+        if (m.from === "sys") { html.push('<p class="m m--sys">' + m.text + "</p>"); return; }
+        html.push('<p class="m m--' + m.from + nw + '">' + m.text + (m.time ? "<time>" + m.time + "</time>" : "") + "</p>");
+        if (m.buttons) {
+          html.push('<div class="qr' + nw + (m.used ? "" : " is-hot") + '">' + m.buttons.map(function (b, j) {
+            return '<button type="button" data-msg="' + i + '" data-btn="' + j + '"' + (m.used ? " disabled" : "") + ">" + b[0] + "</button>";
+          }).join("") + "</div>");
+        }
+      });
+      if (S.typing === S.active) html.push('<span class="typing"><i></i><i></i><i></i></span>');
+      box.innerHTML = html.join("");
+      box.scrollTop = box.scrollHeight;
+      if (visible(S.active)) S.unread[S.active] = 0;
+      renderWho();
+    }
+
+    function renderWho() {
+      document.querySelectorAll(".who button").forEach(function (b) {
+        b.setAttribute("aria-pressed", b.getAttribute("data-chat") === S.active ? "true" : "false");
+      });
+      ["marta", "lucia"].forEach(function (k) {
+        var bd = document.querySelector('[data-badge="' + k + '"]');
+        bd.hidden = !S.unread[k];
+        bd.textContent = S.unread[k];
+      });
+      var total = S.unread.marta + S.unread.lucia;
+      var sb = $("switchBadge");
+      sb.hidden = !(total && $("stage").getAttribute("data-view") === "panel");
+      sb.textContent = total;
+      $("phoneCap").textContent = "Así lo ve " + (S.active === "marta" ? "Marta" : "Lucía") + " en su WhatsApp";
+    }
+
+    function visible(chat) {
+      return S.active === chat && !(mobile.matches && $("stage").getAttribute("data-view") === "panel");
+    }
+
+    function renderAll() {
+      renderAgenda(); renderWait(); renderGuide(); renderSaved(false); renderChat();
+    }
+
+    /* ---------- Acciones ---------- */
+
+    function now() {
+      var d = new Date();
+      return ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2);
+    }
+
+    // Mensaje del negocio con "escribiendo…" previo
+    function bizSays(chat, text, buttons, after) {
+      S.typing = chat;
+      if (S.active === chat) renderChat();
+      later(function () {
+        S.typing = null;
+        S.chats[chat].push({ from: "biz", text: text, time: now(), buttons: buttons || null });
+        if (!visible(chat)) S.unread[chat]++;
+        renderChat();
+        if (after) after();
+      }, 900);
+    }
+
+    function meSays(chat, text) {
+      S.chats[chat].push({ from: "me", text: text, time: now() });
+      renderChat();
+    }
+
+    function setView(v) {
+      $("stage").setAttribute("data-view", v);
+      document.querySelectorAll(".switch button").forEach(function (b) {
+        b.setAttribute("aria-pressed", b.getAttribute("data-view") === v ? "true" : "false");
+      });
+      renderWho();
+      if (v === "phone") renderChat();
+    }
+
+    function openChat(chat) {
+      S.active = chat;
+      renderChat();
+    }
+
+    var toastTimer;
+    function toast(text, action) {
+      var t = $("toast"), b = $("toastBtn");
+      $("toastText").textContent = text;
+      b.hidden = !action;
+      b.onclick = action ? function () { t.classList.remove("is-on"); action(); } : null;
+      t.classList.add("is-on");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(function () { t.classList.remove("is-on"); }, 4500);
+    }
+
+    function showTab(id) {
+      document.querySelectorAll(".tab").forEach(function (t) {
+        var on = t.id === id;
+        t.setAttribute("aria-selected", on ? "true" : "false");
+        $(t.getAttribute("aria-controls")).hidden = !on;
+      });
+    }
+
+    function sendReminders() {
+      if (S.step > 0) return;
+      S.step = 1;
+      APPTS.forEach(function (a) { S.appts[a.id] = "sent"; });
+      renderAgenda(); renderGuide();
+      APPTS.forEach(function (a) {
+        if (!a.auto) return;
+        later(function () {
+          S.appts[a.id] = a.auto === "late" ? "noreply" : "confirmed";
+          renderAgenda();
+          if (a.auto === "late") later(function () { S.appts[a.id] = "confirmed"; renderAgenda(); }, 5000);
+        }, a.delay);
+      });
+      openChat("marta");
+      bizSays("marta", "Hola Marta 👋 Te recordamos tu cita en Lúa Estudio:\n\n📅 Mañana, viernes · 10:30\n✂️ Corte + peinado\n\n¿Nos confirmas que vienes?", [
+        ["✅ Confirmo", "confirm"], ["🔁 Cambiar hora", "change"], ["❌ No puedo ir", "cancel"]
+      ], function () {
+        if (mobile.matches) toast("Marta ha recibido el recordatorio", function () { setView("phone"); });
+      });
+    }
+
+    function freeSlot(how) {
+      S.appts.marta = how;
+      S.step = 2;
+      renderAgenda(); renderGuide();
+      later(function () { notify("lucia"); }, 1600);
+    }
+
+    function notify(who) {
+      S.wait[who] = "notified";
+      renderWait();
+      if (who === "lucia") {
+        later(function () {
+          openChat("lucia");
+          if (mobile.matches) setView("phone");
+          bizSays("lucia", "¡Hola Lucía! 🎉 Se ha liberado un hueco:\n\n📅 Mañana, viernes · 10:30\n✂️ Corte + peinado · 32 €\n\n¿Lo quieres? Se lo queda la primera persona que conteste.", [
+            ["🙌 ¡Lo quiero!", "take"], ["No me viene bien", "decline"]
+          ]);
+        }, 1400);
+      } else {
+        // Raúl responde solo
+        later(function () { fill("raul", "Raúl Gómez"); }, 2600);
+      }
+    }
+
+    function fill(who, name) {
+      S.wait[who] = "booked";
+      S.filled = { name: name };
+      S.saved += 32;
+      S.step = 4;
+      renderAgenda(); renderWait(); renderGuide(); renderSaved(true);
+      if (mobile.matches) toast("Hueco recuperado: +32 €", function () { setView("panel"); showTab("t-agenda"); });
+      else toast("Hueco recuperado: +32 € para Lúa Estudio");
+    }
+
+    function onReply(chat, msgIndex, btnIndex) {
+      var m = S.chats[chat][msgIndex];
+      if (!m || m.used) return;
+      m.used = true;
+      var b = m.buttons[btnIndex];
+      meSays(chat, b[0]);
+      switch (b[1]) {
+        case "confirm":
+          S.appts.marta = "confirmed"; S.branch = "confirmed";
+          renderAgenda(); renderGuide();
+          bizSays("marta", "¡Genial, Marta! Te esperamos mañana a las 10:30 ✂️");
+          break;
+        case "change":
+          bizSays("marta", "¡Claro! Estas son las horas libres:", [["Viernes · 17:30", "slot1730"], ["Sábado · 10:00", "slotsat"]]);
+          break;
+        case "slot1730":
+        case "slotsat":
+          S.extra = { t: b[1] === "slot1730" ? "17:30" : "Sáb 10:00" };
+          bizSays("marta", "Hecho ✅ Te cambio la cita al " + b[0].toLowerCase() + ". ¡Hasta entonces!");
+          freeSlot("moved");
+          break;
+        case "cancel":
+          bizSays("marta", "Sin problema, Marta. Gracias por avisar 🙏\nHemos liberado tu hueco para otra persona. Cuando quieras pedir otra cita, escríbenos por aquí.");
+          freeSlot("cancelled");
+          break;
+        case "take":
+          bizSays("lucia", "¡Hecho, Lucía! 🙌\nTe esperamos mañana, viernes, a las 10:30 para Corte + peinado.\nTe enviaremos un recordatorio el día antes.");
+          fill("lucia", "Lucía Pérez");
+          break;
+        case "decline":
+          S.wait.lucia = "declined"; S.step = 3;
+          renderWait(); renderGuide();
+          bizSays("lucia", "¡Sin problema! Sigues en la lista para la próxima vez 👍");
+          if (mobile.matches) later(function () { setView("panel"); showTab("t-wait"); }, 1600);
+          else later(function () { showTab("t-wait"); }, 1200);
+          later(function () { notify("raul"); }, 1400);
+          break;
+      }
+    }
+
+    function reset() {
+      timers.forEach(clearTimeout); timers = [];
+      S = fresh();
+      showTab("t-agenda");
+      setView("panel");
+      renderAll();
+    }
+
+    /* ---------- Señal ---------- */
+
+    function renderPolicy() {
+      var price = +$("pService").value;
+      var amount = Math.max(0, Math.round(+$("pAmount").value || 0));
+      var hours = $("pHours").value;
+      var refund = $("pRefund").checked;
+      var text, checks = [];
+      if (amount === 0) {
+        text = "Si no puedes venir, avísanos con al menos " + hours + " horas de antelación para que otra persona pueda aprovechar tu hueco. ¡Gracias!";
+        checks.push(["ok", "Sin señal: solo recordatorios y lista de espera. Es la opción más sencilla."]);
+      } else {
+        text = "Para reservar tu cita pedimos una señal de " + amount + " €, que se descuenta del precio del servicio.\n\n" +
+          "Si necesitas cancelar o cambiar la cita, avísanos con al menos " + hours + " horas de antelación" +
+          (refund ? " y te devolvemos la señal." : " y guardamos la señal para tu próxima cita.") +
+          "\nSi no avisas o cancelas con menos de " + hours + " horas, la señal no se devuelve.\n\n¡Gracias por ayudarnos a no dejar huecos vacíos!";
+        var pct = Math.round(amount / price * 100);
+        checks.push(["ok", "La señal se descuenta del precio final: no cobras nada de más."]);
+        if (amount > price) checks.push(["warn", "La señal es mayor que el precio del servicio. Eso puede considerarse una cláusula abusiva: bájala."]);
+        else if (pct > 50) checks.push(["warn", "La señal es el " + pct + " % del servicio. Cuanto más alta, más fácil es que se considere desproporcionada. Recomendamos no pasar del 30–50 %."]);
+        else checks.push(["ok", "Importe proporcionado: el " + pct + " % del servicio."]);
+        checks.push(["ok", "El cliente lo ve antes de reservar: este texto va en el mensaje de confirmación de la cita."]);
+      }
+      $("pText").textContent = text;
+      $("pChecks").innerHTML = checks.map(function (c) { return '<li class="' + c[0] + '">' + (c[0] === "ok" ? "✓" : "⚠") + " <span>" + c[1] + "</span></li>"; }).join("");
+    }
+
+    function copyPolicy() {
+      var text = $("pText").textContent, btn = $("pCopy");
+      var done = function () { btn.textContent = "¡Copiado!"; setTimeout(function () { btn.textContent = "Copiar texto"; }, 1600); };
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(done, function () {});
+      } else {
+        var r = document.createRange(); r.selectNodeContents($("pText"));
+        var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+      }
+    }
+
+    /* ---------- Eventos ---------- */
+
+    $("send").addEventListener("click", sendReminders);
+    $("reset").addEventListener("click", reset);
+    $("wa").addEventListener("click", function (e) {
+      var b = e.target.closest("button[data-msg]");
+      if (b) onReply(S.active, +b.getAttribute("data-msg"), +b.getAttribute("data-btn"));
+    });
+    document.querySelectorAll(".who button").forEach(function (b) {
+      b.addEventListener("click", function () { openChat(b.getAttribute("data-chat")); });
+    });
+    document.querySelectorAll(".switch button").forEach(function (b) {
+      b.addEventListener("click", function () { setView(b.getAttribute("data-view")); });
+    });
+    document.querySelectorAll(".tab").forEach(function (t) {
+      t.addEventListener("click", function () { showTab(t.id); });
+    });
+    ["pService", "pAmount", "pHours", "pRefund"].forEach(function (id) {
+      $(id).addEventListener("input", renderPolicy);
+      $(id).addEventListener("change", renderPolicy);
+    });
+    $("pCopy").addEventListener("click", copyPolicy);
+
+    S = fresh();
+    renderAll();
+    renderPolicy();
+  })();
+  </script>
+</body>
+</html>

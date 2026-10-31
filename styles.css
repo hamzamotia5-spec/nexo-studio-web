@@ -91,7 +91,7 @@ p { margin: 0; }
 .nav.is-scrolled { background: rgba(245, 247, 252, .82); backdrop-filter: blur(16px) saturate(140%); -webkit-backdrop-filter: blur(16px) saturate(140%); border-bottom-color: var(--line); }
 .nav__inner { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
 .nav__links { display: flex; gap: 32px; }
-.nav__links a { text-decoration: none; font-size: 14px; font-weight: 500; color: var(--muted); transition: color .2s ease; }
+.nav__links a { text-decoration: none; white-space: nowrap; font-size: 14px; font-weight: 500; color: var(--muted); transition: color .2s ease; }
 .nav__links a:hover { color: var(--text); }
 
 .logo { display: inline-flex; align-items: center; gap: 12px; text-decoration: none; }
@@ -432,6 +432,35 @@ p { margin: 0; }
   .ai .btn--big { width: 100%; }
 }
 
+/* NEXO Sin Plantones */
+.np__grid { display: grid; grid-template-columns: .95fr 1.05fr; gap: 64px; align-items: center; }
+.np__demo { position: relative; order: -1; }
+.np__lead { color: var(--muted); font-size: 18px; margin-top: 20px; max-width: 560px; }
+.np__list { list-style: none; padding: 0; margin: 28px 0; display: grid; gap: 12px; }
+.np__list li { display: flex; gap: 12px; color: var(--muted); }
+.np__list li::before { content: ""; flex: none; width: 22px; height: 22px; margin-top: 2px; border-radius: 50%; background: rgba(31, 91, 255, .1) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5.5 10.5l3 3 6-7' fill='none' stroke='%231f5bff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 100% no-repeat; }
+.np__list b { color: var(--text); font-weight: 600; }
+.np__price { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; padding: 18px 22px; margin-bottom: 26px; border-radius: var(--radius-sm); border: 1px solid var(--line); background: var(--surface); }
+.np__amount { font-family: var(--font-display); font-weight: 800; font-size: 44px; letter-spacing: -.04em; }
+.np__per { color: var(--muted); font-size: 18px; margin-left: 4px; }
+.np__price p { color: var(--muted); font-size: 14.5px; flex: 1; min-width: 200px; }
+.np__price p b { color: var(--text); font-weight: 600; }
+.np__ctas { display: flex; gap: 12px; flex-wrap: wrap; }
+.np__note { color: var(--muted); font-size: 13.5px; margin-top: 14px; }
+.np__avatar { background: #5b3150; font-size: 11px; }
+.np .chat { box-shadow: 0 40px 90px -40px rgba(11, 18, 48, .45), 0 0 0 1px var(--line); }
+.np .ai__stat { box-shadow: 0 24px 50px -20px rgba(11, 18, 48, .35); }
+.msg--btns { display: grid; gap: 4px; width: 82%; margin-top: -4px; padding: 0; background: none; box-shadow: none; }
+.msg--btns span { padding: 8px; border-radius: 10px; background: #fff; text-align: center; color: #027eb5; font-weight: 600; font-size: 14px; box-shadow: 0 1px 1px rgba(0, 0, 0, .08); }
+.msg--btns .is-picked { background: #e6f6ff; }
+.msg--win { background: #dcf5e6; color: #0d6b37; font-weight: 600; }
+
+@media (max-width: 880px) {
+  .np__grid { grid-template-columns: 1fr; gap: 56px; }
+  .np__demo { order: 0; }
+  .np__ctas .btn { width: 100%; }
+}
+
 /* Pasos */
 .steps { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
 .step { padding: 34px 30px 36px; }
@@ -521,6 +550,9 @@ p { margin: 0; }
 @media (max-width: 1080px) {
   .services { grid-template-columns: repeat(2, 1fr); }
   .nav__links { gap: 22px; }
+}
+@media (max-width: 1180px) {
+  .nav__links .nav__extra { display: none; }
 }
 
 /* Pantallas pequeñas o bajas: el hero deja de ser una escena fija.

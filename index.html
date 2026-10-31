@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Nexo Studio · Páginas web para negocios locales en Zaragoza</title>
-  <meta name="description" content="Diseño páginas web para restaurantes, peluquerías, talleres y clínicas de Zaragoza. Carta online, aparecer en Google y botón de reservas. Desde 150 €. Escríbeme por WhatsApp.">
+  <meta name="description" content="Diseño páginas web para restaurantes, peluquerías, talleres y clínicas de Zaragoza. Carta online, aparecer en Google, reservas y recordatorios de cita por WhatsApp. Desde 150 €.">
   <meta name="theme-color" content="#f5f7fc">
   <link rel="canonical" href="https://hamzamotia5-spec.github.io/nexo-studio-web/">
 
@@ -29,7 +29,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20261103">
+  <link rel="stylesheet" href="styles.css?v=20261104">
 
   <script type="application/ld+json">
   {
@@ -46,7 +46,7 @@
   }
   </script>
 
-  <script defer src="main.js?v=20261103"></script>
+  <script defer src="main.js?v=20261104"></script>
 </head>
 <body>
 
@@ -61,10 +61,11 @@
       <nav class="nav__links" aria-label="Principal">
         <a href="#servicios">Qué hago</a>
         <a href="#recepcionista">Recepcionista IA</a>
+        <a href="#sin-plantones">Sin plantones</a>
         <a href="#trabajos">Trabajos</a>
-        <a href="#proceso">Cómo funciona</a>
+        <a class="nav__extra" href="#proceso">Cómo funciona</a>
         <a href="#precios">Precios</a>
-        <a href="#faq">Dudas</a>
+        <a class="nav__extra" href="#faq">Dudas</a>
       </nav>
       <a class="btn btn--small btn--line" href="https://wa.me/34711591734?text=Hola,%20quiero%20info%20sobre%20una%20web" target="_blank" rel="noopener">
         <svg class="ico" aria-hidden="true"><use href="#i-wa"/></svg> WhatsApp
@@ -269,7 +270,7 @@
               <span class="chat__avatar" aria-hidden="true">IA</span>
               <span><b>La Brasa del Tubo</b><small><i class="chat__dot"></i> Recepcionista IA · 23:47</small></span>
             </div>
-            <div class="chat__body" id="chat">
+            <div class="chat__body" id="chat" data-play>
               <p class="msg msg--in">Hola, ¿tenéis mesa para 4 este sábado a las 21:30?</p>
               <p class="msg msg--out">¡Hola! Sí, tenemos mesa el sábado a las 21:30 para 4 personas. ¿A nombre de quién la apunto?</p>
               <p class="msg msg--in">De Marta. Uno de nosotros es celíaco.</p>
@@ -278,6 +279,52 @@
             </div>
           </div>
           <div class="ai__stat"><b>24/7</b><span>atiende aunque estés cerrado</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2c · NEXO SIN PLANTONES -->
+    <section class="section np" id="sin-plantones">
+      <div class="wrap np__grid">
+        <div class="np__copy">
+          <p class="kicker reveal">Nuevo · Peluquerías, estética, fisios y clínicas</p>
+          <h2 class="reveal">NEXO Sin Plantones: <span class="grad">que ninguna cita se quede vacía.</span></h2>
+          <p class="np__lead reveal">Más de la mitad de los clientes que no se presentan simplemente se olvidaron. Sin Plantones les recuerda la cita por WhatsApp y, si alguien cancela, llena el hueco solo con tu lista de espera.</p>
+          <ul class="np__list">
+            <li class="reveal"><span><b>Recordatorio por WhatsApp</b> 24 h antes, con botones para confirmar, cambiar la hora o cancelar.</span></li>
+            <li class="reveal"><span><b>Lista de espera automática</b>: si se libera un hueco, avisa a quien estaba esperando y se lo queda el primero que conteste.</span></li>
+            <li class="reveal"><span><b>Señal sin líos</b>: te dejo una política de cancelación clara y proporcionada, para cobrar señal sin arriesgarte a una sanción.</span></li>
+            <li class="reveal"><span><b>Resumen mensual en euros</b>: cuántas citas se han salvado y cuánto dinero has recuperado.</span></li>
+          </ul>
+          <div class="np__price reveal">
+            <div><span class="np__amount">29 €</span><span class="np__per">/mes</span></div>
+            <p>+ 49 € de alta: paso tu agenda, configuro los mensajes y lo probamos juntos. <b>Sin comisiones por cita.</b></p>
+          </div>
+          <div class="np__ctas reveal">
+            <a class="btn btn--primary btn--big" href="demos/sin-plantones/">Probar la demo</a>
+            <a class="btn btn--line btn--big" href="https://wa.me/34711591734?text=Hola,%20quiero%20info%20sobre%20NEXO%20Sin%20Plantones%20para%20mi%20negocio" target="_blank" rel="noopener">
+              <svg class="ico" aria-hidden="true"><use href="#i-wa"/></svg> Lo quiero en mi negocio
+            </a>
+          </div>
+          <p class="np__note reveal">Incluye hasta 500 mensajes de WhatsApp al mes. Si tienes más volumen, te lo ajusto antes de empezar.</p>
+        </div>
+
+        <div class="np__demo reveal" aria-label="Ejemplo de recordatorio y lista de espera por WhatsApp">
+          <div class="chat">
+            <div class="chat__head">
+              <span class="chat__avatar np__avatar" aria-hidden="true">LÚA</span>
+              <span><b>Lúa Estudio</b><small><i class="chat__dot"></i> Recordatorio automático</small></span>
+            </div>
+            <div class="chat__body" data-play>
+              <p class="msg msg--in">Hola Marta 👋 Te recordamos tu cita mañana a las 10:30 (corte y peinado). ¿Nos confirmas?</p>
+              <p class="msg msg--btns"><span>✅ Confirmo</span><span>🔁 Cambiar hora</span><span class="is-picked">❌ No puedo ir</span></p>
+              <p class="msg msg--out">❌ No puedo ir</p>
+              <p class="msg msg--in">Sin problema, Marta. ¡Gracias por avisar! 🙏</p>
+              <p class="msg msg--sys">🔔 Hueco libre a las 10:30 · Aviso enviado a Lucía, de la lista de espera</p>
+              <p class="msg msg--sys msg--win">✅ Lucía ha cogido el hueco · +32 € recuperados</p>
+            </div>
+          </div>
+          <div class="ai__stat"><b>55 %</b><span>de los plantones son olvidos</span></div>
         </div>
       </div>
     </section>
@@ -446,6 +493,10 @@
           <details class="reveal">
             <summary>¿Cómo funciona la recepcionista IA?</summary>
             <p>Configuro un asistente con la información de tu restaurante (horario, carta, normas de reserva) y lo conecto a tu teléfono o WhatsApp. Cuando no puedes atender, responde ella, apunta la reserva y te avisa. Antes de activarla la probamos juntos.</p>
+          </details>
+          <details class="reveal">
+            <summary>¿Cómo funciona Sin Plantones?</summary>
+            <p>Cada cliente recibe por WhatsApp un recordatorio el día antes de su cita y puede confirmar, cambiar la hora o cancelar con un toque. Si alguien cancela, se avisa a las personas de tu lista de espera y el hueco se lo queda la primera que conteste. Tus clientes no tienen que instalar nada y tú no pagas comisiones por cita. <a href="demos/sin-plantones/">Pruébalo en la demo</a>.</p>
           </details>
           <details class="reveal">
             <summary>¿Trabajas solo en Zaragoza?</summary>
