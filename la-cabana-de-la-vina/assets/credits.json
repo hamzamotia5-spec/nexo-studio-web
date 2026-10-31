@@ -1,0 +1,83 @@
+{
+  "hero": {
+    "src": "assets/img/hero.webp",
+    "title": "Christmas Pub Light",
+    "creator": "pavlinajane",
+    "license": "CC BY-SA 2.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/2.0/",
+    "foreign_landing_url": "https://www.flickr.com/photos/60291025@N05/11038343086",
+    "source": "flickr"
+  },
+  "barra": {
+    "src": "assets/img/barra.webp",
+    "title": "Sevilla Tapas Bar",
+    "creator": "ArminFlickr",
+    "license": "CC BY 2.0",
+    "license_url": "https://creativecommons.org/licenses/by/2.0/",
+    "foreign_landing_url": "https://www.flickr.com/photos/52556176@N00/2860816428",
+    "source": "flickr"
+  },
+  "tapas": {
+    "src": "assets/img/tapas.webp",
+    "title": "Spanish Tapas",
+    "creator": "Azchael",
+    "license": "CC BY 2.0",
+    "license_url": "https://creativecommons.org/licenses/by/2.0/",
+    "foreign_landing_url": "https://www.flickr.com/photos/34003965@N00/11964799625",
+    "source": "flickr"
+  },
+  "croquetas": {
+    "src": "assets/img/croquetas.webp",
+    "title": "Croquetas Ibéricas",
+    "creator": "jlastras",
+    "license": "CC BY 2.0",
+    "license_url": "https://creativecommons.org/licenses/by/2.0/",
+    "foreign_landing_url": "https://www.flickr.com/photos/22662305@N04/3016671769",
+    "source": "flickr"
+  },
+  "pinchos": {
+    "src": "assets/img/pinchos.webp",
+    "title": "Spanish Tapas",
+    "creator": "DesheBoard",
+    "license": "CC BY 2.0",
+    "license_url": "https://creativecommons.org/licenses/by/2.0/",
+    "foreign_landing_url": "https://www.flickr.com/photos/30458313@N03/9636607352",
+    "source": "flickr"
+  },
+  "jamon": {
+    "src": "assets/img/jamon.webp",
+    "title": "jaleo jamon iberico de bellota",
+    "creator": "goodiesfirst",
+    "license": "CC BY 2.0",
+    "license_url": "https://creativecommons.org/licenses/by/2.0/",
+    "foreign_landing_url": "https://www.flickr.com/photos/49215102@N00/5107674549",
+    "source": "flickr"
+  },
+  "tabla": {
+    "src": "assets/img/tabla.webp",
+    "title": "Cheese, Wine and Bread.",
+    "creator": "Mustang Joe",
+    "license": "CC0",
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "foreign_landing_url": "https://www.flickr.com/photos/63234672@N04/19757310168",
+    "source": "flickr"
+  },
+  "vino": {
+    "src": "assets/img/vino.webp",
+    "title": "Pour me some wine please!",
+    "creator": "yashima",
+    "license": "CC BY-SA 2.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/2.0/",
+    "foreign_landing_url": "https://www.flickr.com/photos/44032042@N00/131232874",
+    "source": "flickr"
+  },
+  "magdalena": {
+    "src": "assets/img/magdalena.webp",
+    "title": "La Magdalena, Zaragoza",
+    "creator": "Matthew Black",
+    "license": "CC BY-SA 2.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/2.0/",
+    "foreign_landing_url": "https://www.flickr.com/photos/60099286@N00/3347367905",
+    "source": "flickr"
+  }
+}

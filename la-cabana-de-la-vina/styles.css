@@ -226,6 +226,10 @@ section { position: relative; }
 }
 .carta.is-pinned .carta-viewport { overflow: visible; scroll-snap-type: none; }
 .carta.is-pinned .carta-pin { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; padding: 90px 0 60px; }
+.carta.is-pinned .carta-head { margin-bottom: clamp(28px, 4vh, 48px); }
+.carta.is-pinned .carta-head h2 { font-size: clamp(44px, 5vw, 76px); }
+.carta.is-pinned .dish { flex-basis: clamp(260px, 24vw, 330px); }
+.carta.is-pinned .dish-media { aspect-ratio: auto; height: clamp(180px, 32vh, 340px); }
 .dish {
   position: relative; flex: 0 0 clamp(270px, 28vw, 380px); scroll-snap-align: center;
   background: var(--bg-3); border: 1px solid var(--line); border-radius: 6px; overflow: hidden;
@@ -368,3 +372,14 @@ section { position: relative; }
   .dot { animation: none; }
   .hero-scroll i { animation: none; }
 }
+
+/* ---------- Créditos ---------- */
+.credits { padding: 60px var(--pad) 90px; max-width: 900px; }
+.credits h1 { font-size: clamp(48px, 8vw, 88px); margin: 40px 0 20px; }
+.credits > p { color: var(--cream-2); }
+.credits-list { list-style: none; padding: 0; margin: 40px 0 0; }
+.credits-list li { display: flex; gap: 18px; align-items: center; padding: 16px 0; border-top: 1px solid var(--line); }
+.credits-list img { width: 84px; height: 64px; object-fit: cover; border-radius: 3px; flex: none; }
+.credits-list div { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.credits-list strong { font-weight: 500; }
+.credits-list span { font-size: 14px; color: var(--cream-3); }
