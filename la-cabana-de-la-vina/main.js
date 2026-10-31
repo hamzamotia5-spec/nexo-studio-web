@@ -4,8 +4,7 @@
   'use strict';
 
   var B = window.__BRAND__ || {};
-  var hasGsap = !!(window.gsap && window.ScrollTrigger);
-  var canHover = matchMedia('(hover: hover) and (pointer: fine)').matches;
+  var DAYS = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
 
   function safe(fn, name) {
     try { fn(); } catch (e) { console.warn('[init ' + name + ']', e); }
@@ -15,9 +14,9 @@
     var splash = document.querySelector('.splash');
     if (!splash) return;
     var hide = function () { splash.classList.add('is-hidden'); };
-    if (document.readyState === 'complete') setTimeout(hide, 900);
-    else window.addEventListener('load', function () { setTimeout(hide, 900); });
-    setTimeout(hide, 3000);
+    if (document.readyState === 'complete') setTimeout(hide, 700);
+    else window.addEventListener('load', function () { setTimeout(hide, 700); });
+    setTimeout(hide, 2800);
   }
 
   function initNav() {
@@ -45,6 +44,7 @@
   }
 
   function initReveal() {
+    document.querySelectorAll('.chalk').forEach(function (el, i) { el.style.setProperty('--i', i); });
     var els = document.querySelectorAll('.reveal');
     if (!('IntersectionObserver' in window)) {
       els.forEach(function (el) { el.classList.add('is-visible'); });
@@ -60,61 +60,56 @@
     setTimeout(function () { els.forEach(function (el) { el.classList.add('is-visible'); }); }, 6000);
   }
 
-  function initParallax() {
-    if (!hasGsap) return;
-    gsap.registerPlugin(ScrollTrigger);
-    gsap.to('.hero-bg img', {
-      yPercent: 8, ease: 'none',
-      scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true }
-    });
-    gsap.fromTo('.casa-figure img', { yPercent: -8 }, {
-      yPercent: 0, ease: 'none',
-      scrollTrigger: { trigger: '.casa-figure', start: 'top bottom', end: 'bottom top', scrub: true }
-    });
+  // Hora actual en Zaragoza, sea cual sea la zona horaria del visitante
+  function madridNow() {
+    var parts = {};
+    new Intl.DateTimeFormat('en-GB', {
+      timeZone: 'Europe/Madrid', weekday: 'short', hour: '2-digit', minute: '2-digit', hourCycle: 'h23'
+    }).formatToParts(new Date()).forEach(function (p) { parts[p.type] = p.value; });
+    var day = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(parts.weekday);
+    return { day: day, mins: parseInt(parts.hour, 10) * 60 + parseInt(parts.minute, 10) };
   }
 
-  // Carta: en escritorio la sección se fija y las tarjetas avanzan en horizontal.
-  // En móvil (o sin GSAP) queda el carrusel táctil nativo con scroll-snap.
-  function initShowcase() {
-    if (!hasGsap) return;
-    var section = document.querySelector('.carta');
-    var pin = section.querySelector('.carta-pin');
-    var track = section.querySelector('.carta-track');
-    var viewport = section.querySelector('.carta-viewport');
-    var mm = gsap.matchMedia();
-    mm.add('(min-width: 961px)', function () {
-      section.classList.add('is-pinned');
-      var distance = function () { return Math.max(0, track.scrollWidth - viewport.clientWidth); };
-      var tween = gsap.to(track, {
-        x: function () { return -distance(); }, ease: 'none',
-        scrollTrigger: {
-          trigger: pin, start: 'top top', end: function () { return '+=' + distance(); },
-          pin: true, scrub: 0.6, invalidateOnRefresh: true, anticipatePin: 1
+  function toMins(hhmm) {
+    var p = hhmm.split(':');
+    return parseInt(p[0], 10) * 60 + parseInt(p[1], 10);
+  }
+
+  function initHours() {
+    if (!B.hours) return;
+    var now = madridNow();
+    if (now.day < 0) return;
+
+    var row = document.querySelector('.hours tr[data-day="' + now.day + '"]');
+    if (row) row.classList.add('is-today');
+
+    var open = null, nextText = '';
+    (B.hours[now.day] || []).forEach(function (slot) {
+      var s = slot.split('-'), a = toMins(s[0]), b = toMins(s[1]);
+      if (now.mins >= a && now.mins < b) open = s[1];
+      else if (!open && !nextText && now.mins < a) nextText = 'Abrimos hoy a las ' + s[0];
+    });
+    if (!open && !nextText) {
+      for (var k = 1; k <= 7; k++) {
+        var d = (now.day + k) % 7, slots = B.hours[d] || [];
+        if (slots.length) {
+          nextText = 'Abrimos ' + (k === 1 ? 'mañana' : 'el ' + DAYS[d]) + ' a las ' + slots[0].split('-')[0];
+          break;
         }
-      });
-      return function () { section.classList.remove('is-pinned'); tween.kill(); gsap.set(track, { clearProps: 'transform' }); };
-    });
-    window.addEventListener('load', function () { ScrollTrigger.refresh(); });
-  }
+      }
+    }
 
-  function initTilt() {
-    if (!canHover) return;
-    document.querySelectorAll('.dish').forEach(function (card) {
-      if (card.dataset.tiltBound) return;
-      card.dataset.tiltBound = '1';
-      card.addEventListener('mousemove', function (e) {
-        var r = card.getBoundingClientRect();
-        var x = (e.clientX - r.left) / r.width;
-        var y = (e.clientY - r.top) / r.height;
-        card.style.setProperty('--mx', (x * 100) + '%');
-        card.style.setProperty('--my', (y * 100) + '%');
-        card.style.transform = 'perspective(900px) rotateY(' + ((x - .5) * 10) + 'deg) rotateX(' + ((.5 - y) * 8) + 'deg)';
-      });
-      card.addEventListener('mouseout', function (e) {
-        if (card.contains(e.relatedTarget)) return;
-        card.style.transform = '';
-      });
-    });
+    var short = document.querySelector('[data-status]');
+    var long = document.querySelector('[data-status-long]');
+    var closeAt = open === '24:00' ? 'medianoche' : 'las ' + open;
+    if (short) {
+      short.classList.add(open ? 'is-open' : 'is-closed');
+      short.textContent = open ? 'Abierto ahora · hasta ' + (open === '24:00' ? 'las 00:00' : 'las ' + open) : 'Cerrado ahora';
+    }
+    if (long) {
+      long.classList.add(open ? 'is-open' : 'is-closed');
+      long.textContent = open ? 'Ahora estamos abiertos, hasta ' + closeAt + '.' : 'Ahora estamos cerrados. ' + nextText + '.';
+    }
   }
 
   function initMobileCta() {
@@ -149,9 +144,15 @@
       var bad = fields.filter(function (f) { return !f.value.trim(); });
       fields.forEach(function (f) { f.classList.toggle('is-error', bad.indexOf(f) > -1); });
       if (bad.length) { msg.textContent = 'Rellena nombre, día y hora, por favor.'; bad[0].focus(); return; }
-      msg.textContent = '';
 
       var d = new Date(date.value + 'T12:00:00');
+      var slots = (B.hours && B.hours[d.getDay()]) || [];
+      if (B.hours && !slots.length) {
+        msg.textContent = 'Ese día cerramos (' + DAYS[d.getDay()] + '). Elige otro, por favor.';
+        date.classList.add('is-error'); date.focus(); return;
+      }
+      msg.textContent = '';
+
       var day = d.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
       var text = 'Hola, soy ' + name + '. Me gustaría reservar mesa en ' + (B.name || 'La Cabaña de la Viña 3') +
         ' para ' + form.people.value + ' personas el ' + day + ' a las ' + form.time.value + '.';
@@ -175,9 +176,7 @@
     safe(initSplash, 'splash');
     safe(initNav, 'nav');
     safe(initReveal, 'reveal');
-    safe(initParallax, 'parallax');
-    safe(initShowcase, 'showcase');
-    safe(initTilt, 'tilt');
+    safe(initHours, 'hours');
     safe(initMobileCta, 'mobileCta');
     safe(initBrandLinks, 'brandLinks');
     safe(initForm, 'form');

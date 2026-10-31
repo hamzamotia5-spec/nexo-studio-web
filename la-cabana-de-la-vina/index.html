@@ -3,190 +3,249 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>La Cabaña de la Viña 3 · Gastrobar en La Magdalena, Zaragoza</title>
-  <meta name="description" content="La Cabaña de la Viña 3, gastrobar en la calle Heroísmo, 4 (La Magdalena, Zaragoza). Tapas, raciones para compartir y vino por copas. Reserva tu mesa: 632 82 51 76.">
-  <meta name="theme-color" content="#120D0A">
+  <title>La Cabaña de la Viña 3 · Gastrobar en el Casco, Zaragoza</title>
+  <meta name="description" content="La Cabaña de la Viña 3, gastrobar en la calle Heroísmo, 4 (Casco Antiguo, Zaragoza). Berenjena con miel, bravas caseras con tres salsas, croquetas y pinchos morunos. 4,9 en Google. Tel. 632 82 51 76.">
+  <meta name="theme-color" content="#79C29C">
   <meta name="robots" content="noindex, nofollow">
-  <meta property="og:title" content="La Cabaña de la Viña 3 · Zaragoza">
-  <meta property="og:description" content="Gastrobar en la calle Heroísmo, 4. Tapas, raciones y vino por copas en el corazón de La Magdalena.">
-  <meta property="og:image" content="assets/img/hero.webp">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23120D0A'/%3E%3Cpath d='M12 30 32 14l20 16' fill='none' stroke='%23C9A15B' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M23 34v16M32 34v16M41 34v16' stroke='%23F1E7D6' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
+  <meta property="og:title" content="La Cabaña de la Viña 3 · Gastrobar">
+  <meta property="og:description" content="Berenjena con miel, bravas con tres salsas y cerveza de grifo en la calle Heroísmo, 4. Zaragoza.">
+  <meta property="og:image" content="assets/img/berenjena.webp">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%233B2416'/%3E%3Cg fill='none' stroke='%23F3EFE6' stroke-width='3'%3E%3Ccircle cx='24' cy='24' r='6'/%3E%3Ccircle cx='38' cy='24' r='6'/%3E%3Ccircle cx='31' cy='35' r='6'/%3E%3Ccircle cx='31' cy='47' r='5'/%3E%3Cpath d='M31 18c0-5 3-8 8-9'/%3E%3C/g%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link rel="preload" as="image" href="assets/img/hero.webp">
-  <link rel="stylesheet" href="styles.css?v=20261031">
-  <script defer src="lib/manifest.js?v=20261031"></script>
-  <script defer src="lib/gsap.min.js?v=20261031"></script>
-  <script defer src="lib/ScrollTrigger.min.js?v=20261031"></script>
-  <script defer src="main.js?v=20261031"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="preload" as="image" href="assets/img/fachada.webp">
+  <link rel="stylesheet" href="styles.css?v=20261031b">
+  <script defer src="lib/manifest.js?v=20261031b"></script>
+  <script defer src="main.js?v=20261031b"></script>
 </head>
 <body>
 
+  <!-- Racimo de uvas, como el del letrero de la puerta -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="grape" viewBox="0 0 80 110">
+      <g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M40 22c0-8 4-14 12-17"/>
+        <path d="M44 16c8-6 20-6 28 2-8 6-20 6-28-2z"/>
+        <circle cx="22" cy="32" r="9"/><circle cx="40" cy="30" r="9"/><circle cx="58" cy="32" r="9"/>
+        <circle cx="30" cy="48" r="9"/><circle cx="50" cy="48" r="9"/>
+        <circle cx="22" cy="64" r="8"/><circle cx="40" cy="64" r="9"/><circle cx="58" cy="64" r="8"/>
+        <circle cx="31" cy="80" r="8"/><circle cx="49" cy="80" r="8"/>
+        <circle cx="40" cy="95" r="8"/>
+      </g>
+    </symbol>
+  </svg>
+
   <!-- Splash: se oculta por JS y, como red de seguridad, por CSS a los 4.5s -->
   <div class="splash" aria-hidden="true">
-    <svg class="splash-mark" viewBox="0 0 120 110"><path class="roof" d="M10 50 60 12l50 38"/><path class="bars" d="M38 60v38M60 60v38M82 60v38"/></svg>
+    <svg class="splash-grape"><use href="#grape"/></svg>
   </div>
 
   <header class="nav" id="nav">
     <a class="brand" href="#inicio" aria-label="La Cabaña de la Viña 3, inicio">
-      <svg class="brand-mark" viewBox="0 0 120 110" aria-hidden="true"><path d="M10 50 60 12l50 38"/><path d="M38 60v38M60 60v38M82 60v38"/></svg>
-      <span class="brand-text"><span>La Cabaña</span><small>de la Viña · III</small></span>
+      <svg class="brand-grape" aria-hidden="true"><use href="#grape"/></svg>
+      <span class="brand-text">La Cabaña de la <b>Viña 3</b></span>
     </a>
     <nav class="nav-links" aria-label="Principal">
+      <a href="#estrella">La estrella</a>
+      <a href="#pizarra">La pizarra</a>
       <a href="#casa">La casa</a>
-      <a href="#carta">Carta</a>
-      <a href="#barrio">El barrio</a>
-      <a href="#visitanos">Visítanos</a>
+      <a href="#horario">Horario</a>
     </nav>
-    <a class="btn btn-small nav-cta" href="#reserva">Reservar mesa</a>
+    <a class="btn btn-small nav-cta" href="#reserva">Reservar</a>
     <button class="burger" aria-label="Abrir menú" aria-expanded="false" aria-controls="menu"><span></span><span></span></button>
   </header>
 
   <div class="menu" id="menu" aria-hidden="true">
     <nav>
-      <a href="#casa"><small>01</small>La casa</a>
-      <a href="#carta"><small>02</small>Carta</a>
-      <a href="#barrio"><small>03</small>El barrio</a>
-      <a href="#reserva"><small>04</small>Reservar</a>
-      <a href="#visitanos"><small>05</small>Visítanos</a>
+      <a href="#estrella">La estrella</a>
+      <a href="#pizarra">La pizarra</a>
+      <a href="#casa">La casa</a>
+      <a href="#horario">Horario</a>
+      <a href="#reserva">Reservar</a>
     </nav>
-    <p class="menu-foot"><a href="tel:+34632825176">632 82 51 76</a> · <a href="https://www.instagram.com/lacabanadelavina3/" target="_blank" rel="noopener">Instagram</a> · La Magdalena</p>
+    <p class="menu-foot"><a href="tel:+34632825176">632 82 51 76</a> · C. del Heroísmo, 4</p>
   </div>
 
   <main>
 
-    <!-- HERO -->
+    <!-- HERO: la pared verde de la fachada y el letrero marrón -->
     <section class="hero" id="inicio">
-      <div class="hero-bg"><img src="assets/img/hero.webp" alt="Barra en penumbra con luces cálidas y una vela" fetchpriority="high"></div>
-      <div class="hero-tint"></div>
-      <div class="hero-mesh" aria-hidden="true"></div>
-      <div class="hero-grain" aria-hidden="true"></div>
+      <div class="wrap hero-grid">
+        <div class="hero-copy">
+          <div class="sign hero-in" style="--d:.15s">
+            <svg class="sign-grape sign-grape--l" aria-hidden="true"><use href="#grape"/></svg>
+            <h1><span class="sign-small">La Cabaña de la</span><span class="sign-big">Viña 3</span><span class="sign-sub">Gastrobar</span></h1>
+            <svg class="sign-grape sign-grape--r" aria-hidden="true"><use href="#grape"/></svg>
+          </div>
 
-      <div class="wrap hero-inner">
-        <p class="hero-meta hero-in" style="--d:.15s"><span class="dot"></span>Nuevo en el barrio · Calle Heroísmo, 4</p>
-        <span class="hero-glyph hero-in" style="--d:.3s" aria-hidden="true">III</span>
-        <h1 class="hero-title hero-in" style="--d:.45s">Vino, barra<br><em>y buena compañía.</em></h1>
-        <p class="hero-sub hero-in" style="--d:.6s">Gastrobar en el corazón de La Magdalena. Tapas, raciones para compartir y una copa bien servida, a dos pasos de la torre mudéjar.</p>
-        <div class="hero-actions hero-in" style="--d:.75s">
-          <a class="btn" href="#reserva">Reservar mesa</a>
-          <a class="btn btn-ghost" href="#carta">Ver platos estrella</a>
+          <p class="hero-lead hero-in" style="--d:.35s">Berenjena con miel, bravas con tres salsas y cerveza de grifo en pleno Casco.</p>
+
+          <div class="hero-chips hero-in" style="--d:.5s">
+            <a class="chip" href="https://www.google.com/maps/search/?api=1&query=La+Vi%C3%B1a+3+Calle+del+Hero%C3%ADsmo+4+Zaragoza" target="_blank" rel="noopener" data-maps><b>4,9</b> <span class="stars" aria-hidden="true">★★★★★</span> 142 reseñas</a>
+            <span class="chip chip-status" data-status>Calle Heroísmo, 4</span>
+          </div>
+
+          <div class="hero-actions hero-in" style="--d:.65s">
+            <a class="btn" href="#reserva">Reservar mesa</a>
+            <a class="btn btn-line" href="#pizarra">Ver la pizarra</a>
+          </div>
         </div>
-      </div>
 
-      <a class="hero-scroll" href="#casa" aria-label="Bajar"><i></i></a>
+        <figure class="hero-photo hero-in" style="--d:.3s">
+          <img src="assets/img/fachada.webp" alt="Fachada verde de La Cabaña de la Viña 3 con su letrero y la pizarra en la puerta" fetchpriority="high" width="828" height="1104">
+          <figcaption>C. del Heroísmo, 4</figcaption>
+        </figure>
+      </div>
     </section>
 
-    <!-- Ticker -->
-    <div class="ticker" aria-hidden="true">
-      <div class="ticker-track">
-        <span>Tapas</span><b>✦</b><span>Raciones</span><b>✦</b><span>Vino por copas</span><b>✦</b><span>Vermú</span><b>✦</b><span>Cañas</span><b>✦</b><span>Sobremesa</span><b>✦</b>
-        <span>Tapas</span><b>✦</b><span>Raciones</span><b>✦</b><span>Vino por copas</span><b>✦</b><span>Vermú</span><b>✦</b><span>Cañas</span><b>✦</b><span>Sobremesa</span><b>✦</b>
+    <!-- Cinta de cuadros, como los pañuelos de la barra -->
+    <div class="gingham" aria-hidden="true">
+      <div class="gingham-track">
+        <span>Berenjena con miel</span><i>✦</i><span>Bravas caseras</span><i>✦</i><span>Croquetas</span><i>✦</i><span>Pinchos morunos</span><i>✦</i><span>Rejos de calamar</span><i>✦</i><span>Cerveza de grifo</span><i>✦</i>
+        <span>Berenjena con miel</span><i>✦</i><span>Bravas caseras</span><i>✦</i><span>Croquetas</span><i>✦</i><span>Pinchos morunos</span><i>✦</i><span>Rejos de calamar</span><i>✦</i><span>Cerveza de grifo</span><i>✦</i>
       </div>
     </div>
+
+    <!-- LA ESTRELLA -->
+    <section class="estrella" id="estrella">
+      <div class="wrap estrella-grid">
+        <figure class="estrella-photo reveal">
+          <img src="assets/img/berenjena.webp" alt="Berenjena frita con miel y sésamo junto a una copa de vino tinto" loading="lazy" width="828" height="1103">
+          <span class="estrella-badge">La que<br>todos<br>piden</span>
+        </figure>
+        <div class="estrella-copy reveal">
+          <p class="kicker">La estrella de la casa</p>
+          <h2>Berenjena<br><em>con miel</em></h2>
+          <p class="lead">Tiras finas de berenjena, fritas hasta que crujen y bañadas en miel con sésamo. Llega a la mesa en montaña y desaparece en cinco minutos.</p>
+          <p>Es el plato que sale en casi todas las fotos de nuestros clientes. Pídela para compartir, con una caña bien tirada o una copa de tinto.</p>
+          <a class="btn" href="#reserva">Guárdame una ración</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- LA PIZARRA: la carta tal cual está escrita en la puerta -->
+    <section class="pizarra-sec" id="pizarra">
+      <div class="wrap pizarra-grid">
+        <div class="board reveal">
+          <div class="board-inner">
+            <p class="board-title">La Viña 3</p>
+            <ul class="board-list">
+              <li class="chalk"><span>Berenjena con miel</span> <em class="star">★</em></li>
+              <li class="chalk"><span>Patatas bravas caseras con 3 salsas</span>
+                <small>aragonesa · de la casa · mayonesa</small></li>
+              <li class="chalk"><span>Morro de cerdo en salsa verde</span></li>
+              <li class="chalk"><span>Pinchos morunos</span>
+                <small>pollo · ternasco</small></li>
+              <li class="chalk"><span>Croquetas caseras</span>
+                <small>cocido · jamón · rabo de toro · boletus</small></li>
+              <li class="chalk"><span>Tequeños de queso</span> <small class="inline">(3 ud)</small></li>
+              <li class="chalk"><span>Rejos de calamar</span></li>
+            </ul>
+            <p class="board-foot">Pregunta en barra por las sugerencias del día</p>
+          </div>
+        </div>
+
+        <div class="pizarra-side">
+          <header class="reveal">
+            <p class="kicker">La pizarra</p>
+            <h2>Corta, casera<br><em>y para compartir.</em></h2>
+            <p>Nuestra carta cabe en una pizarra, y está escrita a tiza en la puerta. Pocas cosas, hechas en casa y bien hechas. Entre 10 y 20 € por persona.</p>
+          </header>
+          <div class="polaroids">
+            <figure class="polaroid reveal" style="--r:-3deg">
+              <img src="assets/img/bravas.webp" alt="Patatas bravas caseras con salsa brava, alioli y salsa verde" loading="lazy" width="828" height="1103">
+              <figcaption>Bravas con 3 salsas</figcaption>
+            </figure>
+            <figure class="polaroid reveal" style="--r:2.5deg">
+              <img src="assets/img/morunos.webp" alt="Dos pinchos morunos sobre pan con pimentón" loading="lazy" width="828" height="1103">
+              <figcaption>Pinchos morunos</figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <!-- LA CASA -->
     <section class="casa" id="casa">
       <div class="wrap">
-        <header class="section-head reveal">
-          <p class="eyebrow">01 — La casa</p>
-          <h2>Una cabaña<br><em>en pleno Casco.</em></h2>
+        <header class="casa-head reveal">
+          <p class="kicker">La casa</p>
+          <h2>Una cabaña<br><em>en el Casco.</em></h2>
         </header>
 
         <div class="casa-grid">
-          <figure class="casa-figure reveal">
-            <img src="assets/img/barra.webp" alt="Barra de bar con botellas y lámparas de luz cálida" loading="lazy">
+          <figure class="casa-photo casa-photo--wide reveal">
+            <img src="assets/img/barra.webp" alt="Barra con vigas de madera, pañuelos de cuadros de Zaragoza, botellas de vino y grifos de cerveza" loading="lazy" width="828" height="621">
           </figure>
           <div class="casa-copy reveal">
-            <p class="lead">La Cabaña de la Viña 3 ha llegado a la calle Heroísmo con una idea sencilla: barra llena, cocina para compartir y el vino como excusa para alargar la tarde.</p>
-            <p>Entra a por una caña y quédate a cenar. Aquí se viene a picar de pie, a sentarse sin mirar el reloj o a celebrar lo que haga falta con la mesa llena de platos al centro.</p>
+            <p class="lead">Vigas de madera, pared de piedra, celosía y los pañuelos de cuadros de las fiestas colgados sobre la barra.</p>
+            <p>Un bar pequeño y con alma, de los de toda la vida del Casco. Se come en barra, en mesa o en la terraza, con la cerveza recién tirada y un vino de la tierra.</p>
           </div>
-        </div>
-
-        <ol class="pillars">
-          <li class="pillar reveal">
-            <span class="pillar-num">I</span>
-            <h3>La barra</h3>
-            <p>Tapas recién salidas de cocina y raciones pensadas para el centro de la mesa.</p>
-          </li>
-          <li class="pillar reveal">
-            <span class="pillar-num">II</span>
-            <h3>La bodega</h3>
-            <p>Vino por copas para acompañar cada plato. Pregunta en barra qué hay abierto hoy.</p>
-          </li>
-          <li class="pillar reveal">
-            <span class="pillar-num">III</span>
-            <h3>La sobremesa</h3>
-            <p>Un sitio cálido, de madera y luz baja, para quedarse un rato más.</p>
-          </li>
-        </ol>
-      </div>
-    </section>
-
-    <!-- CARTA: scroll horizontal fijado en escritorio, carrusel táctil en móvil.
-         Platos de muestra: confirmar nombres y fotos con el local antes de publicar. -->
-    <section class="carta" id="carta">
-      <div class="carta-pin">
-        <header class="wrap carta-head">
-          <div class="reveal">
-            <p class="eyebrow">02 — Platos estrella</p>
-            <h2>Para compartir<br><em>al centro.</em></h2>
-          </div>
-          <p class="carta-note reveal">Una muestra de lo que sale de cocina. La carta cambia con el mercado: pregunta por las sugerencias del día.</p>
-        </header>
-
-        <div class="carta-viewport">
-          <ul class="carta-track">
-            <li class="dish">
-              <div class="dish-media"><img src="assets/img/tapas.webp" alt="Cazuelitas de tapas para compartir" loading="lazy"></div>
-              <div class="dish-body"><span class="dish-num">01</span><h3>Tapas de barra</h3><p>Lo de siempre, bien hecho. Para abrir boca con la primera caña.</p></div>
-            </li>
-            <li class="dish">
-              <div class="dish-media"><img src="assets/img/croquetas.webp" alt="Croquetas caseras doradas" loading="lazy"></div>
-              <div class="dish-body"><span class="dish-num">02</span><h3>Croquetas caseras</h3><p>Crujientes por fuera, cremosas por dentro. De las que se piden dos veces.</p></div>
-            </li>
-            <li class="dish">
-              <div class="dish-media"><img src="assets/img/pinchos.webp" alt="Pinchos variados en la barra" loading="lazy"></div>
-              <div class="dish-body"><span class="dish-num">03</span><h3>Pinchos</h3><p>Bocados de barra para ir probando, de uno en uno o de todos un poco.</p></div>
-            </li>
-            <li class="dish">
-              <div class="dish-media"><img src="assets/img/jamon.webp" alt="Jamón cortado con pan con tomate" loading="lazy"></div>
-              <div class="dish-body"><span class="dish-num">04</span><h3>Jamón y embutidos</h3><p>Cortado al momento, con pan y un buen tinto al lado.</p></div>
-            </li>
-            <li class="dish">
-              <div class="dish-media"><img src="assets/img/tabla.webp" alt="Quesos, pan y vino tinto en la mesa" loading="lazy"></div>
-              <div class="dish-body"><span class="dish-num">05</span><h3>Tablas para compartir</h3><p>Quesos y embutidos para picar sin prisa entre varios.</p></div>
-            </li>
-            <li class="dish">
-              <div class="dish-media"><img src="assets/img/vino.webp" alt="Sirviendo una copa de vino tinto" loading="lazy"></div>
-              <div class="dish-body"><span class="dish-num">06</span><h3>Vino por copas</h3><p>Tintos, blancos y rosados para acompañar cada plato.</p></div>
-            </li>
-            <li class="dish dish-cta">
-              <div class="dish-body">
-                <span class="dish-num">+</span>
-                <h3>¿Qué hay hoy?</h3>
-                <p>Las novedades y sugerencias del día, en nuestro Instagram.</p>
-                <a class="btn" href="https://www.instagram.com/lacabanadelavina3/" target="_blank" rel="noopener">Ver Instagram ↗</a>
-              </div>
-            </li>
+          <figure class="casa-photo reveal">
+            <img src="assets/img/mesa.webp" alt="Berenjena con miel y carne en cazuela sobre la mesa, con celosía de madera al fondo" loading="lazy" width="828" height="621">
+          </figure>
+          <ul class="facts reveal">
+            <li><b>Terraza</b><span>en la calle Heroísmo</span></li>
+            <li><b>Barra</b><span>para comer de pie</span></li>
+            <li><b>10–20 €</b><span>por persona</span></li>
+            <li><b>4,9 ★</b><span>142 reseñas en Google</span></li>
           </ul>
         </div>
       </div>
     </section>
 
+    <div class="gingham gingham-thin" aria-hidden="true"></div>
+
+    <!-- HORARIO + VISÍTANOS -->
+    <section class="horario" id="horario">
+      <div class="wrap horario-grid">
+        <div class="horario-copy reveal">
+          <p class="kicker">Horario</p>
+          <h2>¿Estamos<br><em>abiertos?</em></h2>
+          <p class="status" data-status-long>Consulta el horario aquí al lado.</p>
+          <table class="hours" aria-label="Horario semanal">
+            <tbody>
+              <tr data-day="3"><th>Miércoles</th><td>19:30 – 23:00</td></tr>
+              <tr data-day="4"><th>Jueves</th><td>19:30 – 23:00</td></tr>
+              <tr data-day="5"><th>Viernes</th><td>12:30 – 15:30 · 19:30 – 24:00</td></tr>
+              <tr data-day="6"><th>Sábado</th><td>12:30 – 16:00 · 19:30 – 24:00</td></tr>
+              <tr data-day="0"><th>Domingo</th><td>12:30 – 16:30</td></tr>
+              <tr data-day="1" class="closed"><th>Lunes</th><td>Cerrado</td></tr>
+              <tr data-day="2" class="closed"><th>Martes</th><td>Cerrado</td></tr>
+            </tbody>
+          </table>
+          <p class="note">En festivos el horario puede cambiar. Ante la duda, llámanos.</p>
+        </div>
+
+        <div class="visit reveal">
+          <div class="visit-map">
+            <iframe title="Mapa: Calle del Heroísmo 4, Zaragoza" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+                    src="https://www.google.com/maps?q=Calle+del+Hero%C3%ADsmo+4,+50002+Zaragoza&z=17&output=embed"></iframe>
+          </div>
+          <dl class="visit-list">
+            <div><dt>Dirección</dt><dd>C. del Heroísmo, 4 · Casco Antiguo<br>50002 Zaragoza</dd></div>
+            <div><dt>Teléfono</dt><dd><a href="tel:+34632825176">632 82 51 76</a></dd></div>
+            <div><dt>Instagram</dt><dd><a href="https://www.instagram.com/lacabanadelavina3/" target="_blank" rel="noopener">@lacabanadelavina3</a></dd></div>
+          </dl>
+          <div class="visit-actions">
+            <a class="btn" href="https://www.google.com/maps/search/?api=1&query=La+Vi%C3%B1a+3+Calle+del+Hero%C3%ADsmo+4+Zaragoza" target="_blank" rel="noopener" data-maps>Cómo llegar ↗</a>
+            <a class="btn btn-line" href="tel:+34632825176">Llamar</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- EL BARRIO -->
-    <section class="barrio" id="barrio">
+    <section class="barrio">
       <div class="wrap barrio-grid">
-        <figure class="barrio-figure reveal">
-          <img src="assets/img/magdalena.webp" alt="Torre mudéjar de la Magdalena iluminada de noche, Zaragoza" loading="lazy">
-          <figcaption>Torre mudéjar de la Magdalena · Patrimonio Mundial</figcaption>
+        <figure class="barrio-photo reveal">
+          <img src="assets/img/magdalena.webp" alt="Torre mudéjar de la Magdalena iluminada de noche" loading="lazy" width="683" height="1024">
         </figure>
         <div class="barrio-copy reveal">
-          <p class="eyebrow">03 — El barrio</p>
-          <h2>A la sombra<br><em>de la torre.</em></h2>
-          <p>Estamos en La Magdalena, uno de los barrios con más vida del Casco Histórico de Zaragoza: calles estrechas, terrazas, librerías y bares de toda la vida alrededor de su torre mudéjar.</p>
-          <p>Desde la plaza de la Magdalena son dos minutos a pie bajando por la calle Heroísmo. Fácil de encontrar, difícil de irse.</p>
-          <a class="ulink" href="https://www.google.com/maps/search/?api=1&query=La+Caba%C3%B1a+de+la+Vi%C3%B1a+3+Calle+del+Hero%C3%ADsmo+4+Zaragoza" target="_blank" rel="noopener" data-maps>Cómo llegar ↗</a>
+          <p class="kicker">El barrio</p>
+          <h2>A dos pasos<br><em>de la Magdalena.</em></h2>
+          <p>Estamos en el Casco Antiguo, junto a la plaza de la Magdalena y su torre mudéjar, Patrimonio Mundial. Barrio de terrazas, calles estrechas y bares con historia: el sitio perfecto para ir de tapas.</p>
         </div>
       </div>
     </section>
@@ -195,9 +254,10 @@
     <section class="reserva" id="reserva">
       <div class="wrap reserva-grid">
         <div class="reserva-copy reveal">
-          <p class="eyebrow">04 — Reserva</p>
+          <p class="kicker">Reserva</p>
           <h2>Guárdanos<br><em>una mesa.</em></h2>
-          <p>Dinos cuántos sois y cuándo venís, y te confirmamos por WhatsApp. ¿Prefieres hablar? Llámanos al <a class="ulink" href="tel:+34632825176">632 82 51 76</a>.</p>
+          <p>Dinos cuántos sois y cuándo venís, y te confirmamos por WhatsApp. ¿Prefieres hablar? Llámanos al <a href="tel:+34632825176">632 82 51 76</a>.</p>
+          <svg class="reserva-grape" aria-hidden="true"><use href="#grape"/></svg>
         </div>
 
         <form class="form reveal" id="form" novalidate>
@@ -223,7 +283,7 @@
           </div>
           <div class="field">
             <label for="f-note">¿Algo más? <span>(opcional)</span></label>
-            <input id="f-note" name="note" type="text" placeholder="Cumpleaños, alergias, terraza…">
+            <input id="f-note" name="note" type="text" placeholder="Terraza, cumpleaños, alergias…">
           </div>
           <button class="btn btn-block" type="submit">Enviar por WhatsApp</button>
           <p class="form-msg" role="status" aria-live="polite"></p>
@@ -235,37 +295,17 @@
       </div>
     </section>
 
-    <!-- VISÍTANOS -->
-    <section class="visit" id="visitanos">
-      <div class="wrap visit-grid">
-        <div class="visit-info reveal">
-          <p class="eyebrow">05 — Visítanos</p>
-          <h2>Calle Heroísmo, <em>4.</em></h2>
-          <dl class="visit-list">
-            <div><dt>Dirección</dt><dd>Calle del Heroísmo, 4<br>50001 Zaragoza · La Magdalena</dd></div>
-            <div><dt>Teléfono</dt><dd><a href="tel:+34632825176">632 82 51 76</a></dd></div>
-            <div><dt>Instagram</dt><dd><a href="https://www.instagram.com/lacabanadelavina3/" target="_blank" rel="noopener">@lacabanadelavina3</a></dd></div>
-            <div><dt>Horario</dt><dd>Consulta el horario del día en Google o Instagram, o llámanos.</dd></div>
-          </dl>
-          <div class="visit-actions">
-            <a class="btn" href="https://www.google.com/maps/search/?api=1&query=La+Caba%C3%B1a+de+la+Vi%C3%B1a+3+Calle+del+Hero%C3%ADsmo+4+Zaragoza" target="_blank" rel="noopener" data-maps>Cómo llegar ↗</a>
-            <a class="btn btn-ghost" href="tel:+34632825176">Llamar</a>
-          </div>
-        </div>
-        <div class="visit-map reveal">
-          <iframe title="Mapa: Calle del Heroísmo 4, Zaragoza" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
-                  src="https://www.google.com/maps?q=Calle+del+Hero%C3%ADsmo+4,+50001+Zaragoza&z=17&output=embed"></iframe>
-        </div>
-      </div>
-    </section>
-
   </main>
 
   <footer class="footer">
     <div class="wrap">
-      <p class="footer-big">La Cabaña <em>de la Viña</em> <span>III</span></p>
+      <div class="sign sign-footer">
+        <svg class="sign-grape sign-grape--l" aria-hidden="true"><use href="#grape"/></svg>
+        <p><span class="sign-small">La Cabaña de la</span><span class="sign-big">Viña 3</span><span class="sign-sub">Gastrobar</span></p>
+        <svg class="sign-grape sign-grape--r" aria-hidden="true"><use href="#grape"/></svg>
+      </div>
       <div class="footer-row">
-        <p>Calle del Heroísmo, 4 · 50001 Zaragoza · <a href="tel:+34632825176">632 82 51 76</a></p>
+        <p>C. del Heroísmo, 4 · 50002 Zaragoza · <a href="tel:+34632825176">632 82 51 76</a> · <a href="https://www.instagram.com/lacabanadelavina3/" target="_blank" rel="noopener">Instagram</a></p>
         <p>© <span id="year">2026</span> La Cabaña de la Viña 3 · <a href="creditos.html">Créditos fotográficos</a></p>
       </div>
     </div>
@@ -275,7 +315,7 @@
   <div class="mobile-cta" aria-label="Acciones rápidas">
     <a href="tel:+34632825176">Llamar</a>
     <a href="#reserva" class="is-main">Reservar</a>
-    <a href="https://www.google.com/maps/search/?api=1&query=La+Caba%C3%B1a+de+la+Vi%C3%B1a+3+Calle+del+Hero%C3%ADsmo+4+Zaragoza" target="_blank" rel="noopener" data-maps>Llegar</a>
+    <a href="https://www.google.com/maps/search/?api=1&query=La+Vi%C3%B1a+3+Calle+del+Hero%C3%ADsmo+4+Zaragoza" target="_blank" rel="noopener" data-maps>Llegar</a>
   </div>
 
 </body>
