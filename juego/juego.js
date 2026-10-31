@@ -6,7 +6,8 @@
 
   var C = window.IAPRO;
   var KEY = "iapro.partida.v1";
-  var TRACK = "webs-locales";
+  var FIRST = "webs-locales";
+  Object.keys(C.missions).forEach(function (slug) { C.missions[slug].forEach(function (m) { m.track = slug; }); });
   var STATUS = ["todo", "sent", "replied", "meeting", "won", "lost"];
   var STATUS_LABEL = { todo: "Por contactar", sent: "Mensaje enviado", replied: "Ha respondido", meeting: "Reunión", won: "Cliente", lost: "Descartado" };
   var ORDER = { todo: 0, sent: 1, replied: 2, meeting: 3, won: 4 };
@@ -19,7 +20,7 @@
     return {
       v: 1, onboarded: false,
       perfil: { marca: "", ciudad: "", zona: "", xp: 0, streak: 0, last: null },
-      run: { track: TRACK, current: 1, done: {} },
+      active: FIRST, runs: {},
       entregas: {}, checks: {}, prospects: [], ingresos: [], badges: [],
       negocio: { tipo: "", tipoOtro: "", nombre: "", zona: "", direccion: "", telefono: "", servicios: "", horario: "", estilo: "moderno", tono: "cercano" }
     };
@@ -31,6 +32,12 @@
     if (!s || s.v !== 1) return b;
     Object.keys(b).forEach(function (k) { if (s[k] === undefined) s[k] = b[k]; });
     Object.keys(b.negocio).forEach(function (k) { if (s.negocio[k] === undefined) s.negocio[k] = b.negocio[k]; });
+    if (s.run) { // partida de la versión con una sola ruta
+      var slug = s.run.track || FIRST, fix = function (o) { var r = {}; Object.keys(o || {}).forEach(function (k) { r[/:/.test(k) ? k : slug + ":" + k] = o[k]; }); return r; };
+      s.runs[slug] = { current: s.run.current, done: s.run.done };
+      s.entregas = fix(s.entregas); s.checks = fix(s.checks); s.active = slug; delete s.run;
+    }
+    if (!C.missions[s.active]) s.active = FIRST;
     return s;
   }
   function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* sin almacenamiento: la partida dura lo que la pestaña */ } }
@@ -42,10 +49,12 @@
   function today() { return ymd(new Date()); }
   function yesterday() { var d = new Date(); d.setDate(d.getDate() - 1); return ymd(d); }
   function eur(n) { return new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR", maximumFractionDigits: n % 1 ? 2 : 0 }).format(n || 0); }
-  function missions() { return C.missions[TRACK]; }
-  function mission(n) { return missions().filter(function (m) { return m.number === n; })[0]; }
+  function missions(slug) { return C.missions[slug || S.active]; }
+  function mission(n, slug) { return missions(slug).filter(function (m) { return m.number === n; })[0]; }
+  function run(slug) { slug = slug || S.active; if (!S.runs[slug]) S.runs[slug] = { current: 1, done: {} }; return S.runs[slug]; }
+  function ek(m) { return m.track + ":" + m.number; }
   function badge(slug) { return C.badges.filter(function (b) { return b.slug === slug; })[0]; }
-  function track() { return C.tracks.filter(function (t) { return t.slug === TRACK; })[0]; }
+  function track(slug) { slug = slug || S.active; return C.tracks.filter(function (t) { return t.slug === slug; })[0]; }
   function negDef(id) { return C.negocios.filter(function (n) { return n.id === id; })[0]; }
   function hl(text) { return esc(text).replace(/\[[^\]\n]{1,70}\]/g, function (m) { return "<mark>" + m + "</mark>"; }); }
 
@@ -63,16 +72,23 @@
     S.perfil.streak = l === yesterday() ? S.perfil.streak + 1 : 1;
     S.perfil.last = t;
   }
-  function canSell() {
-    var won = S.prospects.some(function (p) { return p.status === "won"; });
-    return { won: won, income: S.ingresos.length > 0, ok: won && S.ingresos.length > 0 };
+  function prospectsOf(slug) { slug = slug || S.active; return S.prospects.filter(function (p) { return (p.track || FIRST) === slug; }); }
+  function incomesOf(slug) {
+    var ids = {}; prospectsOf(slug).forEach(function (p) { ids[p.id] = 1; });
+    return S.ingresos.filter(function (i) { return ids[i.prospectId]; });
   }
-  function countAtLeast(status) {
-    return S.prospects.filter(function (p) { return p.status !== "lost" && ORDER[p.status] >= ORDER[status]; }).length;
+  function trackMoney(slug) { return incomesOf(slug).reduce(function (a, i) { return a + Number(i.amount); }, 0); }
+  function canSell(slug) { // ≈ can_sell_in_track(user_id, track_id)
+    var won = prospectsOf(slug).some(function (p) { return p.status === "won"; }), inc = incomesOf(slug).length > 0;
+    return { won: won, income: inc, ok: won && inc };
   }
-  function monthlyClients() {
+  function canSellAny() { return C.tracks.filter(function (t) { return canSell(t.slug).ok; }); }
+  function countAtLeast(status, slug) {
+    return prospectsOf(slug).filter(function (p) { return p.status !== "lost" && ORDER[p.status] >= ORDER[status]; }).length;
+  }
+  function clientsWithIncome(slug, kind) {
     var set = {};
-    S.ingresos.forEach(function (i) { if (i.kind === "monthly") set[i.prospectId] = 1; });
+    incomesOf(slug).forEach(function (i) { if (!kind || i.kind === kind) set[i.prospectId] = 1; });
     return Object.keys(set).length;
   }
 
@@ -120,7 +136,8 @@
 
   /* ------------------------------------------------- Reglas (≈ RPC submit_mission) */
   function submit(m, payload) {
-    if (m.number !== S.run.current) return { ok: false, msg: m.number < S.run.current ? "Esta misión ya está completada." : "Esta misión aún está bloqueada. Completa antes la misión " + S.run.current + "." };
+    var R0 = run(m.track);
+    if (m.number !== R0.current) return { ok: false, msg: m.number < R0.current ? "Esta misión ya está completada." : "Esta misión aún está bloqueada. Completa antes la misión " + R0.current + "." };
     var c = m.proof_config || {}, t = m.proof_type;
     if (t === "text") {
       var fields = c.fields || [{ key: "texto", label: "Respuesta" }];
@@ -134,17 +151,21 @@
       if (url.protocol !== "https:") return { ok: false, msg: "El enlace tiene que empezar por https:// (Netlify y GitHub Pages ya te lo dan así)." };
       if (!/\.[a-z]{2,}$/i.test(url.hostname)) return { ok: false, msg: "El enlace no parece una web publicada. Revisa que esté completo." };
     } else if (t === "checklist") {
-      var marks = S.checks[m.number] || [];
+      var marks = S.checks[ek(m)] || [];
       var left = m.steps.filter(function (s, i) { return !marks[i]; }).length;
       if (left) return { ok: false, msg: left === 1 ? "Te queda 1 punto por marcar." : "Te quedan " + left + " puntos por marcar." };
     } else if (t === "contacts") {
-      var have = countAtLeast(c.status), need = c.min_contacts;
+      var have = countAtLeast(c.status, m.track), need = c.min_contacts;
       if (have < need) return { ok: false, msg: "Tienes " + have + " de " + need + " negocios en «" + STATUS_LABEL[c.status] + "» o más. Te faltan " + (need - have) + "." };
     } else if (t === "income") {
-      var sum = money();
-      if (sum < c.min_amount) return { ok: false, msg: "Aún no has registrado ningún ingreso. Marca un negocio como «Cliente» en Mis clientes y registra lo que te ha pagado." };
+      var sum = trackMoney(m.track);
+      if (sum < c.min_amount) return { ok: false, msg: "Aún no has registrado ningún ingreso en esta ruta. Marca un negocio como «Cliente» en Mis clientes y registra lo que te ha pagado." };
+      if (c.min_clients) {
+        var cc = clientsWithIncome(m.track);
+        if (cc < c.min_clients) return { ok: false, msg: "Tienes " + cc + " de " + c.min_clients + " clientes que te han pagado. Te faltan " + (c.min_clients - cc) + "." };
+      }
       if (c.min_monthly_clients) {
-        var mc = monthlyClients();
+        var mc = clientsWithIncome(m.track, "monthly");
         if (mc < c.min_monthly_clients) return { ok: false, msg: "Tienes " + mc + " de " + c.min_monthly_clients + " clientes con cuota mensual. Te faltan " + (c.min_monthly_clients - mc) + "." };
       }
     } else if (t === "image") {
@@ -152,16 +173,16 @@
     }
 
     var before = rankOf(S.perfil.xp);
-    S.entregas[m.number] = { payload: payload, at: new Date().toISOString(), status: "approved" };
+    S.entregas[ek(m)] = { payload: payload, at: new Date().toISOString(), status: "approved" };
     S.perfil.xp += m.xp_reward;
     var newBadge = null;
     if (m.badge_slug && S.badges.indexOf(m.badge_slug) < 0) { S.badges.push(m.badge_slug); newBadge = badge(m.badge_slug); }
-    S.run.done[m.number] = today();
-    S.run.current = m.number + 1;
+    R0.done[m.number] = today();
+    R0.current = m.number + 1;
     touch();
     save();
     var after = rankOf(S.perfil.xp);
-    return { ok: true, xp: m.xp_reward, badge: newBadge, next: mission(m.number + 1) || null, rankUp: after.title !== before.title ? after : null };
+    return { ok: true, xp: m.xp_reward, badge: newBadge, next: mission(m.number + 1, m.track) || null, rankUp: after.title !== before.title ? after : null };
   }
 
   /* ------------------------------------------------------------- Interfaz */
@@ -175,7 +196,7 @@
       '</header>';
   }
   function tabbar(active) {
-    var items = [["mapa", "🗺️", "Mapa"], ["kit", "✨", "Kit Web Pro"], ["clientes", "👥", "Clientes"], ["perfil", "👤", "Perfil"]];
+    var items = [["mapa", "🗺️", "Mapa"], ["kit", "✨", "Kit"], ["clientes", "👥", "Clientes"], ["perfil", "👤", "Perfil"]];
     return '<nav class="tabbar" aria-label="Secciones">' + items.map(function (it) {
       return '<a href="#/' + it[0] + '" class="' + (active === it[0] ? "is-on" : "") + '"' + (active === it[0] ? ' aria-current="page"' : "") + '><span aria-hidden="true">' + it[1] + '</span>' + it[2] + '</a>';
     }).join("") + '</nav>';
@@ -192,16 +213,16 @@
     if (st === 0) {
       body = '<div class="ob__hero"><span class="ob__logo">IA<b>PRO</b></span>' +
         '<h1>Monta tu negocio con IA, <span class="grad">misión a misión.</span></h1>' +
-        '<p>Un juego en el que avanzas haciendo cosas de verdad: creas una web, escribes a negocios, cierras clientes y ves crecer tu contador de dinero real.</p>' +
+        '<p>Un juego en el que avanzas haciendo cosas de verdad: creas webs, redes, chatbots o marcas para negocios, cierras clientes y ves crecer tu contador de dinero real.</p>' +
         '<ul class="ob__list"><li><b>🎯 Misiones reales.</b> No avanzas por ver vídeos, sino por demostrar lo que has hecho.</li>' +
         '<li><b>✨ Prompts listos.</b> Copia y pega en Claude o ChatGPT, ya adaptados a tu negocio.</li>' +
         '<li><b>💶 Dinero real.</b> Registra lo que ganas, sube de rango y desbloquea tu perfil en el marketplace.</li></ul>' +
         '<button class="btn btn--primary btn--block" data-act="ob-next">Empezar</button></div>';
     } else if (st === 1) {
-      body = '<h2 class="ob__h">Elige tu ruta</h2><p class="muted">Cada ruta es un mapa de misiones para montar un tipo de negocio.</p><div class="routes">' +
+      body = '<h2 class="ob__h">Elige tu ruta</h2><p class="muted">Cada ruta es un mapa de misiones para montar un tipo de negocio. Puedes jugar varias a la vez.</p><div class="routes">' +
         C.tracks.map(function (t) {
           var on = t.is_published;
-          return '<button class="route' + (on ? "" : " is-off") + '" style="--c:' + t.color + '" ' + (on ? 'data-act="ob-next"' : "disabled") + '>' +
+          return '<button class="route' + (on ? "" : " is-off") + '" style="--c:' + t.color + '" ' + (on ? 'data-route="' + t.slug + '"' : "disabled") + '>' +
             '<span class="route__ico" aria-hidden="true">' + t.icon + '</span><span><b>' + esc(t.title) + '</b><small>' + esc(t.description) + '</small></span>' +
             (on ? '<em>Jugar</em>' : '<em class="soon">Pronto</em>') + '</button>';
         }).join("") + '</div>';
@@ -209,7 +230,7 @@
       body = '<h2 class="ob__h">Tu negocio</h2><p class="muted">Lo usaremos para personalizar todos los prompts. Puedes cambiarlo después.</p>' +
         '<form class="form" data-form="ob-perfil">' +
         '<label>Tu ciudad<input name="ciudad" required minlength="2" autocomplete="address-level2" placeholder="Ej.: Valencia" value="' + esc(S.perfil.ciudad) + '"></label>' +
-        '<label>Nombre de tu marca <small>(si aún no lo tienes, lo eliges en la misión 1)</small><input name="marca" placeholder="Ej.: Webs del Barrio" value="' + esc(S.perfil.marca) + '"></label>' +
+        '<label>Nombre de tu marca <small>(si aún no lo tienes, déjalo vacío)</small><input name="marca" placeholder="Ej.: Nexo Studio" value="' + esc(S.perfil.marca) + '"></label>' +
         '<button class="btn btn--primary btn--block">Continuar</button></form>';
     } else {
       body = '<h2 class="ob__h">Guarda tu partida</h2>' +
@@ -223,7 +244,7 @@
 
   /* ---------- Mapa */
   function viewMap() {
-    var ms = missions(), t = track(), cur = S.run.current, gap = 132, H = ms.length * gap + 30;
+    var ms = missions(), t = track(), cur = run().current, gap = 132, H = ms.length * gap + 30;
     var pts = ms.map(function (m, i) { return { x: 50 + Math.sin(i * 1.15) * 26, y: 60 + i * gap }; });
     var path = pts.map(function (p, i) { return (i ? "L" : "M") + p.x + " " + p.y; }).join(" ");
     var curIdx = Math.min(cur - 1, ms.length - 1);
@@ -241,8 +262,8 @@
     var cs = canSell();
     shell("mapa",
       '<section class="map-head"><span class="route__ico" aria-hidden="true">' + t.icon + '</span><div><small>Tu ruta</small><h1>' + esc(t.title) + '</h1>' +
-      '<p class="muted">' + Math.min(cur - 1, ms.length) + ' de ' + ms.length + ' misiones' + (S.perfil.marca ? ' · ' + esc(S.perfil.marca) : "") + '</p></div></section>' +
-      (finished ? '<div class="card win">🏆 ¡Ruta completada! Ya tienes un negocio real. Las próximas rutas llegan pronto.</div>' : "") +
+      '<p class="muted">' + Math.min(cur - 1, ms.length) + ' de ' + ms.length + ' misiones · <a href="#/rutas">Cambiar de ruta</a></p></div></section>' +
+      (finished ? '<div class="card win">🏆 ¡Ruta completada! Ya tienes un negocio real. <a href="#/rutas">Empieza otra ruta</a> para sumar servicios.</div>' : "") +
       '<div class="map" style="height:' + H + 'px"><svg viewBox="0 0 100 ' + H + '" preserveAspectRatio="none" aria-hidden="true">' +
       '<path d="' + path + '" class="map__path"/><path d="' + donePath + '" class="map__done"/></svg>' + nodes + '</div>' +
       '<a class="card market' + (cs.ok ? " is-open" : "") + '" href="#/marketplace"><span aria-hidden="true">' + (cs.ok ? "🏪" : "🔒") + '</span><span><b>Marketplace</b><small>' +
@@ -267,9 +288,9 @@
   function viewMission(n) {
     var m = mission(n);
     if (!m) { location.hash = "#/mapa"; return; }
-    var cur = S.run.current, st = n < cur ? "done" : n === cur ? "now" : "locked";
+    var cur = run().current, st = n < cur ? "done" : n === cur ? "now" : "locked";
     var b = badge(m.badge_slug);
-    var head = '<a class="back" href="#/mapa">← Mapa</a><section class="m-head"><small>Misión ' + n + ' de ' + missions().length + '</small><h1>' + esc(m.title) + '</h1>' +
+    var head = '<a class="back" href="#/mapa">← Mapa</a><section class="m-head"><small>' + esc(track().title) + ' · Misión ' + n + ' de ' + missions().length + '</small><h1>' + esc(m.title) + '</h1>' +
       '<p class="goal">' + esc(m.goal) + '</p><p class="chips"><span>+' + m.xp_reward + ' XP</span>' + (b ? '<span>' + b.icon + ' ' + esc(b.title) + '</span>' : "") +
       (st === "done" ? '<span class="ok">✓ Completada</span>' : "") + '</p></section>';
     if (st === "locked") {
@@ -285,7 +306,7 @@
     var html = videoBlock(m) + '<ol class="steps">';
     m.steps.forEach(function (s, i) {
       html += '<li><p>' + esc(s.text) + '</p>';
-      if (s.kit) html += '<div class="kit-inline"><p class="muted">Rellena los datos y tendrás <b>' + C.kitWeb.length + ' prompts</b> listos, en orden, para crear una web profesional de principio a fin.</p>' + kitForm() + kitList(true) + '</div>';
+      if (s.kit) html += '<div class="kit-inline"><p class="muted">Rellena los datos y tendrás los <b>' + kit().length + ' prompts del ' + esc(track().kit) + '</b> listos, en orden, de principio a fin.</p>' + kitForm() + kitList(true) + '</div>';
       if (s.prompt) { ui.tpls["p" + m.number + "-" + i] = [s.prompt, m.number === 2]; html += promptBox(fillMission(s.prompt, m.number === 2), "p" + m.number + "-" + i); }
       html += '</li>';
     });
@@ -297,36 +318,41 @@
     if (t === "text") {
       f = (c.fields || [{ key: "texto", label: "Respuesta" }]).map(function (fl) {
         var pre = fl.key === "marca" ? S.perfil.marca : fl.key === "zona" ? S.perfil.zona : "";
+        var prev = S.entregas[ek(m)]; if (prev && prev.payload[fl.key]) pre = prev.payload[fl.key];
         return '<label>' + esc(fl.label) + '<input name="' + fl.key + '" placeholder="' + esc(fl.ph || "") + '" value="' + esc(pre) + '"></label>';
       }).join("");
     } else if (t === "link") {
       f = '<label>' + esc(c.label || "Enlace") + '<input name="url" type="url" inputmode="url" placeholder="' + esc(c.ph || "https://") + '"></label>' +
-        '<p class="muted small">¿Aún no la has publicado? Arrastra la carpeta a <a href="https://app.netlify.com/drop" target="_blank" rel="noopener">Netlify Drop</a> y copia el enlace.</p>';
+        (m.track === FIRST ? '<p class="muted small">¿Aún no la has publicado? Arrastra la carpeta a <a href="https://app.netlify.com/drop" target="_blank" rel="noopener">Netlify Drop</a> y copia el enlace.</p>' : '<p class="muted small">Comparte el enlace en modo «cualquiera con el enlace puede verlo».</p>');
     } else if (t === "checklist") {
-      var marks = S.checks[m.number] || [];
+      var marks = S.checks[ek(m)] || [];
       f = '<div class="checklist">' + m.steps.map(function (s, i) {
-        return '<label class="check"><input type="checkbox" data-check="' + m.number + ':' + i + '"' + (marks[i] ? " checked" : "") + '><span>' + esc(s.text) + '</span></label>';
+        return '<label class="check"><input type="checkbox" data-check="' + ek(m) + ':' + i + '"' + (marks[i] ? " checked" : "") + '><span>' + esc(s.text) + '</span></label>';
       }).join("") + '</div>';
     } else if (t === "contacts") {
-      var have = countAtLeast(c.status), pct = Math.min(100, Math.round(have / c.min_contacts * 100));
+      var have = countAtLeast(c.status, m.track), pct = Math.min(100, Math.round(have / c.min_contacts * 100));
       f = '<div class="progress"><b>' + Math.min(have, c.min_contacts) + ' / ' + c.min_contacts + '</b> negocios en «' + STATUS_LABEL[c.status] + '» o más<i class="bar bar--big"><i style="width:' + pct + '%"></i></i></div>' +
         '<a class="btn btn--line btn--block" href="#/clientes">👥 Ir a Mis clientes</a>';
     } else if (t === "income") {
-      var sum = money(), mc = monthlyClients();
-      f = '<div class="progress"><b>' + eur(sum) + '</b> registrados' + (c.min_monthly_clients ? '<br><b>' + mc + ' / ' + c.min_monthly_clients + '</b> clientes con cuota mensual<i class="bar bar--big"><i style="width:' + Math.min(100, Math.round(mc / c.min_monthly_clients * 100)) + '%"></i></i>' : "") + '</div>' +
+      var sum = trackMoney(m.track), mc = clientsWithIncome(m.track, "monthly"), cc = clientsWithIncome(m.track);
+      f = '<div class="progress"><b>' + eur(sum) + '</b> registrados en esta ruta' +
+        (c.min_clients ? '<br><b>' + cc + ' / ' + c.min_clients + '</b> clientes que te han pagado<i class="bar bar--big"><i style="width:' + Math.min(100, Math.round(cc / c.min_clients * 100)) + '%"></i></i>' : "") +
+        (c.min_monthly_clients ? '<br><b>' + mc + ' / ' + c.min_monthly_clients + '</b> clientes con cuota mensual<i class="bar bar--big"><i style="width:' + Math.min(100, Math.round(mc / c.min_monthly_clients * 100)) + '%"></i></i>' : "") + '</div>' +
         '<a class="btn btn--line btn--block" href="#/clientes">👥 Registrar un ingreso en Mis clientes</a>';
     } else if (t === "image") {
-      f = '<label>Imagen<input name="image" type="file" accept="image/*"></label>';
+      f = '<label>' + esc(c.label || "Imagen") + '<input name="image" type="file" accept="image/*"></label><p class="muted small">Se guarda reducida en este dispositivo.</p>';
     }
     return '<form class="form" data-form="submit" data-n="' + m.number + '">' + f + '<p class="err" role="alert" id="err"></p>' +
       '<button class="btn btn--primary btn--block">Comprobar y completar misión</button></form>';
   }
   function delivered(m) {
-    var e = S.entregas[m.number], p = e ? e.payload : {}, out = "";
-    if (m.proof_type === "text") out = Object.keys(p).map(function (k) { return '<p><small>' + esc(k) + '</small><br><b>' + esc(p[k]) + '</b></p>'; }).join("");
+    var e = S.entregas[ek(m)], p = e ? e.payload : {}, out = "", R0 = run(m.track);
+    if (m.proof_type === "text") out = (m.proof_config.fields || []).map(function (fl) { return '<p><small class="muted">' + esc(fl.label) + '</small><br><b>' + esc(p[fl.key] || "") + '</b></p>'; }).join("");
     else if (m.proof_type === "link") out = '<p><a href="' + esc(p.url) + '" target="_blank" rel="noopener">' + esc(p.url) + '</a></p>';
-    else out = '<p>Prueba validada el ' + esc(S.run.done[m.number] || "") + '.</p>';
-    return '<div class="card">' + out + '</div><a class="btn btn--primary btn--block" href="#/mision/' + S.run.current + '">Ir a la misión actual</a>';
+    else if (m.proof_type === "image" && p.image) out = '<img class="proofimg" src="' + esc(p.image) + '" alt="Tu entrega de la misión ' + m.number + '">';
+    else out = '<p>Prueba validada el ' + esc(R0.done[m.number] || "") + '.</p>';
+    var next = R0.current <= missions(m.track).length ? '<a class="btn btn--primary btn--block" href="#/mision/' + R0.current + '">Ir a la misión actual</a>' : '<a class="btn btn--primary btn--block" href="#/mapa">Volver al mapa</a>';
+    return '<div class="card">' + out + '</div>' + next;
   }
 
   /* ---------- Kit Web Pro */
@@ -338,7 +364,7 @@
     var def = negDef(n.tipo);
     function opt(list, sel) { return list.map(function (o) { return '<option value="' + o.id + '"' + (o.id === sel ? " selected" : "") + '>' + esc(o.label) + '</option>'; }).join(""); }
     return '<form class="form kitform" data-form="kit" autocomplete="off">' +
-      '<fieldset><legend>1. ¿Para qué negocio es la web?</legend><div class="tipos">' + tipos + '</div>' +
+      '<fieldset><legend>1. ¿Para qué negocio es?</legend><div class="tipos">' + tipos + '</div>' +
       (n.tipo === "otro" ? '<label>¿Qué negocio es?<input name="tipoOtro" placeholder="Ej.: autoescuela" value="' + esc(n.tipoOtro) + '"></label>' : "") + '</fieldset>' +
       '<fieldset><legend>2. Datos del negocio <small>(lo que no sepas queda como [hueco] para rellenar)</small></legend>' +
       '<label>Nombre del negocio<input name="nombre" placeholder="Ej.: Bar Casa Lola" value="' + esc(n.nombre) + '"></label>' +
@@ -353,7 +379,7 @@
   function kitList(compact) {
     var v = vals(), fase = "";
     var html = '<div class="kit" id="kitlist"><div class="kit__top"><h3>3. Tus prompts, en orden</h3><button class="btn btn--line btn--small" data-act="copy-all">Copiar todos</button></div>';
-    C.kitWeb.forEach(function (k, i) {
+    kit().forEach(function (k, i) {
       if (k.fase !== fase) { fase = k.fase; html += '<p class="kit__fase">' + esc(fase) + '</p>'; }
       var open = ui.kitOpen[k.id] != null ? ui.kitOpen[k.id] : (!compact && i === 0);
       html += '<details class="kp"' + (open ? " open" : "") + ' data-kp="' + k.id + '"><summary><i>' + (i + 1) + '</i><span><b>' + esc(k.titulo) + '</b><small>' + esc(k.herramienta) + '</small></span></summary>' +
@@ -362,12 +388,18 @@
     return html + '</div>';
   }
   function viewKit() {
-    shell("kit", '<section class="m-head"><small>Kit Web Pro</small><h1>Prompts para una web <span class="grad">profesional</span></h1>' +
-      '<p class="goal">Elige el negocio, rellena lo que sepas y copia cada prompt en Claude o ChatGPT en este orden: estrategia → textos → diseño → web → revisión → SEO → legales → publicar.</p></section>' +
+    var t = track();
+    var chips = '<div class="filters" role="group" aria-label="Elegir kit">' + C.tracks.map(function (x) {
+      return '<button data-route-kit="' + x.slug + '" aria-pressed="' + (x.slug === S.active) + '" style="--c:' + x.color + '">' + x.icon + ' ' + esc(x.kit) + '</button>';
+    }).join("") + '</div>';
+    shell("kit", chips + '<section class="m-head"><small>' + esc(t.kit) + '</small><h1>' + t.kitTitle + '</h1>' +
+      '<p class="goal">' + esc(t.kitIntro) + '</p></section>' +
       kitForm() + kitList(false) + missionLibrary());
+    var on = document.querySelector('[data-route-kit][aria-pressed="true"]');
+    if (on && on.parentNode.scrollTo) on.parentNode.scrollTo({ left: on.offsetLeft - 16 });
   }
   function missionLibrary() {
-    var html = '<section class="lib"><h2>Todos los prompts de la ruta</h2><p class="muted">Para vender la web: nombre de marca, precios, mensajes, reuniones, cobro y cuotas mensuales.</p>';
+    var html = '<section class="lib"><h2>Todos los prompts de la ruta</h2><p class="muted">Para vender el servicio: nicho, precios, objeciones, mensajes, reuniones, cobro y cuotas mensuales.</p>';
     missions().forEach(function (m) {
       var ps = m.steps.filter(function (s) { return s.prompt; });
       if (!ps.length) return;
@@ -376,6 +408,7 @@
     });
     return html + '</section>';
   }
+  function kit(slug) { return C.kits[slug || S.active] || C.kitWeb; }
   function refreshKitList() {
     var el = document.getElementById("kitlist");
     if (!el) return;
@@ -387,26 +420,26 @@
 
   /* ---------- Mis clientes */
   function waMessage(p) {
-    var marca = S.perfil.marca || "[tu marca]";
-    var link = S.entregas[2] ? S.entregas[2].payload.url : "[enlace a tu web de muestra]";
-    return "Hola, ¿qué tal? Soy de " + marca + ", hago páginas web para negocios de " + (S.perfil.zona || "la zona") + ". He visto " + p.business_name +
-      " en Google y me ha gustado mucho, pero no he encontrado vuestra web, así que os he preparado un ejemplo de cómo podría ser: " + link +
-      "\n\n¿Te la enseño en 10 minutos sin compromiso?";
+    var marca = S.perfil.marca || "[tu marca]", t = track(p.track || FIRST), e = S.entregas[t.slug + ":2"];
+    var link = e && e.payload.url ? e.payload.url : "[enlace a tu " + t.muestra + "]";
+    return "Hola, ¿qué tal? Soy de " + marca + " y trabajo con negocios de " + (S.perfil.zona || "la zona") + " (" + t.title.toLowerCase() + "). He visto " + p.business_name +
+      " y me ha gustado mucho; " + t.msg + ": " + link +
+      "\n\n¿Te lo enseño en 10 minutos sin compromiso?";
   }
   function viewClients() {
-    var counts = {}; STATUS.forEach(function (s) { counts[s] = 0; });
-    S.prospects.forEach(function (p) { counts[p.status]++; });
-    var list = S.prospects.filter(function (p) { return ui.filtro === "all" || p.status === ui.filtro; })
+    var counts = {}, mine = prospectsOf(), t = track(); STATUS.forEach(function (s) { counts[s] = 0; });
+    mine.forEach(function (p) { counts[p.status]++; });
+    var list = mine.filter(function (p) { return ui.filtro === "all" || p.status === ui.filtro; })
       .sort(function (a, b) { return b.updated_at.localeCompare(a.updated_at); });
-    var chips = '<div class="filters" role="group" aria-label="Filtrar por estado"><button data-filtro="all" aria-pressed="' + (ui.filtro === "all") + '">Todos <b>' + S.prospects.length + '</b></button>' +
+    var chips = '<div class="filters" role="group" aria-label="Filtrar por estado"><button data-filtro="all" aria-pressed="' + (ui.filtro === "all") + '">Todos <b>' + mine.length + '</b></button>' +
       STATUS.map(function (s) { return '<button data-filtro="' + s + '" class="st-' + s + '" aria-pressed="' + (ui.filtro === s) + '">' + STATUS_LABEL[s] + ' <b>' + counts[s] + '</b></button>'; }).join("") + '</div>';
     var tipos = C.negocios.filter(function (d) { return d.id !== "otro"; }).map(function (d) { return '<option>' + esc(d.label) + '</option>'; }).join("");
-    var form = '<details class="card add"' + (ui.addOpen || !S.prospects.length ? " open" : "") + ' data-add><summary>＋ Añadir negocio</summary>' +
+    var form = '<details class="card add"' + (ui.addOpen || !mine.length ? " open" : "") + ' data-add><summary>＋ Añadir negocio</summary>' +
       '<form class="form" data-form="prospect"><label>Nombre del negocio *<input name="business_name" required placeholder="Ej.: Peluquería Marisa"></label>' +
       '<div class="two"><label>Tipo<input name="business_type" list="tipos-dl" placeholder="Ej.: Peluquería"></label><datalist id="tipos-dl">' + tipos + '</datalist>' +
       '<label>Ubicación<input name="location" placeholder="Calle o barrio"></label></div>' +
       '<label>Contacto (WhatsApp o Instagram)<input name="contact" placeholder="600 000 000 o @usuario"></label>' +
-      '<label>Notas<input name="notes" placeholder="Ej.: 4,7★ en Google, sin web"></label>' +
+      '<label>Notas<input name="notes" placeholder="Ej.: 4,7★ en Google, ' + (S.active === FIRST ? "sin web" : "qué le falta") + '"></label>' +
       '<button class="btn btn--primary btn--block">Añadir a mi lista</button></form></details>';
     var cards = list.map(function (p) {
       var idx = ORDER[p.status], next = p.status === "lost" ? null : STATUS[idx + 1];
@@ -422,9 +455,11 @@
         '<select data-status="' + p.id + '" aria-label="Cambiar estado">' + STATUS.map(function (s) { return '<option value="' + s + '"' + (s === p.status ? " selected" : "") + '>' + STATUS_LABEL[s] + '</option>'; }).join("") + '</select>' +
         '<button class="icon" data-del="' + p.id + '" aria-label="Eliminar ' + esc(p.business_name) + '">🗑</button></div></article>';
     }).join("");
-    shell("clientes", '<section class="m-head"><small>Mini-CRM</small><h1>Mis clientes</h1><p class="goal">Toca el botón de cada tarjeta para moverla al siguiente estado. Cuando alguien sea «Cliente», registra lo que te paga.</p></section>' +
-      form + (S.prospects.length ? chips : "") + '<div class="pcs">' + (cards || (S.prospects.length ? '<p class="muted center">No hay negocios en este estado.</p>' : "")) + '</div>' +
-      (S.ingresos.length ? '<section class="lib"><h2>Ingresos</h2><ul class="incomes">' + S.ingresos.slice().reverse().map(function (i) {
+    var incs = incomesOf();
+    shell("clientes", '<section class="m-head"><small>Mini-CRM · ' + t.icon + ' ' + esc(t.title) + '</small><h1>Mis clientes</h1><p class="goal">Toca el botón de cada tarjeta para moverla al siguiente estado. Cuando alguien sea «Cliente», registra lo que te paga.</p>' +
+      '<p class="small muted">Ves los clientes de tu ruta activa. <a href="#/rutas">Cambiar de ruta</a></p></section>' +
+      form + (mine.length ? chips : "") + '<div class="pcs">' + (cards || (mine.length ? '<p class="muted center">No hay negocios en este estado.</p>' : "")) + '</div>' +
+      (incs.length ? '<section class="lib"><h2>Ingresos de esta ruta · ' + eur(trackMoney()) + '</h2><ul class="incomes">' + incs.slice().reverse().map(function (i) {
         var p = S.prospects.filter(function (x) { return x.id === i.prospectId; })[0];
         return '<li><span><b>' + eur(i.amount) + '</b> · ' + (i.kind === "monthly" ? "Cuota mensual" : "Pago único") + '<small>' + esc((p ? p.business_name : "Cliente eliminado") + (i.description ? " · " + i.description : "")) + '</small></span><time>' + esc(i.created_at.slice(0, 10)) + '</time></li>';
       }).join("") + '</ul></section>' : ""));
@@ -441,28 +476,46 @@
 
   /* ---------- Perfil */
   function viewProfile() {
-    var xp = S.perfil.xp, r = rankOf(xp), nr = nextRank(xp), ms = missions(), done = Math.min(S.run.current - 1, ms.length);
+    var xp = S.perfil.xp, r = rankOf(xp), nr = nextRank(xp);
     var pct = nr ? Math.round((xp - r.min) / (nr.min - r.min) * 100) : 100;
-    var cs = canSell();
+    var cs = { ok: canSellAny().length > 0 };
+    var started = C.tracks.filter(function (t) { return S.runs[t.slug] || t.slug === S.active; });
+    var earned = C.badges.filter(function (b) { return S.badges.indexOf(b.slug) >= 0; });
     shell("perfil", '<section class="prof"><div class="avatar" aria-hidden="true">' + esc(initials()) + '</div>' +
       '<h1>' + esc(S.perfil.marca || "Tu marca") + '</h1><p class="muted">' + esc([S.perfil.zona, S.perfil.ciudad].filter(Boolean).join(" · ") || "Sin zona aún") + '</p></section>' +
       '<div class="stats"><div><small>Dinero ganado</small><b class="gold">' + eur(money()) + '</b></div><div><small>Rango</small><b>' + esc(r.title) + '</b></div>' +
       '<div><small>XP</small><b>' + xp + '</b></div><div><small>Racha</small><b>🔥 ' + streakShown() + (streakShown() === 1 ? ' día' : ' días') + '</b></div></div>' +
       '<div class="card"><p><b>' + esc(r.title) + '</b>' + (nr ? ' → ' + esc(nr.title) + ' <span class="muted">(' + (nr.min - xp) + ' XP)</span>' : ' · rango máximo') + '</p><i class="bar bar--big"><i style="width:' + pct + '%"></i></i>' +
       '<p class="small muted ranks">' + C.ranks.map(function (k) { return '<span class="' + (xp >= k.min ? "on" : "") + '">' + esc(k.title) + ' ' + k.min + '</span>'; }).join("") + '</p></div>' +
-      '<h2 class="sub">Insignias</h2><div class="badges">' + C.badges.map(function (b) {
-        var on = S.badges.indexOf(b.slug) >= 0;
-        return '<div class="bdg' + (on ? " is-on" : "") + '"><span aria-hidden="true">' + (on ? b.icon : "🔒") + '</span><small>' + esc(b.title) + '</small></div>';
-      }).join("") + '</div>' +
-      '<h2 class="sub">Rutas en curso</h2><a class="card routecard" href="#/mapa" style="--c:' + track().color + '"><span aria-hidden="true">' + track().icon + '</span><span><b>' + esc(track().title) + '</b><small>' + done + ' / ' + ms.length + ' misiones</small><i class="bar"><i style="width:' + Math.round(done / ms.length * 100) + '%"></i></i></span></a>' +
+      '<h2 class="sub">Insignias <small class="muted">' + earned.length + ' / ' + C.badges.length + '</small></h2>' +
+      started.map(function (t) {
+        return '<p class="small muted">' + t.icon + ' ' + esc(t.title) + '</p><div class="badges">' + missions(t.slug).map(function (m) {
+          var b = badge(m.badge_slug), on = b && S.badges.indexOf(b.slug) >= 0;
+          return b ? '<div class="bdg' + (on ? " is-on" : "") + '"><span aria-hidden="true">' + (on ? b.icon : "🔒") + '</span><small>' + esc(b.title) + '</small></div>' : "";
+        }).join("") + '</div>';
+      }).join("") +
+      '<h2 class="sub">Rutas en curso</h2>' + started.map(routeCard).join("") + '<a class="btn btn--line btn--block" href="#/rutas">＋ Ver todas las rutas</a>' +
       '<a class="card market' + (cs.ok ? " is-open" : "") + '" href="#/marketplace"><span aria-hidden="true">' + (cs.ok ? "🏪" : "🔒") + '</span><span><b>Perfil en el marketplace</b><small>' + (cs.ok ? "Desbloqueado" : "Bloqueado hasta tu primer cliente") + '</small></span></a>' +
       '<form class="form card" data-form="perfil"><h2 class="sub">Ajustes</h2><label>Marca<input name="marca" value="' + esc(S.perfil.marca) + '"></label><div class="two"><label>Zona<input name="zona" value="' + esc(S.perfil.zona) + '"></label><label>Ciudad<input name="ciudad" value="' + esc(S.perfil.ciudad) + '"></label></div><button class="btn btn--line btn--block">Guardar</button></form>' +
       '<div class="danger"><button class="btn btn--line btn--small" data-act="export">Descargar mi partida</button><button class="btn btn--line btn--small" data-act="reset">Borrar partida</button></div>');
   }
 
+  function routeCard(t) {
+    var ms = missions(t.slug), done = Math.min(run(t.slug).current - 1, ms.length), on = t.slug === S.active;
+    return '<button class="card routecard' + (on ? " is-active" : "") + '" data-route="' + t.slug + '" style="--c:' + t.color + '"><span aria-hidden="true">' + t.icon + '</span><span><b>' + esc(t.title) + '</b>' +
+      '<small>' + (done ? done + ' / ' + ms.length + ' misiones' + (trackMoney(t.slug) ? ' · ' + eur(trackMoney(t.slug)) : "") : esc(t.description)) + '</small><i class="bar"><i style="width:' + Math.round(done / ms.length * 100) + '%"></i></i></span>' +
+      '<em>' + (on ? "Activa" : done ? "Seguir" : "Empezar") + '</em></button>';
+  }
+  function viewRoutes() {
+    shell("mapa", '<a class="back" href="#/mapa">← Mapa</a><section class="m-head"><small>Rutas</small><h1>Elige qué negocio montar</h1>' +
+      '<p class="goal">Cada ruta tiene 8 misiones, su propio kit de prompts y sus clientes. Tu XP, tu dinero y tu racha son comunes a todas.</p></section>' +
+      '<div class="routes">' + C.tracks.map(routeCard).join("") + '</div>');
+  }
+
   /* ---------- Marketplace (vista previa de la Fase 3) */
   function viewMarket() {
-    var cs = canSell();
+    var cs = canSell(), open = canSellAny();
+    if (!cs.ok && open.length) cs = canSell(open[0].slug);
     var body = '<a class="back" href="#/mapa">← Mapa</a><section class="m-head"><small>Marketplace</small><h1>Que te contraten</h1>' +
       '<p class="goal">Cuando cierres tu primer cliente, tu perfil público aparecerá aquí para que otros negocios te contraten.</p></section>';
     if (!cs.ok) {
@@ -471,8 +524,8 @@
     } else {
       var b = S.badges.map(badge).filter(Boolean).map(function (x) { return x.icon; }).join(" ");
       body += '<div class="card win">🎉 ¡Desbloqueado! Así se verá tu ficha cuando abramos el marketplace.</div>' +
-        '<article class="card seller"><div class="avatar" aria-hidden="true">' + esc(initials()) + '</div><div><b>' + esc(S.perfil.marca || "Tu marca") + '</b><small>' + esc(S.perfil.zona || S.perfil.ciudad) + ' · Webs para negocios locales</small><p>' + b + '</p></div></article>' +
-        promptBox("Escribe la descripción de mi servicio para un marketplace de profesionales: soy " + (S.perfil.marca || "[tu marca]") + ", hago páginas web con IA para negocios de " + (S.perfil.zona || "[tu zona]") + ". Incluye título (máx. 60 caracteres), descripción de 80 palabras centrada en resultados, qué incluye, plazo de entrega y precio desde [PRECIO]. Tono cercano y profesional.", "mk-desc");
+        '<article class="card seller"><div class="avatar" aria-hidden="true">' + esc(initials()) + '</div><div><b>' + esc(S.perfil.marca || "Tu marca") + '</b><small>' + esc(S.perfil.zona || S.perfil.ciudad) + ' · ' + esc(open.map(function (t) { return t.title; }).join(", ")) + '</small><p>' + b + '</p></div></article>' +
+        promptBox("Escribe la descripción de mi servicio para un marketplace de profesionales: soy " + (S.perfil.marca || "[tu marca]") + ", y ofrezco " + open.map(function (t) { return t.title.toLowerCase(); }).join(" y ") + " para negocios de " + (S.perfil.zona || "[tu zona]") + ". Incluye título (máx. 60 caracteres), descripción de 80 palabras centrada en resultados, qué incluye, plazo de entrega y precio desde [PRECIO]. Tono cercano y profesional.", "mk-desc");
     }
     shell("mapa", body);
   }
@@ -544,12 +597,30 @@
     }
   }
 
+  function shrink(file, cb) { // reduce la imagen a 900 px para que quepa en el almacenamiento del navegador
+    var rd = new FileReader();
+    rd.onerror = function () { cb(null); };
+    rd.onload = function () {
+      var img = new Image();
+      img.onerror = function () { cb(null); };
+      img.onload = function () {
+        var k = Math.min(1, 900 / Math.max(img.width, img.height)), cv = document.createElement("canvas");
+        cv.width = Math.round(img.width * k); cv.height = Math.round(img.height * k);
+        var cx = cv.getContext("2d"); cx.fillStyle = "#fff"; cx.fillRect(0, 0, cv.width, cv.height); cx.drawImage(img, 0, 0, cv.width, cv.height);
+        cb(cv.toDataURL("image/jpeg", .8));
+      };
+      img.src = rd.result;
+    };
+    rd.readAsDataURL(file);
+  }
+
   /* ------------------------------------------------------------- Router */
   function route() {
     closeModal();
     if (!S.onboarded) { viewOnboarding(); return; }
     var h = location.hash.replace(/^#\/?/, "").split("/");
-    if (h[0] === "mision") { var n = parseInt(h[1], 10); if (ui.lastMission !== n) { ui.tab = "guia"; ui.lastMission = n; } viewMission(n); }
+    if (h[0] === "mision") { var n = parseInt(h[1], 10), key = S.active + n; if (ui.lastMission !== key) { ui.tab = "guia"; ui.lastMission = key; } viewMission(n); }
+    else if (h[0] === "rutas") viewRoutes();
     else if (h[0] === "kit") viewKit();
     else if (h[0] === "clientes") viewClients();
     else if (h[0] === "perfil") viewProfile();
@@ -560,12 +631,18 @@
 
   /* ------------------------------------------------------------- Eventos */
   document.addEventListener("click", function (e) {
-    var t = e.target.closest("[data-act],[data-tab],[data-copy],[data-tipo],[data-filtro],[data-adv],[data-income],[data-msg],[data-del],[data-close]");
+    var t = e.target.closest("[data-act],[data-route],[data-route-kit],[data-tab],[data-copy],[data-tipo],[data-filtro],[data-adv],[data-income],[data-msg],[data-del],[data-close]");
     if (!t) return;
     var d = t.dataset;
     if (d.close != null) { closeModal(); if (t.tagName !== "A") e.preventDefault(); return; }
     if (d.copy) { var pre = document.getElementById(d.copy); if (pre) copyText(pre.textContent); return; }
     if (d.tab) { ui.tab = d.tab; rerender(); return; }
+    if (d.route) { // elegir ruta (onboarding, lista de rutas, perfil)
+      S.active = d.route; run(d.route); ui.filtro = "all"; save();
+      if (!S.onboarded) { ui.obStep = 2; viewOnboarding(); } else { toast(track().icon + " " + track().title); location.hash = "#/mapa"; route(); }
+      return;
+    }
+    if (d.routeKit) { S.active = d.routeKit; run(d.routeKit); save(); ui.kitOpen = {}; rerender(); return; }
     if (d.tipo) {
       S.negocio.tipo = d.tipo; save(); rerender();
       return;
@@ -597,7 +674,7 @@
     else if (a === "ob-finish") { S.onboarded = true; touch(); save(); location.hash = "#/mapa"; route(); }
     else if (a === "copy-all") {
       var v = vals();
-      copyText(C.kitWeb.map(function (k, i) { return "### " + (i + 1) + ". " + k.titulo + "\n\n" + k.prompt(v); }).join("\n\n\n"));
+      copyText(kit().map(function (k, i) { return "### " + (i + 1) + ". " + k.titulo + "\n\n" + k.prompt(v); }).join("\n\n\n"));
     } else if (a === "reset") {
       if (confirm("Se borrará toda tu partida (misiones, clientes e ingresos). ¿Seguro?")) { S = blank(); save(); ui.obStep = 0; location.hash = ""; route(); }
     } else if (a === "export") {
@@ -622,8 +699,8 @@
     var t = e.target;
     if (t.form && t.form.dataset.form === "kit" && t.tagName === "SELECT") { S.negocio[t.name] = t.value; save(); refreshKitList(); }
     if (t.dataset.check) {
-      var parts = t.dataset.check.split(":"), n = parts[0];
-      S.checks[n] = S.checks[n] || []; S.checks[n][+parts[1]] = t.checked; touch(); save();
+      var parts = t.dataset.check.split(":"), n = parts[0] + ":" + parts[1];
+      S.checks[n] = S.checks[n] || []; S.checks[n][+parts[2]] = t.checked; touch(); save();
     }
     if (t.dataset.status) {
       var p = S.prospects.filter(function (x) { return x.id === t.dataset.status; })[0];
@@ -644,7 +721,7 @@
       S.perfil.marca = o.marca; S.perfil.zona = o.zona; S.perfil.ciudad = o.ciudad; save(); toast("Guardado"); rerender();
     } else if (k === "prospect") {
       if (!o.business_name) return;
-      S.prospects.push({ id: uid(), track: TRACK, business_name: o.business_name, business_type: o.business_type, location: o.location, contact: o.contact, notes: o.notes, status: "todo", updated_at: new Date().toISOString() });
+      S.prospects.push({ id: uid(), track: S.active, business_name: o.business_name, business_type: o.business_type, location: o.location, contact: o.contact, notes: o.notes, status: "todo", updated_at: new Date().toISOString() });
       ui.addOpen = true; ui.filtro = "all"; touch(); save(); toast("Añadido: " + o.business_name); rerender();
       var first = document.querySelector('[data-form="prospect"] input'); if (first) first.focus();
     } else if (k === "income") {
@@ -666,7 +743,7 @@
         rerender(); celebrate(res, m);
       };
       if (m.proof_type === "image" && o.image && o.image.size) {
-        var rd = new FileReader(); rd.onload = function () { payload.image = rd.result; go(); }; rd.readAsDataURL(o.image);
+        shrink(o.image, function (url) { if (url) payload.image = url; go(); });
       } else go();
     }
   });

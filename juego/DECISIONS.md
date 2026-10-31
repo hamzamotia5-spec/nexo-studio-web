@@ -7,3 +7,8 @@
 5. **Misión 1 (`text`) con dos campos** (marca y zona), cada uno con un mínimo de 3 caracteres. Al entregarla se guardan en el perfil y personalizan el resto de prompts.
 6. **Clientes con cuota mensual** = prospects distintos con al menos un ingreso `monthly`. Los ingresos solo se registran desde un prospect en estado «Cliente».
 7. **Racha**: se cuenta cualquier acción del día (misión, cambio de estado, ingreso, marcar checklist). Si pasa un día entero sin actividad se muestra 0.
+8. **Rutas 2 a 6 (Fase 2).** Las misiones 1–3 son propias de cada ruta; las 4–8 (prospectar, contactar, reunión, cobrar, repetir) siguen el mismo esquema adaptado a cada servicio, generado con `ventas()` en `rutas.js`.
+9. **Clientes por ruta.** Cada prospect pertenece a la ruta activa al crearlo; Mis clientes muestra los de la ruta activa. Las misiones de contactos e ingresos y `can_sell_in_track` cuentan solo los de su ruta.
+10. **Nuevo `proof_config.min_clients`** (ruta Diseño, misión 8): clientes distintos con al menos un ingreso, porque el diseño no suele cobrarse con cuota mensual.
+11. **Prueba `image`** (ruta Diseño, misión 2): la imagen se reduce a 900 px en JPEG y se guarda en el dispositivo. En la app irá a Supabase Storage.
+12. **Partidas antiguas**: la partida de una sola ruta se convierte sola al formato de varias rutas sin perder progreso.

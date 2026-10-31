@@ -1,6 +1,17 @@
 # IAPRO — prototipo jugable (Fase 1, versión web)
 
-Juego para montar un negocio real con IA, misión a misión. Ruta incluida: **Webs para negocios locales** (8 misiones).
+Juego para montar un negocio real con IA, misión a misión. **6 rutas** de 8 misiones cada una, cada una con su kit de prompts:
+
+| Ruta | Kit | Prompts del kit |
+|---|---|---|
+| Webs para negocios locales | Kit Web Pro | 13 |
+| Contenido y gestión de redes | Kit Redes | 9 |
+| Automatizaciones y chatbots | Kit Automatización | 10 |
+| Diseño y branding con IA | Kit Diseño | 10 |
+| Tienda online | Kit Tienda Online | 10 |
+| Consultoría de IA para pymes | Kit Consultoría | 8 |
+
+Se pueden jugar varias rutas a la vez: XP, dinero, rango y racha son comunes; misiones, clientes, ingresos de la ruta e insignias van por ruta.
 
 Abrir: `juego/index.html` (o `/juego/` en GitHub Pages / Netlify). No necesita compilar nada.
 
@@ -15,7 +26,8 @@ Abrir: `juego/index.html` (o `/juego/` en GitHub Pages / Netlify). No necesita c
 - Vista previa del marketplace, que se desbloquea con un cliente en «Cliente» y un ingreso (`can_sell_in_track`).
 
 ## Archivos
-- `contenido.js` — rutas, misiones, insignias, tipos de negocio y kit de prompts. Es la base del futuro `supabase/seed.sql`.
+- `contenido.js` — rutas, ruta 1, insignias, tipos de negocio y Kit Web Pro.
+- `rutas.js` — rutas 2 a 6: misiones, insignias y kits. Junto con `contenido.js` es la base del futuro `supabase/seed.sql`.
 - `juego.js` — reglas (`submit()` replica la RPC `submit_mission`) e interfaz.
 - `juego.css` — estilos (oscuro, color por ruta).
 
