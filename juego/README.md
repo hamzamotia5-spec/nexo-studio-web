@@ -1,6 +1,6 @@
 # IAPRO — prototipo jugable (Fase 1, versión web)
 
-Juego para montar un negocio real con IA, misión a misión. **6 rutas** de 8 misiones cada una, cada una con su kit de prompts:
+Juego para montar un negocio real con IA, misión a misión. **7 rutas** de 8 misiones cada una, cada una con su kit de prompts:
 
 | Ruta | Kit | Prompts del kit |
 |---|---|---|
@@ -10,6 +10,7 @@ Juego para montar un negocio real con IA, misión a misión. **6 rutas** de 8 mi
 | Diseño y branding con IA | Kit Diseño | 10 |
 | Tienda online | Kit Tienda Online | 10 |
 | Consultoría de IA para pymes | Kit Consultoría | 8 |
+| Dropshipping con IA | Kit Dropshipping | 12 |
 
 Se pueden jugar varias rutas a la vez: XP, dinero, rango y racha son comunes; misiones, clientes, ingresos de la ruta e insignias van por ruta.
 
@@ -27,6 +28,7 @@ Abrir: `juego/index.html` (o `/juego/` en GitHub Pages / Netlify). No necesita c
 
 ## Archivos
 - `contenido.js` — rutas, ruta 1, insignias, tipos de negocio y Kit Web Pro.
+- `dropshipping.js` — ruta 7: vende productos, no servicios. Sin mini-CRM: la pestaña Clientes pasa a ser **Ventas** (beneficio y nº de pedidos) y el kit se rellena con los datos del producto.
 - `rutas.js` — rutas 2 a 6: misiones, insignias y kits. Junto con `contenido.js` es la base del futuro `supabase/seed.sql`.
 - `juego.js` — reglas (`submit()` replica la RPC `submit_mission`) e interfaz.
 - `juego.css` — estilos (oscuro, color por ruta).

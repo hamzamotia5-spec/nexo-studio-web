@@ -12,3 +12,4 @@
 10. **Nuevo `proof_config.min_clients`** (ruta Diseño, misión 8): clientes distintos con al menos un ingreso, porque el diseño no suele cobrarse con cuota mensual.
 11. **Prueba `image`** (ruta Diseño, misión 2): la imagen se reduce a 900 px en JPEG y se guarda en el dispositivo. En la app irá a Supabase Storage.
 12. **Partidas antiguas**: la partida de una sola ruta se convierte sola al formato de varias rutas sin perder progreso.
+13. **Ruta Dropshipping con IA.** No vende servicios a negocios, así que no usa prospects: las ventas se registran por ruta (`income_entries` con `track` y `units`) y lo que se apunta es el **beneficio**, no la facturación, porque el contador es «dinero real ganado». Nuevo `proof_config.min_sales` (suma de pedidos). No desbloquea el marketplace de servicios. Las misiones avisan de que hacen falta presupuesto para anuncios y obligaciones legales (IVA, IOSS, desistimiento, garantía, marcado CE).

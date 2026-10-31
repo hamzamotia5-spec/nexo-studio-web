@@ -22,6 +22,7 @@
       perfil: { marca: "", ciudad: "", zona: "", xp: 0, streak: 0, last: null },
       active: FIRST, runs: {},
       entregas: {}, checks: {}, prospects: [], ingresos: [], badges: [],
+      producto: { nombre: "", nicho: "", problema: "", publico: "", coste: "", precio: "", tienda: "", plataforma: "Shopify", pais: "España" },
       negocio: { tipo: "", tipoOtro: "", nombre: "", zona: "", direccion: "", telefono: "", servicios: "", horario: "", estilo: "moderno", tono: "cercano" }
     };
   }
@@ -32,6 +33,7 @@
     if (!s || s.v !== 1) return b;
     Object.keys(b).forEach(function (k) { if (s[k] === undefined) s[k] = b[k]; });
     Object.keys(b.negocio).forEach(function (k) { if (s.negocio[k] === undefined) s.negocio[k] = b.negocio[k]; });
+    Object.keys(b.producto).forEach(function (k) { if (s.producto[k] === undefined) s.producto[k] = b.producto[k]; });
     if (s.run) { // partida de la versión con una sola ruta
       var slug = s.run.track || FIRST, fix = function (o) { var r = {}; Object.keys(o || {}).forEach(function (k) { r[/:/.test(k) ? k : slug + ":" + k] = o[k]; }); return r; };
       s.runs[slug] = { current: s.run.current, done: s.run.done };
@@ -75,10 +77,11 @@
   function prospectsOf(slug) { slug = slug || S.active; return S.prospects.filter(function (p) { return (p.track || FIRST) === slug; }); }
   function incomesOf(slug) {
     var ids = {}; prospectsOf(slug).forEach(function (p) { ids[p.id] = 1; });
-    return S.ingresos.filter(function (i) { return ids[i.prospectId]; });
+    return S.ingresos.filter(function (i) { return i.prospectId ? ids[i.prospectId] : i.track === (slug || S.active); });
   }
   function trackMoney(slug) { return incomesOf(slug).reduce(function (a, i) { return a + Number(i.amount); }, 0); }
   function canSell(slug) { // ≈ can_sell_in_track(user_id, track_id)
+    if (track(slug).crm === false) return { won: false, income: false, ok: false, na: true };
     var won = prospectsOf(slug).some(function (p) { return p.status === "won"; }), inc = incomesOf(slug).length > 0;
     return { won: won, income: inc, ok: won && inc };
   }
@@ -86,6 +89,7 @@
   function countAtLeast(status, slug) {
     return prospectsOf(slug).filter(function (p) { return p.status !== "lost" && ORDER[p.status] >= ORDER[status]; }).length;
   }
+  function salesCount(slug) { return incomesOf(slug).reduce(function (a, i) { return a + (Number(i.units) || 1); }, 0); }
   function clientsWithIncome(slug, kind) {
     var set = {};
     incomesOf(slug).forEach(function (i) { if (!kind || i.kind === kind) set[i.prospectId] = 1; });
@@ -124,13 +128,22 @@
       telefono: n.telefono.trim() || P("teléfono"),
       telefonoWa: tel || "34XXXXXXXXX",
       horario: n.horario.trim() || P("horario"),
-      schema: d.schema
+      schema: d.schema,
+      producto: S.producto.nombre.trim() || P("tu producto"),
+      nicho: S.producto.nicho.trim() || P("tu nicho"),
+      problema: S.producto.problema.trim() || P("qué problema resuelve o qué deseo cubre"),
+      publico: S.producto.publico.trim() || P("a quién va dirigido"),
+      coste: S.producto.coste.trim() ? S.producto.coste.trim() + " €" : P("coste del producto + envío"),
+      precio: S.producto.precio.trim() ? S.producto.precio.trim() + " €" : P("precio de venta"),
+      tienda: S.producto.tienda.trim() || P("nombre de tu tienda"),
+      plataforma: S.producto.plataforma.trim() || "Shopify",
+      pais: S.producto.pais.trim() || "España"
     };
   }
   function fillMission(tpl, useNegocio) {
     var v = vals(), z = S.perfil.zona.trim() || S.perfil.ciudad.trim();
     if (useNegocio && S.negocio.zona.trim()) z = S.negocio.zona.trim();
-    var map = { ciudad: v.ciudad, marca: v.marca, zona: z || "[tu zona]", tipo: S.negocio.tipo ? v.tipoCorto : "[tipo de negocio]" };
+    var map = { nicho: v.nicho, tienda: v.tienda, producto: v.producto, ciudad: v.ciudad, marca: v.marca, zona: z || "[tu zona]", tipo: S.negocio.tipo ? v.tipoCorto : "[tipo de negocio]" };
     return tpl.replace(/\{(\w+)\}/g, function (m, k) { return map[k] != null ? map[k] : m; });
   }
 
@@ -159,7 +172,12 @@
       if (have < need) return { ok: false, msg: "Tienes " + have + " de " + need + " negocios en «" + STATUS_LABEL[c.status] + "» o más. Te faltan " + (need - have) + "." };
     } else if (t === "income") {
       var sum = trackMoney(m.track);
-      if (sum < c.min_amount) return { ok: false, msg: "Aún no has registrado ningún ingreso en esta ruta. Marca un negocio como «Cliente» en Mis clientes y registra lo que te ha pagado." };
+      var crm = track(m.track).crm !== false;
+      if (c.min_sales) {
+        var sc = salesCount(m.track);
+        if (sc < c.min_sales) return { ok: false, msg: sc ? "Llevas " + sc + " de " + c.min_sales + " ventas registradas. Te faltan " + (c.min_sales - sc) + "." : "Aún no has registrado ninguna venta. Apúntala en la pestaña Ventas." };
+      }
+      if (sum < c.min_amount) return { ok: false, msg: crm ? "Aún no has registrado ningún ingreso en esta ruta. Marca un negocio como «Cliente» en Mis clientes y registra lo que te ha pagado." : (sum > 0 ? "Llevas " + eur(sum) + " de beneficio. Te faltan " + eur(c.min_amount - sum) + " para llegar a " + eur(c.min_amount) + "." : "Registra el beneficio de tus ventas en la pestaña Ventas.") };
       if (c.min_clients) {
         var cc = clientsWithIncome(m.track);
         if (cc < c.min_clients) return { ok: false, msg: "Tienes " + cc + " de " + c.min_clients + " clientes que te han pagado. Te faltan " + (c.min_clients - cc) + "." };
@@ -196,7 +214,7 @@
       '</header>';
   }
   function tabbar(active) {
-    var items = [["mapa", "🗺️", "Mapa"], ["kit", "✨", "Kit"], ["clientes", "👥", "Clientes"], ["perfil", "👤", "Perfil"]];
+    var items = [["mapa", "🗺️", "Mapa"], ["kit", "✨", "Kit"], (track().crm === false ? ["clientes", "📦", "Ventas"] : ["clientes", "👥", "Clientes"]), ["perfil", "👤", "Perfil"]];
     return '<nav class="tabbar" aria-label="Secciones">' + items.map(function (it) {
       return '<a href="#/' + it[0] + '" class="' + (active === it[0] ? "is-on" : "") + '"' + (active === it[0] ? ' aria-current="page"' : "") + '><span aria-hidden="true">' + it[1] + '</span>' + it[2] + '</a>';
     }).join("") + '</nav>';
@@ -266,8 +284,8 @@
       (finished ? '<div class="card win">🏆 ¡Ruta completada! Ya tienes un negocio real. <a href="#/rutas">Empieza otra ruta</a> para sumar servicios.</div>' : "") +
       '<div class="map" style="height:' + H + 'px"><svg viewBox="0 0 100 ' + H + '" preserveAspectRatio="none" aria-hidden="true">' +
       '<path d="' + path + '" class="map__path"/><path d="' + donePath + '" class="map__done"/></svg>' + nodes + '</div>' +
-      '<a class="card market' + (cs.ok ? " is-open" : "") + '" href="#/marketplace"><span aria-hidden="true">' + (cs.ok ? "🏪" : "🔒") + '</span><span><b>Marketplace</b><small>' +
-      (cs.ok ? "Desbloqueado: publica tu servicio y que te contraten." : "Se desbloquea al cerrar tu primer cliente.") + '</small></span></a>');
+      (cs.na ? "" : '<a class="card market' + (cs.ok ? " is-open" : "") + '" href="#/marketplace"><span aria-hidden="true">' + (cs.ok ? "🏪" : "🔒") + '</span><span><b>Marketplace</b><small>' +
+      (cs.ok ? "Desbloqueado: publica tu servicio y que te contraten." : "Se desbloquea al cerrar tu primer cliente.") + '</small></span></a>'));
   }
 
   /* ---------- Misión */
@@ -323,7 +341,7 @@
       }).join("");
     } else if (t === "link") {
       f = '<label>' + esc(c.label || "Enlace") + '<input name="url" type="url" inputmode="url" placeholder="' + esc(c.ph || "https://") + '"></label>' +
-        (m.track === FIRST ? '<p class="muted small">¿Aún no la has publicado? Arrastra la carpeta a <a href="https://app.netlify.com/drop" target="_blank" rel="noopener">Netlify Drop</a> y copia el enlace.</p>' : '<p class="muted small">Comparte el enlace en modo «cualquiera con el enlace puede verlo».</p>');
+        (track(m.track).crm === false ? "" : m.track === FIRST ? '<p class="muted small">¿Aún no la has publicado? Arrastra la carpeta a <a href="https://app.netlify.com/drop" target="_blank" rel="noopener">Netlify Drop</a> y copia el enlace.</p>' : '<p class="muted small">Comparte el enlace en modo «cualquiera con el enlace puede verlo».</p>');
     } else if (t === "checklist") {
       var marks = S.checks[ek(m)] || [];
       f = '<div class="checklist">' + m.steps.map(function (s, i) {
@@ -335,10 +353,13 @@
         '<a class="btn btn--line btn--block" href="#/clientes">👥 Ir a Mis clientes</a>';
     } else if (t === "income") {
       var sum = trackMoney(m.track), mc = clientsWithIncome(m.track, "monthly"), cc = clientsWithIncome(m.track);
-      f = '<div class="progress"><b>' + eur(sum) + '</b> registrados en esta ruta' +
+      var sc = salesCount(m.track), isDrop = track(m.track).crm === false;
+      f = '<div class="progress"><b>' + eur(sum) + '</b> ' + (isDrop ? "de beneficio" : "registrados") + ' en esta ruta' +
+        (c.min_sales ? '<br><b>' + Math.min(sc, c.min_sales) + ' / ' + c.min_sales + '</b> ventas<i class="bar bar--big"><i style="width:' + Math.min(100, Math.round(sc / c.min_sales * 100)) + '%"></i></i>' : "") +
+        (isDrop && !c.min_sales && c.min_amount > 1 ? '<i class="bar bar--big"><i style="width:' + Math.min(100, Math.round(sum / c.min_amount * 100)) + '%"></i></i>' : "") +
         (c.min_clients ? '<br><b>' + cc + ' / ' + c.min_clients + '</b> clientes que te han pagado<i class="bar bar--big"><i style="width:' + Math.min(100, Math.round(cc / c.min_clients * 100)) + '%"></i></i>' : "") +
         (c.min_monthly_clients ? '<br><b>' + mc + ' / ' + c.min_monthly_clients + '</b> clientes con cuota mensual<i class="bar bar--big"><i style="width:' + Math.min(100, Math.round(mc / c.min_monthly_clients * 100)) + '%"></i></i>' : "") + '</div>' +
-        '<a class="btn btn--line btn--block" href="#/clientes">👥 Registrar un ingreso en Mis clientes</a>';
+        '<a class="btn btn--line btn--block" href="#/clientes">' + (isDrop ? "📦 Registrar ventas" : "👥 Registrar un ingreso en Mis clientes") + '</a>';
     } else if (t === "image") {
       f = '<label>' + esc(c.label || "Imagen") + '<input name="image" type="file" accept="image/*"></label><p class="muted small">Se guarda reducida en este dispositivo.</p>';
     }
@@ -356,7 +377,19 @@
   }
 
   /* ---------- Kit Web Pro */
+  function productForm() {
+    var p = S.producto;
+    function inp(name, label, ph, mode) { return '<label>' + label + '<input name="' + name + '"' + (mode ? ' inputmode="' + mode + '"' : "") + ' placeholder="' + esc(ph) + '" value="' + esc(p[name]) + '"></label>'; }
+    return '<form class="form kitform" data-form="kitp" autocomplete="off"><fieldset><legend>1. Tu producto <small>(lo que no sepas queda como [hueco] para rellenar)</small></legend>' +
+      inp("nombre", "Producto", "Ej.: fuente de agua silenciosa para gatos") +
+      '<div class="two">' + inp("nicho", "Nicho", "Ej.: mascotas") + inp("tienda", "Nombre de tu tienda", "Ej.: Patitas Felices") + '</div>' +
+      inp("problema", "Qué problema resuelve", "Ej.: los gatos beben poco y enferman del riñón") +
+      inp("publico", "A quién va dirigido", "Ej.: dueños de gatos de 25 a 45 años") +
+      '<div class="two">' + inp("coste", "Coste + envío (€)", "Ej.: 11", "decimal") + inp("precio", "Precio de venta (€)", "Ej.: 34,95", "decimal") + '</div>' +
+      '<div class="two">' + inp("plataforma", "Plataforma", "Shopify") + inp("pais", "País donde vendes", "España") + '</div></fieldset></form>';
+  }
   function kitForm() {
+    if (track().kitForm === "producto") return productForm();
     var n = S.negocio;
     var tipos = C.negocios.map(function (d) {
       return '<button type="button" class="tipo' + (n.tipo === d.id ? " is-on" : "") + '" data-tipo="' + d.id + '" aria-pressed="' + (n.tipo === d.id) + '"><span aria-hidden="true">' + d.emoji + '</span>' + esc(d.label) + '</button>';
@@ -426,7 +459,23 @@
       " y me ha gustado mucho; " + t.msg + ": " + link +
       "\n\n¿Te lo enseño en 10 minutos sin compromiso?";
   }
+  function viewSales() {
+    var t = track(), incs = incomesOf(), sc = salesCount();
+    shell("clientes", '<section class="m-head"><small>' + t.icon + ' ' + esc(t.title) + '</small><h1>Mis ventas</h1><p class="goal">Apunta tus pedidos con su <b>beneficio real</b>: precio cobrado − producto − envío − comisiones − anuncios.</p>' +
+      '<p class="small muted"><a href="#/rutas">Cambiar de ruta</a></p></section>' +
+      '<div class="stats"><div><small>Beneficio</small><b class="gold">' + eur(trackMoney()) + '</b></div><div><small>Pedidos</small><b>' + sc + '</b></div></div>' +
+      '<form class="form card" data-form="income"><h2 class="sub">＋ Registrar ventas</h2>' +
+      '<div class="two"><label>Beneficio total (€)<input name="amount" type="number" inputmode="decimal" min="0.01" step="0.01" required placeholder="Ej.: 14,50"></label>' +
+      '<label>Nº de pedidos<input name="units" type="number" inputmode="numeric" min="1" step="1" value="1" required></label></div>' +
+      '<label>Concepto<input name="description" placeholder="Ej.: ' + esc(S.producto.nombre || "Fuente para gatos") + ', ventas del lunes"></label>' +
+      '<p class="err" role="alert"></p><button class="btn btn--gold btn--block">Añadir ventas</button></form>' +
+      (incs.length ? '<section class="lib"><h2>Historial</h2><ul class="incomes">' + incs.slice().reverse().map(function (i) {
+        var u = Number(i.units) || 1;
+        return '<li><span><b>' + eur(i.amount) + '</b> · ' + u + (u === 1 ? " pedido" : " pedidos") + '<small>' + esc(i.description || "") + '</small></span><time>' + esc(i.created_at.slice(0, 10)) + '</time></li>';
+      }).join("") + '</ul></section>' : '<p class="muted center">Aún no hay ventas. ¡La primera llega!</p>'));
+  }
   function viewClients() {
+    if (track().crm === false) { viewSales(); return; }
     var counts = {}, mine = prospectsOf(), t = track(); STATUS.forEach(function (s) { counts[s] = 0; });
     mine.forEach(function (p) { counts[p.status]++; });
     var list = mine.filter(function (p) { return ui.filtro === "all" || p.status === ui.filtro; })
@@ -690,8 +739,8 @@
 
   document.addEventListener("input", function (e) {
     var f = e.target.form;
-    if (f && f.dataset.form === "kit" && e.target.name) {
-      S.negocio[e.target.name] = e.target.value; save();
+    if (f && (f.dataset.form === "kit" || f.dataset.form === "kitp") && e.target.name) {
+      (f.dataset.form === "kitp" ? S.producto : S.negocio)[e.target.name] = e.target.value; save();
       clearTimeout(ui.kitT); ui.kitT = setTimeout(refreshKitList, 180);
     }
   });
@@ -728,7 +777,9 @@
       var amount = Math.round(parseFloat(String(o.amount).replace(",", ".")) * 100) / 100;
       if (!(amount > 0)) { f.querySelector(".err").textContent = "El importe tiene que ser mayor que 0."; return; }
       var prev = money();
-      S.ingresos.push({ id: uid(), prospectId: f.dataset.pid, amount: amount, kind: o.kind === "monthly" ? "monthly" : "one_time", description: o.description, created_at: new Date().toISOString() });
+      var inc = { id: uid(), amount: amount, kind: o.kind === "monthly" ? "monthly" : "one_time", description: o.description, created_at: new Date().toISOString() };
+      if (f.dataset.pid) inc.prospectId = f.dataset.pid; else { inc.track = S.active; inc.units = Math.max(1, parseInt(o.units, 10) || 1); }
+      S.ingresos.push(inc);
       touch(); save(); closeModal(); rerender();
       document.getElementById("money").textContent = eur(prev);
       coins(prev);
@@ -739,7 +790,13 @@
       var go = function () {
         var res = submit(m, payload);
         if (!res.ok) { var er = document.getElementById("err"); er.textContent = res.msg; er.classList.remove("shake"); void er.offsetWidth; er.classList.add("shake"); return; }
-        if (m.proof_type === "text") { if (payload.marca) S.perfil.marca = payload.marca; if (payload.zona) S.perfil.zona = payload.zona; save(); }
+        if (m.proof_type === "text") {
+          if (payload.marca) S.perfil.marca = payload.marca; if (payload.zona) S.perfil.zona = payload.zona;
+          if (payload.nicho && m.track === "dropshipping") S.producto.nicho = payload.nicho;
+          if (payload.tienda) S.producto.tienda = payload.tienda;
+          if (payload.producto1 && !S.producto.nombre) S.producto.nombre = payload.producto1;
+          save();
+        }
         rerender(); celebrate(res, m);
       };
       if (m.proof_type === "image" && o.image && o.image.size) {
