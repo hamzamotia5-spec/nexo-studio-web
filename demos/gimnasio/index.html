@@ -1,0 +1,802 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Forja Training Club · Demo de gimnasio · Nexo Studio</title>
+  <meta name="description" content="Web de muestra para un gimnasio con entrenamiento personal, diseñada por Nexo Studio. Tarifas, horario de clases, test de plan y clase de prueba por WhatsApp.">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#0b0b0c">
+  <link rel="icon" href="../../assets/img/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root { --bg: #0b0b0c; --bg-2: #121214; --card: #17171a; --card-2: #1e1e22; --line: #2a2a2f; --text: #f3f3f0; --muted: #a3a3aa; --volt: #d4ff3a; --volt-2: #b8e61f; --ink: #0b0b0c; }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 110px; }
+    body { margin: 0; font-family: Inter, system-ui, sans-serif; color: var(--text); background: var(--bg); line-height: 1.6; font-size: 16px; -webkit-font-smoothing: antialiased; overflow-x: clip; }
+    a { color: inherit; }
+    img { display: block; max-width: 100%; }
+    h1, h2, h3, .display { font-family: Archivo, Impact, sans-serif; font-stretch: 72%; font-weight: 850; text-transform: uppercase; line-height: .92; letter-spacing: -.005em; margin: 0; }
+    p { margin: 0; }
+    .wrap { max-width: 1180px; margin: 0 auto; padding: 0 20px; }
+    .volt { color: var(--volt); }
+
+    .demo-bar { position: fixed; z-index: 100; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; padding: 8px 16px; background: #0b1230; color: #dfe5f7; font-size: 13px; text-align: center; }
+    .demo-bar b { color: #fff; }
+    .demo-bar > span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+    @media (max-width: 560px) { .demo-bar { flex-wrap: nowrap; font-size: 12px; gap: 10px; padding: 8px 12px; } }
+    .demo-bar a { color: #fff; background: linear-gradient(120deg, #19c8ff, #1f5bff); padding: 4px 12px; border-radius: 99px; text-decoration: none; font-weight: 600; white-space: nowrap; }
+
+    /* Navegación */
+    .nav { position: fixed; z-index: 50; top: 37px; left: 0; right: 0; transition: background .3s, border-color .3s; border-bottom: 1px solid transparent; }
+    .nav.solid { background: rgba(11, 11, 12, .86); backdrop-filter: blur(14px); border-bottom-color: var(--line); }
+    .nav__in { display: flex; align-items: center; justify-content: space-between; height: 68px; gap: 20px; }
+    .brand { text-decoration: none; display: flex; align-items: center; gap: 10px; }
+    .brand__mark { width: 34px; height: 34px; border-radius: 9px; background: var(--volt); color: var(--ink); display: grid; place-items: center; font-family: Archivo, sans-serif; font-stretch: 72%; font-weight: 900; font-size: 22px; }
+    .brand__txt { font-family: Archivo, sans-serif; font-stretch: 72%; font-weight: 900; font-size: 24px; letter-spacing: .02em; text-transform: uppercase; line-height: 1; }
+    .brand__txt small { display: block; font-family: Inter, sans-serif; font-stretch: 100%; font-size: 9.5px; font-weight: 600; letter-spacing: .3em; color: var(--muted); margin-top: 3px; }
+    .nav__links { display: flex; gap: 26px; }
+    .nav__links a { text-decoration: none; color: #cfcfd4; font-size: 15px; font-weight: 500; transition: color .2s; }
+    .nav__links a:hover { color: var(--volt); }
+
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 15px 26px; border-radius: 12px; font: inherit; font-weight: 600; text-decoration: none; cursor: pointer; border: 1.5px solid transparent; transition: transform .2s, background .2s, color .2s, border-color .2s; }
+    .btn:hover { transform: translateY(-2px); }
+    .btn--volt { background: var(--volt); color: var(--ink); }
+    .btn--volt:hover { background: #e2ff70; }
+    .btn--line { border-color: rgba(255, 255, 255, .35); color: #fff; background: rgba(255, 255, 255, .04); }
+    .btn--line:hover { border-color: #fff; }
+    .btn--sm { padding: 10px 18px; font-size: 14px; border-radius: 10px; }
+    .btn svg { width: 18px; height: 18px; }
+
+    /* Portada */
+    .hero { position: relative; min-height: 100svh; display: flex; align-items: flex-end; padding: 160px 0 70px; overflow: hidden; isolation: isolate; }
+    .hero__bg { position: absolute; inset: 0; z-index: -2; overflow: hidden; }
+    .hero__bg img { position: absolute; inset: -6% 0; width: 100%; height: 112%; object-fit: cover; object-position: 60% 50%; will-change: transform; animation: zoomIn 2.2s cubic-bezier(.2, .7, .2, 1) both; }
+    @keyframes zoomIn { from { opacity: 0; filter: brightness(.4); } }
+    .hero::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgba(11, 11, 12, .92) 0%, rgba(11, 11, 12, .65) 45%, rgba(11, 11, 12, .15) 100%), linear-gradient(0deg, var(--bg) 0%, transparent 35%); }
+    .eyebrow { display: inline-flex; gap: 10px; align-items: center; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .18em; color: var(--volt); }
+    .eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 2px; background: var(--volt); }
+    .hero h1 { font-size: clamp(64px, 11vw, 160px); margin: 20px 0 22px; }
+    .hero p.lead { font-size: clamp(17px, 1.6vw, 20px); color: #d6d6da; max-width: 540px; }
+    .hero__ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+    .hero__meta { display: flex; flex-wrap: wrap; gap: 14px 40px; margin-top: 48px; padding-top: 26px; border-top: 1px solid rgba(255, 255, 255, .14); font-size: 14px; color: var(--muted); max-width: 640px; }
+    .hero__meta b { display: block; font-family: Archivo, sans-serif; font-stretch: 72%; font-weight: 850; font-size: 38px; color: #fff; line-height: 1; margin-bottom: 4px; }
+    .hero__in > * { animation: up 1s cubic-bezier(.2, .7, .2, 1) both; }
+    .hero__in > :nth-child(2) { animation-delay: .12s; } .hero__in > :nth-child(3) { animation-delay: .24s; } .hero__in > :nth-child(4) { animation-delay: .36s; } .hero__in > :nth-child(5) { animation-delay: .48s; }
+    @keyframes up { from { opacity: 0; transform: translateY(30px); } }
+    .js [data-reveal] { opacity: 0; transform: translateY(34px); transition: opacity .9s cubic-bezier(.2, .7, .2, 1), transform .9s cubic-bezier(.2, .7, .2, 1); }
+    .js [data-reveal].in { opacity: 1; transform: none; }
+
+    /* Cinta */
+    .ticker-wrap { overflow: hidden; padding: 12px 0; margin-top: -2px; }
+    .ticker { background: var(--volt); color: var(--ink); overflow: hidden; padding: 14px 0; transform: rotate(-1.2deg) scale(1.03); }
+    .ticker__track { display: flex; gap: 0; width: max-content; animation: tick 28s linear infinite; }
+    .ticker span { font-family: Archivo, sans-serif; font-stretch: 72%; font-weight: 900; font-size: 26px; text-transform: uppercase; white-space: nowrap; padding: 0 22px; }
+    .ticker span::after { content: "✕"; margin-left: 44px; font-size: 16px; vertical-align: middle; }
+    @keyframes tick { to { transform: translateX(-50%); } }
+
+    .section { padding: clamp(80px, 11vw, 130px) 0; }
+    .section--alt { background: var(--bg-2); }
+    .head { display: flex; justify-content: space-between; align-items: flex-end; gap: 30px; flex-wrap: wrap; margin-bottom: 48px; }
+    .head h2, .h2 { font-size: clamp(46px, 6.5vw, 84px); margin-top: 14px; }
+    .head p { color: var(--muted); max-width: 430px; }
+
+    /* Dos formas */
+    .ways { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .way { position: relative; min-height: 520px; border-radius: 26px; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; padding: 32px; text-decoration: none; isolation: isolate; border: 1px solid var(--line); }
+    .way img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; transition: transform 1.2s cubic-bezier(.2, .7, .2, 1); }
+    .way::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(0deg, rgba(11, 11, 12, .96) 8%, rgba(11, 11, 12, .2) 70%); }
+    .way:hover img { transform: scale(1.05); }
+    .way__tag { align-self: flex-start; font-size: 12px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; padding: 6px 12px; border-radius: 99px; background: rgba(255, 255, 255, .12); backdrop-filter: blur(8px); margin-bottom: auto; }
+    .way h3 { font-size: clamp(40px, 4.6vw, 60px); margin-bottom: 12px; }
+    .way p { color: #cfcfd4; max-width: 420px; }
+    .way__foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 22px; padding-top: 18px; border-top: 1px solid rgba(255, 255, 255, .16); }
+    .way__foot b { font-family: Archivo, sans-serif; font-stretch: 72%; font-size: 30px; font-weight: 850; }
+    .way__foot small { color: var(--muted); font-size: 13px; }
+    .arrow { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: var(--volt); color: var(--ink); font-size: 22px; transition: transform .3s; flex: none; }
+    .way:hover .arrow { transform: rotate(-45deg); }
+
+    /* Entrenamiento personal */
+    .coach { display: grid; grid-template-columns: .85fr 1.15fr; gap: 60px; align-items: center; }
+    .coach__photo { position: relative; border-radius: 26px; overflow: hidden; aspect-ratio: 4 / 5; }
+    .coach__photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; }
+    .coach__card { position: absolute; left: 16px; right: 16px; bottom: 16px; padding: 16px 18px; border-radius: 16px; background: rgba(11, 11, 12, .78); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, .1); }
+    .coach__card b { font-family: Archivo, sans-serif; font-stretch: 72%; font-size: 26px; font-weight: 850; text-transform: uppercase; display: block; line-height: 1.05; }
+    .coach__card span { font-size: 14px; color: var(--muted); }
+    .coach__badge { position: absolute; top: 16px; right: 16px; background: var(--volt); color: var(--ink); font-weight: 700; font-size: 13px; padding: 8px 12px; border-radius: 10px; }
+    .coach p.big { font-size: 19px; color: #d6d6da; margin-top: 20px; }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 34px 0; }
+    .stat { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 18px; }
+    .stat b { font-family: Archivo, sans-serif; font-stretch: 72%; font-weight: 850; font-size: 46px; line-height: 1; color: var(--volt); display: block; }
+    .stat span { font-size: 13.5px; color: var(--muted); }
+    .method { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; counter-reset: m; }
+    .method li { counter-increment: m; background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 20px; font-size: 15px; color: var(--muted); transition: border-color .3s, transform .3s; }
+    .method li:hover { border-color: var(--volt); transform: translateY(-3px); }
+    .method li::before { content: "0" counter(m); display: block; font-family: Archivo, sans-serif; font-stretch: 72%; font-weight: 900; font-size: 18px; color: var(--volt); margin-bottom: 8px; }
+    .method b { display: block; color: var(--text); font-size: 16px; margin-bottom: 4px; }
+
+    .goals { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 60px; justify-content: center; }
+    .goal { padding: 12px 20px; border-radius: 99px; border: 1px solid var(--line); background: var(--card); font-weight: 500; font-size: 15px; }
+    .goal::before { content: "✓"; color: var(--volt); margin-right: 8px; font-weight: 700; }
+
+    /* Sala: la foto se abre al bajar */
+    .studio { position: relative; height: 86vh; min-height: 480px; }
+    .studio__frame { position: absolute; inset: 0; overflow: hidden; clip-path: inset(calc((1 - var(--g, 1)) * 10%) calc((1 - var(--g, 1)) * 18%) round calc(26px + (1 - var(--g, 1)) * 40px)); }
+    .studio__frame img { position: absolute; inset: -10% 0; width: 100%; height: 120%; object-fit: cover; }
+    .studio__frame::after { content: ""; position: absolute; inset: 0; background: linear-gradient(0deg, rgba(11, 11, 12, .85), transparent 60%); }
+    .studio__text { position: absolute; z-index: 2; left: 0; right: 0; bottom: 9%; text-align: center; padding: 0 20px; opacity: calc(var(--g, 1) * 1.6 - .6); }
+    .studio__text h2 { font-size: clamp(48px, 8vw, 110px); }
+    .studio__text p { color: #d6d6da; margin-top: 12px; font-size: 18px; }
+
+    .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .feat { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 26px; }
+    .feat__ico { width: 46px; height: 46px; border-radius: 12px; background: rgba(212, 255, 58, .1); color: var(--volt); display: grid; place-items: center; margin-bottom: 18px; }
+    .feat__ico svg { width: 24px; height: 24px; }
+    .feat h3 { font-size: 28px; margin-bottom: 8px; }
+    .feat p { color: var(--muted); font-size: 15px; }
+    .gallery { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 14px; margin-top: 14px; }
+    .shot { position: relative; margin: 0; border-radius: 20px; overflow: hidden; aspect-ratio: 4 / 5; }
+    .shot:first-child { aspect-ratio: auto; }
+    .shot img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s cubic-bezier(.2, .7, .2, 1); }
+    .shot:hover img { transform: scale(1.06); }
+    .shot figcaption { position: absolute; left: 12px; bottom: 12px; padding: 7px 14px; border-radius: 99px; background: rgba(11, 11, 12, .8); backdrop-filter: blur(8px); font-size: 13.5px; font-weight: 600; }
+
+    /* Horario */
+    .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 22px; }
+    .tab { font: inherit; font-weight: 600; font-size: 15px; padding: 11px 18px; border-radius: 12px; border: 1px solid var(--line); background: var(--card); color: var(--text); cursor: pointer; transition: all .2s; }
+    .tab:hover { border-color: #55555c; }
+    .tab[aria-selected="true"] { background: var(--volt); color: var(--ink); border-color: var(--volt); }
+    .tab small { display: block; font-size: 11px; font-weight: 500; opacity: .7; }
+    .classes { display: grid; gap: 10px; }
+    .cls { display: grid; grid-template-columns: 90px 1fr auto auto; gap: 20px; align-items: center; background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 16px 20px; animation: up .5s cubic-bezier(.2, .7, .2, 1) both; }
+    .cls__time { font-family: Archivo, sans-serif; font-stretch: 72%; font-weight: 850; font-size: 28px; }
+    .cls__name b { display: block; font-size: 17px; }
+    .cls__name span { color: var(--muted); font-size: 14px; }
+    .lvl { font-size: 12px; font-weight: 600; padding: 5px 10px; border-radius: 99px; border: 1px solid var(--line); color: var(--muted); white-space: nowrap; }
+    .spots { font-size: 13.5px; font-weight: 600; white-space: nowrap; }
+    .spots--low { color: #ffb23a; }
+    .spots--full { color: #ff6b5a; }
+    .spots--ok { color: var(--volt); }
+
+    /* Tarifas */
+    .switch { display: inline-flex; padding: 5px; border-radius: 14px; background: var(--card); border: 1px solid var(--line); margin-bottom: 30px; }
+    .switch button { font: inherit; font-weight: 600; font-size: 15px; padding: 11px 20px; border-radius: 10px; border: 0; background: transparent; color: var(--muted); cursor: pointer; transition: all .25s; }
+    .switch button[aria-pressed="true"] { background: var(--volt); color: var(--ink); }
+    .plans { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .plans[hidden] { display: none; }
+    .plan { background: var(--card); border: 1px solid var(--line); border-radius: 24px; padding: 30px; display: flex; flex-direction: column; animation: up .6s cubic-bezier(.2, .7, .2, 1) both; }
+    .plan:nth-child(2) { animation-delay: .08s; } .plan:nth-child(3) { animation-delay: .16s; }
+    .plan--feat { background: linear-gradient(160deg, #22261a, var(--card) 60%); border-color: var(--volt); position: relative; }
+    .plan--feat::before { content: attr(data-flag); position: absolute; top: -13px; left: 30px; background: var(--volt); color: var(--ink); font-size: 12px; font-weight: 700; padding: 5px 12px; border-radius: 99px; text-transform: uppercase; letter-spacing: .08em; }
+    .plan h3 { font-size: 30px; }
+    .plan .desc { color: var(--muted); font-size: 15px; margin-top: 6px; min-height: 48px; }
+    .price { margin: 22px 0; display: flex; align-items: baseline; gap: 6px; }
+    .price b { font-family: Archivo, sans-serif; font-stretch: 72%; font-weight: 900; font-size: 64px; line-height: 1; }
+    .price span { color: var(--muted); font-size: 15px; }
+    .plan ul { list-style: none; padding: 0; margin: 0 0 26px; display: grid; gap: 10px; font-size: 15px; }
+    .plan li { display: flex; gap: 10px; }
+    .plan li::before { content: "✓"; color: var(--volt); font-weight: 700; }
+    .plan .btn { margin-top: auto; width: 100%; }
+    .plan:not(.plan--feat) .btn { background: var(--card-2); color: var(--text); border-color: var(--line); }
+    .plan:not(.plan--feat) .btn:hover { border-color: var(--volt); }
+    .note { margin-top: 22px; color: var(--muted); font-size: 14.5px; text-align: center; }
+    .note b { color: var(--text); }
+
+    /* Test de plan */
+    .quiz { display: grid; grid-template-columns: .9fr 1.1fr; gap: 50px; align-items: center; }
+    .quiz__box { background: var(--card); border: 1px solid var(--line); border-radius: 26px; padding: 30px; min-height: 380px; position: relative; overflow: hidden; }
+    .quiz__bar { height: 4px; border-radius: 4px; background: var(--line); margin-bottom: 26px; overflow: hidden; }
+    .quiz__bar i { display: block; height: 100%; width: 0; background: var(--volt); transition: width .5s cubic-bezier(.2, .7, .2, 1); }
+    .quiz__q { font-size: clamp(30px, 3.4vw, 40px); margin-bottom: 22px; }
+    .opts { display: grid; gap: 10px; }
+    .opt { font: inherit; font-size: 16px; font-weight: 500; text-align: left; padding: 16px 18px; border-radius: 14px; border: 1px solid var(--line); background: var(--card-2); color: var(--text); cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: all .2s; }
+    .opt::after { content: "→"; color: var(--muted); transition: transform .2s, color .2s; }
+    .opt:hover { border-color: var(--volt); }
+    .opt:hover::after { color: var(--volt); transform: translateX(4px); }
+    .quiz__step { animation: up .45s cubic-bezier(.2, .7, .2, 1) both; }
+    .result__tag { font-size: 13px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--volt); }
+    .result h3 { font-size: clamp(38px, 4vw, 54px); margin: 10px 0 12px; }
+    .result p { color: #d0d0d5; }
+    .result .price { margin: 18px 0; }
+    .result__ctas { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+    .linkbtn { font: inherit; background: none; border: 0; color: var(--muted); text-decoration: underline; cursor: pointer; padding: 15px 6px; }
+
+    /* Opiniones */
+    .reviews { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .review { background: var(--card); border: 1px solid var(--line); border-radius: 22px; padding: 26px; display: flex; flex-direction: column; gap: 16px; }
+    .review__res { align-self: flex-start; background: rgba(212, 255, 58, .1); color: var(--volt); font-weight: 700; font-size: 14px; padding: 7px 12px; border-radius: 10px; }
+    .review q { font-size: 16.5px; color: #dcdce0; quotes: "“" "”"; }
+    .review footer { margin-top: auto; display: flex; align-items: center; gap: 12px; font-size: 14px; color: var(--muted); padding: 0; background: none; }
+    .avatar { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; color: var(--ink); flex: none; }
+    .review footer b { color: var(--text); display: block; }
+    .stars { color: #ffc93a; letter-spacing: 2px; font-size: 14px; }
+    .gscore { display: flex; align-items: center; gap: 14px; background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 14px 18px; }
+    .gscore b { font-family: Archivo, sans-serif; font-stretch: 72%; font-weight: 900; font-size: 40px; line-height: 1; }
+    .gscore span { font-size: 13px; color: var(--muted); }
+
+    /* Prueba gratis */
+    .booking { display: grid; grid-template-columns: .9fr 1.1fr; gap: 50px; align-items: start; }
+    .panel { background: var(--card); border: 1px solid var(--line); border-radius: 26px; padding: 30px; }
+    .step { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .14em; color: var(--muted); margin: 0 0 10px; }
+    .chips, .days, .slots { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .chip { font: inherit; font-size: 14px; font-weight: 500; padding: 10px 15px; border-radius: 12px; border: 1px solid var(--line); background: var(--card-2); color: var(--text); cursor: pointer; transition: all .2s; }
+    .chip:hover { border-color: #66666e; }
+    .chip[aria-pressed="true"] { background: var(--volt); border-color: var(--volt); color: var(--ink); }
+    .day { display: flex; flex-direction: column; align-items: center; min-width: 60px; padding: 10px 8px; line-height: 1.2; }
+    .day b { font-size: 20px; }
+    .day small { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; opacity: .75; }
+    .slot[disabled] { opacity: .3; text-decoration: line-through; cursor: not-allowed; }
+    .field { width: 100%; font: inherit; font-size: 16px; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--line); background: var(--card-2); color: var(--text); margin-bottom: 20px; }
+    .field:focus { outline: 2px solid var(--volt); outline-offset: 1px; }
+    .summary { padding: 16px 18px; border-radius: 14px; background: var(--bg); border: 1px dashed var(--line); font-size: 15px; color: var(--muted); }
+    .summary b { color: var(--text); }
+    .panel .btn { width: 100%; margin-top: 14px; }
+    .toast { margin-top: 12px; font-size: 14px; color: var(--volt); min-height: 1.4em; }
+    .why { list-style: none; padding: 0; margin: 30px 0 0; display: grid; gap: 14px; }
+    .why li { display: flex; gap: 12px; align-items: flex-start; color: #d0d0d5; }
+    .why li::before { content: ""; width: 20px; height: 20px; flex: none; margin-top: 2px; border-radius: 6px; background: var(--volt) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230b0b0c' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12l5 5 9-10'/%3E%3C/svg%3E") center / 14px no-repeat; }
+
+    /* Preguntas */
+    .faq { max-width: 820px; margin: 0 auto; display: grid; gap: 10px; }
+    .faq details { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 0 22px; transition: border-color .2s; }
+    .faq details[open] { border-color: #45454c; }
+    .faq summary { cursor: pointer; list-style: none; padding: 20px 0; font-weight: 600; font-size: 17px; display: flex; justify-content: space-between; gap: 16px; }
+    .faq summary::-webkit-details-marker { display: none; }
+    .faq summary::after { content: "+"; color: var(--volt); font-size: 24px; line-height: 1; transition: transform .25s; }
+    .faq details[open] summary::after { transform: rotate(45deg); }
+    .faq details p { color: var(--muted); padding: 0 0 20px; }
+
+    /* Visítanos */
+    .visit { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .visit .feat b { display: block; font-size: 17px; margin-bottom: 6px; }
+    .hours { width: 100%; border-collapse: collapse; font-size: 15px; }
+    .hours td { padding: 6px 0; border-bottom: 1px dashed var(--line); color: var(--muted); }
+    .hours td:last-child { text-align: right; color: var(--text); font-weight: 600; }
+    .hours tr:last-child td { border-bottom: 0; }
+    .open-now { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; margin-bottom: 14px; }
+    .open-now::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; box-shadow: 0 0 0 4px rgba(212, 255, 58, .15); }
+
+    .cta-final { text-align: center; }
+    .cta-final h2 { font-size: clamp(54px, 9vw, 130px); }
+    .cta-final p { color: var(--muted); font-size: 18px; margin: 18px auto 30px; max-width: 520px; }
+
+    .fab { position: fixed; z-index: 40; right: 18px; bottom: 18px; width: 58px; height: 58px; border-radius: 50%; background: #25d366; color: #fff; display: grid; place-items: center; box-shadow: 0 14px 30px -10px rgba(0, 0, 0, .6); transition: transform .2s; }
+    .fab:hover { transform: scale(1.07); }
+    .fab svg { width: 30px; height: 30px; }
+
+    .site-foot { border-top: 1px solid var(--line); color: var(--muted); padding: 30px 0 40px; font-size: 14px; }
+    .site-foot .wrap { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+    .site-foot a { color: #fff; }
+
+    @media (max-width: 960px) {
+      .nav__links { display: none; }
+      .ways, .coach, .quiz, .booking { grid-template-columns: 1fr; }
+      .coach { gap: 40px; }
+      .coach__photo { max-width: 480px; }
+      .features, .plans, .reviews, .visit { grid-template-columns: 1fr 1fr; }
+      .gallery { grid-template-columns: 1fr 1fr; }
+      .gallery .shot:first-child { grid-column: 1 / -1; aspect-ratio: 16 / 10; }
+    }
+    @media (max-width: 640px) {
+      .hero { padding-bottom: 50px; }
+      .hero::after { background: linear-gradient(0deg, rgba(11, 11, 12, .97) 10%, rgba(11, 11, 12, .55) 60%, rgba(11, 11, 12, .35) 100%); }
+      .hero__meta { gap: 14px 28px; }
+      .hero__meta b { font-size: 32px; }
+      .hero__ctas .btn { flex: 1 1 100%; }
+      .way { min-height: 440px; padding: 24px; }
+      .features, .plans, .reviews, .visit, .method { grid-template-columns: 1fr; }
+      .stats { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+      .stat { padding: 14px 12px; }
+      .stat b { font-size: 36px; }
+      .stat span { font-size: 12px; }
+      .gallery { grid-template-columns: 1fr 1fr; }
+      .cls { grid-template-columns: 70px 1fr; gap: 6px 14px; padding: 14px 16px; }
+      .cls__time { font-size: 24px; grid-row: span 2; }
+      .cls .lvl, .cls .spots { justify-self: start; }
+      .cls > :nth-child(3) { display: none; }
+      .switch { display: flex; }
+      .switch button { flex: 1; padding: 11px 10px; font-size: 14px; }
+      .studio { height: 70vh; }
+      .panel, .quiz__box { padding: 22px; }
+      .tabs { flex-wrap: nowrap; overflow-x: auto; margin: 0 -20px 22px; padding: 0 20px 4px; scrollbar-width: none; }
+      .tab { flex: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .ticker__track, .hero__bg img, .hero__in > * { animation: none; }
+      html { scroll-behavior: auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="demo-bar"><span><b>Web de muestra</b> diseñada por Nexo Studio</span><a href="https://wa.me/34711591734?text=Hola,%20he%20visto%20la%20demo%20de%20gimnasio%20y%20quiero%20una%20web%20as%C3%AD" target="_blank" rel="noopener">Quiero una así</a></div>
+
+  <header class="nav" id="nav">
+    <div class="wrap nav__in">
+      <a class="brand" href="#inicio" aria-label="Forja Training Club, inicio"><span class="brand__mark">F</span><span class="brand__txt">Forja<small>Training Club</small></span></a>
+      <nav class="nav__links"><a href="#personal">Entrenador personal</a><a href="#gimnasio">Gimnasio</a><a href="#horario">Clases</a><a href="#tarifas">Tarifas</a><a href="#visitanos">Contacto</a></nav>
+      <a class="btn btn--volt btn--sm" href="#prueba">Prueba gratis</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="inicio">
+      <div class="hero__bg"><img src="../img/gym-hero.webp" alt="Atleta preparando un peso muerto con barra olímpica" data-parallax="0.12" data-scale="1.05" fetchpriority="high"></div>
+      <div class="wrap">
+        <div class="hero__in">
+          <span class="eyebrow">Gimnasio y entrenamiento personal · Zaragoza</span>
+          <h1>Más fuerte<br>cada <span class="volt">semana.</span></h1>
+          <p class="lead">Sala de fuerza completa, clases en grupos pequeños y entrenamiento personal 1 a 1. Un plan hecho para ti, no una rutina copiada de internet.</p>
+          <div class="hero__ctas">
+            <a class="btn btn--volt" href="#prueba">Reservar mi entrenamiento de prueba</a>
+            <a class="btn btn--line" href="#plan">¿Qué plan me encaja?</a>
+          </div>
+          <div class="hero__meta">
+            <span><b>4,9 ★</b>128 reseñas en Google</span>
+            <span><b>400 m²</b>de sala sin esperas</span>
+            <span><b>6:30–23</b>abierto de lunes a viernes</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="ticker-wrap" aria-hidden="true"><div class="ticker">
+      <div class="ticker__track">
+        <span>Fuerza</span><span>Pérdida de grasa</span><span>Hipertrofia</span><span>Movilidad</span><span>Readaptación</span><span>Oposiciones</span><span>Salud +50</span>
+        <span>Fuerza</span><span>Pérdida de grasa</span><span>Hipertrofia</span><span>Movilidad</span><span>Readaptación</span><span>Oposiciones</span><span>Salud +50</span>
+      </div>
+    </div></div>
+
+    <section class="section" id="formas">
+      <div class="wrap">
+        <div class="head">
+          <div><span class="eyebrow" data-reveal>Dos formas de entrenar</span><h2 data-reveal>Tú eliges<br>cómo empezar.</h2></div>
+          <p data-reveal>Entrena por tu cuenta con todo el material, o con un entrenador que te diga exactamente qué hacer cada día. También puedes combinar las dos.</p>
+        </div>
+        <div class="ways">
+          <a class="way" href="#personal" data-reveal>
+            <img src="../img/gym-personal.webp" alt="Entrenador ayudando a un cliente en press de banca" loading="lazy">
+            <span class="way__tag">Lo más pedido</span>
+            <h3>Entrenamiento<br>personal</h3>
+            <p>Sesiones 1 a 1 o en pareja. Técnica, plan a medida y seguimiento por WhatsApp entre sesiones.</p>
+            <div class="way__foot"><div><small>Desde</small><br><b>30 € / sesión</b></div><span class="arrow" aria-hidden="true">→</span></div>
+          </a>
+          <a class="way" href="#gimnasio" data-reveal data-delay="120">
+            <img src="../img/gym-curl.webp" alt="Socio entrenando bíceps con barra en la sala" loading="lazy">
+            <span class="way__tag">Sin permanencia</span>
+            <h3>Cuota de<br>gimnasio</h3>
+            <p>Acceso libre a la sala de fuerza, cardio y clases dirigidas. Con valoración inicial incluida.</p>
+            <div class="way__foot"><div><small>Desde</small><br><b>29 € / mes</b></div><span class="arrow" aria-hidden="true">→</span></div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--alt" id="personal">
+      <div class="wrap">
+        <div class="coach">
+          <div class="coach__photo" data-reveal>
+            <img src="../img/gym-coach.webp" alt="Álex Romero, entrenador personal de Forja" loading="lazy">
+            <span class="coach__badge">Plazas este mes: 3</span>
+            <div class="coach__card"><b>Álex Romero</b><span>Fundador y entrenador personal · Grado en CAFYD · +10 años entrenando</span></div>
+          </div>
+          <div>
+            <span class="eyebrow" data-reveal>Entrenamiento personal</span>
+            <h2 class="h2" data-reveal>Un entrenador.<br><span class="volt">No una app.</span></h2>
+            <p class="big" data-reveal>Monté Forja porque estaba harto de ver a gente pagar un gimnasio y no saber qué hacer al entrar. Aquí cada persona tiene un plan, alguien que le corrige la técnica y que le escribe si un día no aparece.</p>
+            <div class="stats">
+              <div class="stat" data-reveal><b data-count="220" data-suffix="+">220+</b><span>personas entrenadas</span></div>
+              <div class="stat" data-reveal data-delay="100"><b data-count="87" data-suffix="%">87%</b><span>siguen a los 6 meses</span></div>
+              <div class="stat" data-reveal data-delay="200"><b data-count="10">10</b><span>años de experiencia</span></div>
+            </div>
+            <ol class="method">
+              <li data-reveal><b>Valoración inicial</b>Hablamos de tu objetivo, lesiones y horarios. Medimos fuerza, movilidad y composición.</li>
+              <li data-reveal data-delay="80"><b>Plan a tu medida</b>Entrenamiento para tus días reales y pautas de alimentación sin dietas imposibles.</li>
+              <li data-reveal data-delay="160"><b>Sesiones 1 a 1</b>Te corrijo cada repetición y ajustamos cargas para que progreses sin hacerte daño.</li>
+              <li data-reveal data-delay="240"><b>Seguimiento</b>Revisiones cada 4 semanas y WhatsApp directo conmigo para dudas entre sesiones.</li>
+            </ol>
+          </div>
+        </div>
+        <div class="goals" data-reveal>
+          <span class="goal">Perder grasa</span><span class="goal">Ganar músculo</span><span class="goal">Ganar fuerza</span><span class="goal">Volver tras una lesión</span><span class="goal">Pruebas físicas de oposición</span><span class="goal">Salud a partir de los 50</span><span class="goal">Preparto y posparto</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="studio" data-grow id="gimnasio">
+      <div class="studio__frame"><img src="../img/gym-sala.webp" alt="Sala del gimnasio con máquinas de cardio y zona de fuerza" loading="lazy" data-parallax="0.12" data-scale="1"></div>
+      <div class="studio__text"><h2>400 m² para<br><span class="volt">entrenar en serio.</span></h2><p>Sin colas para el rack. Sin música a todo volumen. Sin postureo.</p></div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <div class="head">
+          <div><span class="eyebrow" data-reveal>El gimnasio</span><h2 data-reveal>Todo lo que<br>necesitas. Nada más.</h2></div>
+          <p data-reveal>Material de calidad, bien mantenido y con un entrenador siempre en sala para resolver dudas.</p>
+        </div>
+        <div class="features">
+          <div class="feat" data-reveal>
+            <div class="feat__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 7v10M3 9v6M18 7v10M21 9v6M6 12h12"/></svg></div>
+            <h3>Zona de fuerza</h3><p>6 jaulas de sentadilla, 2 plataformas de halterofilia y barras olímpicas calibradas.</p>
+          </div>
+          <div class="feat" data-reveal data-delay="80">
+            <div class="feat__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="9" width="4" height="6" rx="1"/><rect x="17" y="9" width="4" height="6" rx="1"/><path d="M7 12h10"/></svg></div>
+            <h3>Peso libre</h3><p>Mancuernas de 2 a 50 kg, kettlebells, bancos regulables y poleas dobles.</p>
+          </div>
+          <div class="feat" data-reveal data-delay="160">
+            <div class="feat__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg></div>
+            <h3>Cardio</h3><p>Cintas, bicis, remos y SkiErg para calentar o hacer tu sesión de cardio.</p>
+          </div>
+          <div class="feat" data-reveal>
+            <div class="feat__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M15 14.5c3 0 6 1.8 6 5.5"/></svg></div>
+            <h3>Clases reducidas</h3><p>Máximo 10 personas por clase para que el entrenador pueda corregirte de verdad.</p>
+          </div>
+          <div class="feat" data-reveal data-delay="80">
+            <div class="feat__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M10 18h4"/></svg></div>
+            <h3>Acceso con el móvil</h3><p>Entras con un código en tu móvil y reservas tus clases desde la app del gimnasio.</p>
+          </div>
+          <div class="feat" data-reveal data-delay="160">
+            <div class="feat__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3c3 4 5 6.5 5 9.5a5 5 0 0 1-10 0C7 9.5 9 7 12 3z"/></svg></div>
+            <h3>Vestuarios</h3><p>Duchas con agua caliente de verdad, taquillas con candado y secadores.</p>
+          </div>
+        </div>
+        <div class="gallery">
+          <figure class="shot" data-reveal><img src="../img/gym-funcional.webp" alt="Entrenamiento con cuerdas de batalla" loading="lazy"><figcaption>Funcional</figcaption></figure>
+          <figure class="shot" data-reveal data-delay="100"><img src="../img/gym-fuerza.webp" alt="Socia preparando una sentadilla en la jaula" loading="lazy"><figcaption>Zona de fuerza</figcaption></figure>
+          <figure class="shot" data-reveal data-delay="200"><img src="../img/gym-mancuernas.webp" alt="Fila de mancuernas en el soporte" loading="lazy"><figcaption>Peso libre</figcaption></figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--alt" id="horario">
+      <div class="wrap">
+        <div class="head">
+          <div><span class="eyebrow" data-reveal>Clases dirigidas</span><h2 data-reveal>Horario<br>de la semana.</h2></div>
+          <p data-reveal>Incluidas en la cuota Club. Grupos de 10 como máximo: reserva tu plaza desde la app.</p>
+        </div>
+        <div class="tabs" role="tablist" id="tabs"></div>
+        <div class="classes" id="classes" role="tabpanel" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <section class="section" id="tarifas">
+      <div class="wrap">
+        <div class="head">
+          <div><span class="eyebrow" data-reveal>Tarifas</span><h2 data-reveal>Precios claros.<br>Sin letra pequeña.</h2></div>
+          <p data-reveal>Sin matrícula este mes y sin permanencia. Si te vas, te vas: lo avisas antes del día 25 y listo.</p>
+        </div>
+        <div class="switch" role="group" aria-label="Tipo de tarifa">
+          <button aria-pressed="true" data-plans="pt">Entrenamiento personal</button>
+          <button aria-pressed="false" data-plans="gym">Cuota de gimnasio</button>
+        </div>
+
+        <div class="plans" id="plans-pt">
+          <div class="plan">
+            <h3>Sesión suelta</h3>
+            <p class="desc">Para probar, corregir técnica o resolver dudas de tu rutina.</p>
+            <div class="price"><b>35 €</b><span>/ sesión</span></div>
+            <ul><li>1 hora 1 a 1 con Álex</li><li>Revisión de técnica</li><li>Acceso a sala ese día</li></ul>
+            <a class="btn" href="#prueba" data-pick="Sesión con entrenador">Reservar sesión</a>
+          </div>
+          <div class="plan plan--feat" data-flag="El más elegido">
+            <h3>Bono 8 sesiones</h3>
+            <p class="desc">Dos sesiones por semana durante un mes. Lo justo para notar el cambio.</p>
+            <div class="price"><b>240 €</b><span>/ mes · 30 € sesión</span></div>
+            <ul><li>8 sesiones 1 a 1</li><li>Plan de entrenamiento escrito</li><li>Pautas de alimentación</li><li>Cuota de gimnasio incluida</li><li>WhatsApp directo con Álex</li></ul>
+            <a class="btn btn--volt" href="#prueba" data-pick="Sesión con entrenador">Empezar con prueba gratis</a>
+          </div>
+          <div class="plan">
+            <h3>Reto 12 semanas</h3>
+            <p class="desc">Programa completo para un objetivo concreto con fecha.</p>
+            <div class="price"><b>590 €</b><span>/ 3 meses</span></div>
+            <ul><li>24 sesiones 1 a 1</li><li>Plan nutricional a medida</li><li>Mediciones cada 2 semanas</li><li>Cuota de gimnasio incluida</li></ul>
+            <a class="btn" href="#prueba" data-pick="Sesión con entrenador">Quiero el reto</a>
+          </div>
+        </div>
+
+        <div class="plans" id="plans-gym" hidden>
+          <div class="plan">
+            <h3>Libre</h3>
+            <p class="desc">Acceso a la sala para entrenar por tu cuenta.</p>
+            <div class="price"><b>29 €</b><span>/ mes</span></div>
+            <ul><li>Sala de fuerza y cardio</li><li>Horario completo</li><li>Valoración inicial gratis</li></ul>
+            <a class="btn" href="#prueba" data-pick="Día de gimnasio">Probar un día gratis</a>
+          </div>
+          <div class="plan plan--feat" data-flag="Recomendado">
+            <h3>Club</h3>
+            <p class="desc">Sala y todas las clases dirigidas que quieras.</p>
+            <div class="price"><b>39 €</b><span>/ mes</span></div>
+            <ul><li>Todo lo de Libre</li><li>Clases ilimitadas</li><li>Plan de inicio de 4 semanas</li><li>Revisión con entrenador cada trimestre</li></ul>
+            <a class="btn btn--volt" href="#prueba" data-pick="Clase dirigida">Probar una clase gratis</a>
+          </div>
+          <div class="plan">
+            <h3>Club anual</h3>
+            <p class="desc">La cuota Club pagando el año de una vez.</p>
+            <div class="price"><b>390 €</b><span>/ año · 2 meses gratis</span></div>
+            <ul><li>Todo lo de Club</li><li>Congela la cuota hasta 2 meses</li><li>Camiseta Forja de regalo</li></ul>
+            <a class="btn" href="#prueba" data-pick="Clase dirigida">Probar una clase gratis</a>
+          </div>
+        </div>
+        <p class="note" id="plans-note">¿Entrenáis en pareja? <b>22 € por persona y sesión</b>. Pago con tarjeta, Bizum o domiciliación.</p>
+      </div>
+    </section>
+
+    <section class="section section--alt" id="plan">
+      <div class="wrap quiz">
+        <div>
+          <span class="eyebrow" data-reveal>Test de 20 segundos</span>
+          <h2 class="h2" data-reveal>¿Qué plan<br>te encaja?</h2>
+          <p style="color:var(--muted);margin-top:18px;max-width:430px" data-reveal>Responde tres preguntas y te decimos por dónde empezar. Sin dar tu email ni tu teléfono.</p>
+        </div>
+        <div class="quiz__box" data-reveal>
+          <div class="quiz__bar"><i id="qbar"></i></div>
+          <div id="quiz"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="opiniones">
+      <div class="wrap">
+        <div class="head">
+          <div><span class="eyebrow" data-reveal>Resultados</span><h2 data-reveal>Lo cuentan<br>nuestros socios.</h2></div>
+          <div class="gscore" data-reveal><b>4,9</b><div><span class="stars">★★★★★</span><br><span>128 reseñas en Google</span></div></div>
+        </div>
+        <div class="reviews">
+          <article class="review" data-reveal>
+            <span class="review__res">−11 kg en 5 meses</span>
+            <q>Había probado tres gimnasios y en todos lo dejaba al mes. Aquí Álex me escribía si faltaba y eso cambia todo. Por primera vez he sido constante.</q>
+            <footer><span class="avatar" style="background:#d4ff3a">L</span><span><b>Laura M.</b><span class="stars">★★★★★</span></span></footer>
+          </article>
+          <article class="review" data-reveal data-delay="100">
+            <span class="review__res">De 0 a 8 dominadas</span>
+            <q>Me preparé las pruebas físicas de bombero con el reto de 12 semanas. Llegué con margen en todas. Plan claro y cero tonterías.</q>
+            <footer><span class="avatar" style="background:#7fd3ff">J</span><span><b>Javier R.</b><span class="stars">★★★★★</span></span></footer>
+          </article>
+          <article class="review" data-reveal data-delay="200">
+            <span class="review__res">Adiós al dolor de espalda</span>
+            <q>Con 58 años me daba miedo levantar peso. Empezamos poco a poco y ahora hago sentadilla con barra. Ojalá hubiera venido antes.</q>
+            <footer><span class="avatar" style="background:#ffb38a">P</span><span><b>Pilar G.</b><span class="stars">★★★★★</span></span></footer>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--alt" id="prueba">
+      <div class="wrap booking">
+        <div>
+          <span class="eyebrow">Primera sesión gratis</span>
+          <h2 class="h2" style="margin-top:14px">Ven a<br><span class="volt">probar.</span></h2>
+          <p style="color:var(--muted);margin-top:18px;max-width:430px">Elige qué quieres probar, día y hora. Te confirmamos por WhatsApp en menos de una hora.</p>
+          <ul class="why">
+            <li>Sin compromiso: si no te convence, no pagas nada.</li>
+            <li>Te enseñamos la sala y hacemos tu valoración inicial.</li>
+            <li>Solo trae ropa cómoda y agua. Toalla la ponemos nosotros.</li>
+          </ul>
+        </div>
+        <div class="panel" data-reveal>
+          <p class="step">1 · Qué quieres probar</p>
+          <div class="chips" data-group="svc">
+            <button class="chip" aria-pressed="true">Sesión con entrenador</button>
+            <button class="chip" aria-pressed="false">Clase dirigida</button>
+            <button class="chip" aria-pressed="false">Día de gimnasio</button>
+          </div>
+          <p class="step">2 · Día</p>
+          <div class="days" data-group="day" id="days"></div>
+          <p class="step">3 · Hora</p>
+          <div class="slots" data-group="slot" id="slots"></div>
+          <p class="step"><label for="name">4 · Tu nombre</label></p>
+          <input class="field" id="name" type="text" placeholder="Cómo te llamas" autocomplete="given-name">
+          <div class="summary" id="summary">Elige día y hora.</div>
+          <button class="btn btn--volt" id="confirm">Confirmar por WhatsApp</button>
+          <p class="toast" id="toast" role="status"></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="faq">
+      <div class="wrap">
+        <div class="head" style="justify-content:center;text-align:center"><div><span class="eyebrow" data-reveal>Dudas frecuentes</span><h2 data-reveal>Antes de venir.</h2></div></div>
+        <div class="faq">
+          <details data-reveal><summary>Nunca he ido a un gimnasio. ¿Es para mí?</summary><p>Sí. La mitad de nuestros socios empezaron desde cero. En la valoración inicial vemos tu punto de partida y te damos un plan de inicio de 4 semanas para que sepas qué hacer cada día.</p></details>
+          <details data-reveal><summary>¿Hay permanencia o matrícula?</summary><p>No hay permanencia. La matrícula es de 20 €, pero este mes no la cobramos. Puedes darte de baja avisando antes del día 25.</p></details>
+          <details data-reveal><summary>¿El entrenamiento personal incluye la cuota del gimnasio?</summary><p>Sí, en el Bono 8 sesiones y en el Reto 12 semanas la cuota está incluida, así que puedes entrenar por tu cuenta los días que no tengas sesión.</p></details>
+          <details data-reveal><summary>¿Puedo congelar la cuota si me voy de viaje o me lesiono?</summary><p>Con la cuota anual puedes congelarla hasta 2 meses al año. En las mensuales, si tienes una lesión con justificante, la pausamos sin coste.</p></details>
+          <details data-reveal><summary>¿Hay aparcamiento cerca?</summary><p>Hay zona azul en la calle y un parking público a 2 minutos andando. Para bicis tenemos aparcamiento dentro del local.</p></details>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--alt" id="visitanos">
+      <div class="wrap">
+        <div class="head"><div><span class="eyebrow" data-reveal>Visítanos</span><h2 data-reveal>Dónde estamos.</h2></div></div>
+        <div class="visit">
+          <div class="feat" data-reveal>
+            <span class="open-now volt" id="open-now">Abierto ahora</span>
+            <table class="hours">
+              <tr><td>Lunes a viernes</td><td>6:30 – 23:00</td></tr>
+              <tr><td>Sábado</td><td>9:00 – 14:00</td></tr>
+              <tr><td>Domingo</td><td>9:00 – 13:00</td></tr>
+            </table>
+          </div>
+          <div class="feat" data-reveal data-delay="100">
+            <div class="feat__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg></div>
+            <b>Barrio de Delicias, Zaragoza</b><p>A 5 minutos de la estación Delicias. Bus 21, 33 y 38.</p>
+          </div>
+          <div class="feat" data-reveal data-delay="200">
+            <div class="feat__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l1.3-3.9A8 8 0 1 1 8 19z"/></svg></div>
+            <b>WhatsApp e Instagram</b><p>Escríbenos y te respondemos el mismo día. En Instagram subimos rutinas y consejos cada semana.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section cta-final">
+      <div class="wrap">
+        <h2 data-reveal>El mejor día<br>para empezar <span class="volt">es hoy.</span></h2>
+        <p data-reveal>Tu primera sesión es gratis. Lo peor que puede pasar es que salgas con agujetas.</p>
+        <a class="btn btn--volt" href="#prueba" data-reveal>Reservar mi entrenamiento de prueba</a>
+      </div>
+    </section>
+  </main>
+
+  <a class="fab" href="#prueba" aria-label="Escribir por WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.7-1.4.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.7.3-.2.3-.9.9-.9 2.2s.9 2.5 1 2.7c.1.2 1.8 2.8 4.4 3.9 1.6.7 2.3.8 3.1.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3z"/></svg></a>
+
+  <footer class="site-foot">
+    <div class="wrap"><span>Forja Training Club · Negocio de muestra (ficticio)</span><span>Web diseñada por <a href="../../">Nexo Studio</a></span></div>
+  </footer>
+
+  <script defer src="../demo.js"></script>
+  <script>
+    (function () {
+      var DAYS = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
+      var DAYS_LONG = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+      var MONTHS = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+
+      // Navegación con fondo al bajar
+      var nav = document.getElementById("nav");
+      function onScroll() { nav.classList.toggle("solid", window.scrollY > 40); }
+      onScroll(); window.addEventListener("scroll", onScroll, { passive: true });
+
+      // ---------- Horario de clases ----------
+      // [hora, clase, entrenador, nivel, plazas libres de 10]
+      var WEEK = {
+        1: [["7:00", "Fuerza básica", "con Álex", "Todos los niveles", 4], ["9:30", "Movilidad y core", "con Marta", "Suave", 6], ["14:00", "Express 30'", "con Dani", "Intermedio", 2], ["18:30", "Funcional", "con Dani", "Intermedio", 0], ["20:00", "Fuerza básica", "con Álex", "Todos los niveles", 3]],
+        2: [["7:00", "HIIT", "con Dani", "Intenso", 5], ["10:00", "Salud +50", "con Marta", "Suave", 3], ["18:30", "Halterofilia", "con Álex", "Técnica", 2], ["20:00", "Funcional", "con Dani", "Intermedio", 7]],
+        3: [["7:00", "Fuerza básica", "con Álex", "Todos los niveles", 6], ["9:30", "Movilidad y core", "con Marta", "Suave", 8], ["14:00", "Express 30'", "con Dani", "Intermedio", 4], ["18:30", "Preparación oposiciones", "con Álex", "Intenso", 1], ["20:00", "HIIT", "con Dani", "Intenso", 0]],
+        4: [["7:00", "HIIT", "con Dani", "Intenso", 5], ["10:00", "Salud +50", "con Marta", "Suave", 4], ["18:30", "Halterofilia", "con Álex", "Técnica", 3], ["20:00", "Funcional", "con Dani", "Intermedio", 2]],
+        5: [["7:00", "Fuerza básica", "con Álex", "Todos los niveles", 5], ["14:00", "Express 30'", "con Dani", "Intermedio", 6], ["18:00", "Funcional por parejas", "con Dani y Marta", "Todos los niveles", 3]],
+        6: [["10:00", "Entrenamiento en grupo", "con Álex", "Todos los niveles", 2], ["11:30", "Movilidad y estiramientos", "con Marta", "Suave", 7]],
+        0: [["10:00", "Open box", "sala libre con entrenador", "Libre", 9]]
+      };
+      var tabsEl = document.getElementById("tabs"), clsEl = document.getElementById("classes");
+      var order = [1, 2, 3, 4, 5, 6, 0], today = new Date().getDay();
+      function renderDay(d) {
+        tabsEl.querySelectorAll(".tab").forEach(function (t) { t.setAttribute("aria-selected", t.dataset.day == d ? "true" : "false"); });
+        clsEl.innerHTML = WEEK[d].map(function (c, i) {
+          var s = c[4], cls = s === 0 ? "spots--full" : s <= 3 ? "spots--low" : "spots--ok";
+          var txt = s === 0 ? "Completa · lista de espera" : s <= 3 ? "Quedan " + s + " plazas" : s + " plazas libres";
+          if (s === 1) txt = "¡Queda 1 plaza!";
+          return '<div class="cls" style="animation-delay:' + (i * 60) + 'ms"><span class="cls__time">' + c[0] + '</span><span class="cls__name"><b>' + c[1] + '</b><span>' + c[2] + '</span></span><span class="lvl">' + c[3] + '</span><span class="spots ' + cls + '">' + txt + '</span></div>';
+        }).join("");
+      }
+      order.forEach(function (d) {
+        var b = document.createElement("button");
+        b.className = "tab"; b.setAttribute("role", "tab"); b.dataset.day = d;
+        b.innerHTML = DAYS_LONG[d] + (d === today ? "<small>Hoy</small>" : "<small>&nbsp;</small>");
+        b.addEventListener("click", function () { renderDay(d); });
+        tabsEl.appendChild(b);
+      });
+      renderDay(today);
+
+      // ---------- Tarifas ----------
+      var note = document.getElementById("plans-note");
+      document.querySelectorAll(".switch button").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          document.querySelectorAll(".switch button").forEach(function (b) { b.setAttribute("aria-pressed", b === btn ? "true" : "false"); });
+          var which = btn.dataset.plans;
+          document.getElementById("plans-pt").hidden = which !== "pt";
+          document.getElementById("plans-gym").hidden = which !== "gym";
+          note.innerHTML = which === "pt"
+            ? "¿Entrenáis en pareja? <b>22 € por persona y sesión</b>. Pago con tarjeta, Bizum o domiciliación."
+            : "<b>Matrícula gratis este mes</b> (normalmente 20 €). Estudiantes y mayores de 65: 10 % de descuento.";
+        });
+      });
+
+      // ---------- Test de plan ----------
+      var Q = [
+        { q: "¿Cuál es tu objetivo principal?", o: [["Perder grasa", "fat"], ["Ganar músculo o fuerza", "muscle"], ["Moverme mejor y sin dolores", "health"], ["Preparar una prueba física", "test"]] },
+        { q: "¿Cuánta experiencia tienes entrenando?", o: [["Ninguna, empiezo de cero", 0], ["Algo, pero lo dejé", 1], ["Entreno con regularidad", 2]] },
+        { q: "¿Cómo prefieres entrenar?", o: [["Que alguien me guíe en cada sesión", "pt"], ["En grupo, con ambiente", "group"], ["A mi aire, solo necesito sala", "solo"]] }
+      ];
+      var R = {
+        pt: { tag: "Tu plan ideal", name: "Bono 8 sesiones", price: "240 €", per: "/ mes", pick: "Sesión con entrenador", why: "Dos sesiones a la semana con Álex, plan escrito para los demás días y la cuota del gimnasio incluida. Es la forma más rápida de ver resultados sin lesionarte." },
+        test: { tag: "Tu plan ideal", name: "Reto 12 semanas", price: "590 €", per: "/ 3 meses", pick: "Sesión con entrenador", why: "Un programa con fecha de examen: preparamos cada prueba con mediciones cada 2 semanas para que llegues con margen." },
+        group: { tag: "Tu plan ideal", name: "Cuota Club", price: "39 €", per: "/ mes", pick: "Clase dirigida", why: "Sala libre y clases ilimitadas en grupos de 10 como máximo. Tienes la motivación del grupo y un entrenador corrigiéndote." },
+        solo: { tag: "Tu plan ideal", name: "Cuota Libre", price: "29 €", per: "/ mes", pick: "Día de gimnasio", why: "Acceso a toda la sala en horario completo. Incluye una valoración inicial gratis para que salgas con una rutina pensada para ti." },
+        start: { tag: "Para empezar con buen pie", name: "Club + 4 sesiones", price: "39 € + 140 €", per: "el primer mes", pick: "Sesión con entrenador", why: "Si empiezas de cero, lo mejor es aprender bien la técnica con 4 sesiones personales y luego seguir en clases de grupo con la cuota Club." }
+      };
+      var quizEl = document.getElementById("quiz"), bar = document.getElementById("qbar"), ans = [];
+      function showQ(i) {
+        bar.style.width = (i / Q.length * 100) + "%";
+        var html = '<div class="quiz__step"><p class="step">Pregunta ' + (i + 1) + ' de ' + Q.length + '</p><h3 class="quiz__q">' + Q[i].q + '</h3><div class="opts">';
+        Q[i].o.forEach(function (o, k) { html += '<button class="opt" data-k="' + k + '">' + o[0] + '</button>'; });
+        quizEl.innerHTML = html + "</div></div>";
+        quizEl.querySelectorAll(".opt").forEach(function (b) {
+          b.addEventListener("click", function () {
+            ans[i] = Q[i].o[+b.dataset.k][1];
+            if (i + 1 < Q.length) showQ(i + 1); else showResult();
+          });
+        });
+      }
+      function showResult() {
+        bar.style.width = "100%";
+        var goal = ans[0], exp = ans[1], style = ans[2], key;
+        if (goal === "test") key = "test";
+        else if (style === "pt") key = "pt";
+        else if (exp === 0 && style !== "pt") key = "start";
+        else key = style;
+        var r = R[key];
+        quizEl.innerHTML = '<div class="quiz__step result"><span class="result__tag">' + r.tag + '</span><h3>' + r.name + '</h3><p>' + r.why + '</p><div class="price"><b>' + r.price + '</b><span>' + r.per + '</span></div><div class="result__ctas"><a class="btn btn--volt" href="#prueba" data-pick="' + r.pick + '">Probar gratis</a><button class="linkbtn" id="restart">Repetir el test</button></div></div>';
+        document.getElementById("restart").addEventListener("click", function () { ans = []; showQ(0); });
+      }
+      showQ(0);
+
+      // ---------- Reserva de prueba ----------
+      var daysEl = document.getElementById("days"), slotsEl = document.getElementById("slots");
+      var state = { svc: "Sesión con entrenador", day: "", slot: "" };
+      var d = new Date(), added = 0;
+      while (added < 6) {
+        d.setDate(d.getDate() + 1);
+        if (d.getDay() === 0) continue;
+        var b = document.createElement("button");
+        b.className = "chip day"; b.setAttribute("aria-pressed", "false");
+        b.dataset.value = DAYS[d.getDay()] + " " + d.getDate() + " " + MONTHS[d.getMonth()];
+        b.innerHTML = "<small>" + DAYS[d.getDay()] + "</small><b>" + d.getDate() + "</b><small>" + MONTHS[d.getMonth()] + "</small>";
+        daysEl.appendChild(b); added++;
+      }
+      ["7:00", "8:00", "10:00", "13:00", "17:00", "18:00", "19:00", "20:00"].forEach(function (t, i) {
+        var b = document.createElement("button");
+        b.className = "chip slot"; b.setAttribute("aria-pressed", "false"); b.dataset.value = t; b.textContent = t;
+        if (i === 1 || i === 6) b.disabled = true; // horas ocupadas
+        slotsEl.appendChild(b);
+      });
+      var nameEl = document.getElementById("name");
+      function update() {
+        var s = document.getElementById("summary"), who = nameEl.value.trim();
+        s.innerHTML = "<b>" + state.svc + "</b>" + (state.day && state.slot ? " · " + state.day + " a las " + state.slot : " · elige día y hora") + (who ? " · " + who.replace(/</g, "&lt;") : "");
+      }
+      function select(group, value) {
+        group.querySelectorAll(".chip").forEach(function (c) { c.setAttribute("aria-pressed", (c.dataset.value || c.textContent) === value ? "true" : "false"); });
+        state[group.dataset.group] = value; update();
+      }
+      document.querySelectorAll("[data-group]").forEach(function (group) {
+        group.addEventListener("click", function (e) {
+          var btn = e.target.closest(".chip");
+          if (!btn || btn.disabled) return;
+          select(group, btn.dataset.value || btn.textContent);
+        });
+      });
+      nameEl.addEventListener("input", update);
+      // Botones de tarifas y del test preseleccionan qué probar
+      document.addEventListener("click", function (e) {
+        var a = e.target.closest("[data-pick]");
+        if (a) select(document.querySelector('[data-group="svc"]'), a.dataset.pick);
+      });
+      document.getElementById("confirm").addEventListener("click", function () {
+        var t = document.getElementById("toast"), who = nameEl.value.trim();
+        if (!state.day || !state.slot) { t.textContent = "Elige un día y una hora primero."; return; }
+        if (!who) { t.textContent = "Dinos tu nombre para apuntarte."; nameEl.focus(); return; }
+        t.textContent = "En la web real, esto abriría el WhatsApp del gimnasio con el mensaje ya escrito: «Hola, soy " + who + ", quiero probar " + state.svc.toLowerCase() + " el " + state.day + " a las " + state.slot + "».";
+      });
+      update();
+
+      // ---------- Abierto ahora ----------
+      var now = new Date(), wd = now.getDay(), h = now.getHours() + now.getMinutes() / 60;
+      var open = wd >= 1 && wd <= 5 ? h >= 6.5 && h < 23 : wd === 6 ? h >= 9 && h < 14 : h >= 9 && h < 13;
+      var on = document.getElementById("open-now");
+      if (!open) { on.textContent = "Cerrado ahora"; on.classList.remove("volt"); on.style.color = "#ff6b5a"; }
+    })();
+  </script>
+</body>
+</html>

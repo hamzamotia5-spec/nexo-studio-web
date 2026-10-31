@@ -355,6 +355,7 @@ p { margin: 0; }
 /* Demos (3 columnas) */
 .section__sub { color: var(--muted); margin-top: 16px; font-size: 17px; }
 .works--3 { grid-template-columns: repeat(3, 1fr); }
+.works--4 { grid-template-columns: repeat(2, 1fr); }
 .works--3 .work { text-decoration: none; color: inherit; }
 .works--3 .work__media { padding: 28px 24px 0; min-height: 0; height: 270px; }
 .works--3 .browser__body { padding: 22px 20px 26px; }
