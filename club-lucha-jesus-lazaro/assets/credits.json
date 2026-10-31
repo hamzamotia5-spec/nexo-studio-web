@@ -1,0 +1,66 @@
+{
+  "hero": {
+    "src": "assets/img/hero-1920.webp",
+    "title": "Greco-Roman wrestling competition of the London 2012 Games",
+    "creator": "Presidential Press and Information Office (Azerbaiyán)",
+    "license": "CC BY 4.0",
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "foreign_landing_url": "https://commons.wikimedia.org/w/index.php?curid=66815937"
+  },
+  "grecorromana": {
+    "src": "assets/img/grecorromana.webp",
+    "title": "Greco-Roman wrestling competition of the London 2012 Games 4",
+    "creator": "Presidential Press and Information Office (Azerbaiyán)",
+    "license": "CC BY 4.0",
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "foreign_landing_url": "https://commons.wikimedia.org/w/index.php?curid=66815933"
+  },
+  "libre": {
+    "src": "assets/img/libre.webp",
+    "title": "Greco-Roman wrestling competition of the London 2012 Games 2",
+    "creator": "Presidential Press and Information Office (Azerbaiyán)",
+    "license": "CC BY 4.0",
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "foreign_landing_url": "https://commons.wikimedia.org/w/index.php?curid=66815932"
+  },
+  "proyeccion": {
+    "src": "assets/img/proyeccion.webp",
+    "title": "Greco-Roman wrestling at the 2025 CIS Games 8",
+    "creator": "Dilaver Najafov",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "foreign_landing_url": "https://commons.wikimedia.org/w/index.php?curid=176377272"
+  },
+  "tapiz": {
+    "src": "assets/img/tapiz.webp",
+    "title": "Greco-Roman wrestling at the 2025 CIS Games 4",
+    "creator": "Dilaver Najafov",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "foreign_landing_url": "https://commons.wikimedia.org/w/index.php?curid=176377262"
+  },
+  "femenina": {
+    "src": "assets/img/femenina.webp",
+    "title": "Wrestling Women's Freestyle 65kg at 2018 Summer Youth Olympics",
+    "creator": "Sandro Halank, Wikimedia Commons",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "foreign_landing_url": "https://commons.wikimedia.org/w/index.php?curid=78388957"
+  },
+  "cadetes": {
+    "src": "assets/img/cadetes.webp",
+    "title": "Wrestling Boys' freestyle 80 kg at the 2018 Summer Youth Olympics",
+    "creator": "Martin Rulsch, Wikimedia Commons",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "foreign_landing_url": "https://commons.wikimedia.org/w/index.php?curid=84049376"
+  },
+  "grappling": {
+    "src": "assets/img/grappling.webp",
+    "title": "Youth grappling - armlock",
+    "creator": "Scott LaPierre",
+    "license": "CC BY-SA 2.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/2.0/",
+    "foreign_landing_url": "https://commons.wikimedia.org/w/index.php?curid=20421934"
+  }
+}
