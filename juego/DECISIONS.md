@@ -1,0 +1,9 @@
+# Decisiones
+
+1. **Prototipo web antes que la app Expo + Supabase.** El spec pide una app móvil con backend. Este prototipo es HTML/CSS/JS sin dependencias dentro de la web de Nexo Studio para poder jugarlo ya desde el móvil y validar misiones, textos y prompts. Las reglas de `submit()` en `juego.js` son las mismas que tendrá la RPC `submit_mission`; `contenido.js` se pasará tal cual a `seed.sql`.
+2. **Partida guardada en el dispositivo (localStorage).** Sin cuentas: en la app real, email + Google + Apple. Consecuencia: XP y desbloqueos se pueden manipular desde el navegador. El requisito «nunca en el cliente» se cumple solo cuando exista el backend.
+3. **Vídeos: búsquedas de YouTube en lugar de IDs inventados.** El spec permite IDs de ejemplo con un TODO; para no enlazar vídeos que no existen, cada misión muestra una búsqueda en YouTube. Cuando haya vídeos elegidos se añaden con `youtube_video_id`, `title`, `channel_name` y `channel_url` y se muestran con el reproductor oficial (youtube-nocookie) y el crédito del canal enlazado. TODO(admin): elegir los vídeos.
+4. **Kit Web Pro (petición añadida al spec).** El jugador elige para qué negocio hace la web y el juego le da todos los prompts necesarios, en orden. Está dentro de la misión 2 y también en una pestaña propia, accesible siempre: los prompts no se bloquean; lo que avanza el juego son las pruebas.
+5. **Misión 1 (`text`) con dos campos** (marca y zona), cada uno con un mínimo de 3 caracteres. Al entregarla se guardan en el perfil y personalizan el resto de prompts.
+6. **Clientes con cuota mensual** = prospects distintos con al menos un ingreso `monthly`. Los ingresos solo se registran desde un prospect en estado «Cliente».
+7. **Racha**: se cuenta cualquier acción del día (misión, cambio de estado, ingreso, marcar checklist). Si pasa un día entero sin actividad se muestra 0.
